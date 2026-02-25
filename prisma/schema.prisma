@@ -1,0 +1,112 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============ ENUMS ============
+
+enum Role {
+  ADMIN
+  CENTRO
+  CIDADAO
+}
+
+enum AgendamentoStatus {
+  PENDENTE
+  CONFIRMADO
+  EM_PROGRESSO
+  CONCLUIDO
+  CANCELADO
+}
+
+enum TipoCentro {
+  SAUDE
+  ADMINISTRATIVO
+  EDUCACAO
+  SEGURANCA
+  OUTRO
+}
+
+// ============ MODELS ============
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  nome      String
+  password  String
+  role      Role     @default(CIDADAO)
+  ativo     Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  centro        Centro?
+  agendamentos  Agendamento[]
+  refreshTokens RefreshToken[]
+
+  @@index([email])
+  @@index([role])
+}
+
+model Centro {
+  id              String   @id @default(cuid())
+  nome            String
+  descricao       String?
+  tipo            TipoCentro
+  endereco        String
+  telefone        String?
+  email           String?
+  horaAbertura    String   @default("08:00")
+  horaFechamento  String   @default("17:00")
+  diasAtendimento String   @default("SEGUNDA,TERCA,QUARTA,QUINTA,SEXTA")
+  ativo           Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  userId        String  @unique
+  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  agendamentos  Agendamento[]
+
+  @@index([userId])
+}
+
+model Agendamento {
+  id              String   @id @default(cuid())
+  dataAgendamento DateTime
+  numeroVaga      Int?
+  descricao       String?
+  status          AgendamentoStatus @default(PENDENTE)
+  observacoes     String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  userId    String
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  centroId  String
+  centro    Centro @relation(fields: [centroId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([centroId])
+  @@index([status])
+  @@index([dataAgendamento])
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
