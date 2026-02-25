@@ -1,4 +1,4 @@
-# Exemplo de teste unitário para AuthService
+// Unit test example for AuthService
 
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
@@ -45,16 +45,16 @@ describe('AuthService', () => {
     it('should create a new user', async () => {
       const registerDto = {
         email: 'test@example.com',
-        nome: 'Test User',
-        senha: 'password123',
+        name: 'Test User',
+        password: 'password123',
       };
 
       const user = {
         id: '1',
         email: 'test@example.com',
-        nome: 'Test User',
-        role: 'CIDADAO',
-        ativo: true,
+        name: 'Test User',
+        role: 'CITIZEN',
+        active: true,
         createdAt: new Date(),
       };
 
@@ -73,8 +73,8 @@ describe('AuthService', () => {
     it('should throw if user exists', async () => {
       const registerDto = {
         email: 'test@example.com',
-        nome: 'Test User',
-        senha: 'password123',
+        name: 'Test User',
+        password: 'password123',
       };
 
       jest.spyOn(prisma.user, 'findUnique').mockResolvedValue({} as any);
@@ -87,11 +87,11 @@ describe('AuthService', () => {
     it('should return access token on valid credentials', async () => {
       const loginDto = {
         email: 'test@example.com',
-        senha: 'password123',
+        password: 'password123',
       };
 
-      // Mock será implementado...
-      // expect(result).toHaveProperty('access_token');
+      // Mock to be implemented
+      // expect(result).toHaveProperty('accessToken');
     });
   });
 });
