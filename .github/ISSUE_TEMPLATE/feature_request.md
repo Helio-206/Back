@@ -1,40 +1,40 @@
 name: Feature Request
-description: Sugerir uma nova funcionalidade
+description: Suggest a new feature
 labels: ["enhancement"]
 body:
   - type: markdown
     attributes:
       value: |
-        Obrigado por sugerir uma feature! Use este template para descrever sua ideia.
+        Thanks for the suggestion. Use this template to describe your idea.
   - type: input
     attributes:
-      label: Sumário
-      placeholder: Descrição breve da feature
+      label: Summary
+      placeholder: Short summary of the feature
     validations:
       required: true
   - type: textarea
     attributes:
-      label: Descrição
-      placeholder: Descreva a funcionalidade em detalhes
+      label: Description
+      placeholder: Describe the feature in detail
     validations:
       required: true
   - type: textarea
     attributes:
-      label: Caso de Uso
+      label: Use Case
       placeholder: |
-        Por que essa feature é necessária?
-        Qual problema ela resolve?
+        Why is this needed?
+        What problem does it solve?
     validations:
       required: true
   - type: textarea
     attributes:
-      label: Solução Proposta
-      placeholder: Como você imaginaria implementar?
+      label: Proposed Solution
+      placeholder: How would you implement it?
   - type: textarea
     attributes:
-      label: Alternativas Consideradas
-      placeholder: Outras maneiras de resolver?
+      label: Alternatives Considered
+      placeholder: Other ways to solve this?
   - type: textarea
     attributes:
-      label: Impacto
-      placeholder: Quantos utilizadores seriam afetados?
+      label: Impact
+      placeholder: Who will be affected?

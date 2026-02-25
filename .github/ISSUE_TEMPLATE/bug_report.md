@@ -1,49 +1,49 @@
 name: Bug Report
-description: Reporte um bug encontrado
+description: Report a bug
 labels: ["bug"]
 body:
   - type: markdown
     attributes:
       value: |
-        Obrigado por reportar um bug! Preencha os detalhes abaixo.
+        Thanks for reporting a bug. Please fill in the details below.
   - type: input
     attributes:
-      label: Título
-      placeholder: Descrição breve do bug
+      label: Title
+      placeholder: Short summary of the bug
     validations:
       required: true
   - type: textarea
     attributes:
-      label: Descrição
-      placeholder: Descreva o bug em detalhes
+      label: Description
+      placeholder: Describe the bug in detail
     validations:
       required: true
   - type: textarea
     attributes:
-      label: Passos para Reproduzir
+      label: Steps to Reproduce
       placeholder: |
-        1. Acesse...
-        2. Clique em...
-        3. Veja o erro...
+        1. ...
+        2. ...
+        3. ...
     validations:
       required: true
   - type: textarea
     attributes:
-      label: Comportamento Esperado
-      placeholder: O que deveria acontecer?
+      label: Expected Behavior
+      placeholder: What should happen?
   - type: textarea
     attributes:
-      label: Comportamento Atual
-      placeholder: O que realmente está acontecendo?
+      label: Actual Behavior
+      placeholder: What actually happens?
   - type: input
     attributes:
-      label: Versão Afetada
-      placeholder: ex: 1.0.0
+      label: Affected Version
+      placeholder: e.g., 1.0.0
   - type: textarea
     attributes:
-      label: Logs/Screenshots
-      placeholder: Cole logs ou screenshots
+      label: Logs or Screenshots
+      placeholder: Paste logs or screenshots
   - type: textarea
     attributes:
-      label: Notas Adicionais
-      placeholder: Qualquer outra informação relevante
+      label: Additional Notes
+      placeholder: Any other relevant information
