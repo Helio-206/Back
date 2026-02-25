@@ -14,24 +14,24 @@ datasource db {
 
 enum Role {
   ADMIN
-  CENTRO
-  CIDADAO
+  CENTER
+  CITIZEN
 }
 
-enum AgendamentoStatus {
-  PENDENTE
-  CONFIRMADO
-  EM_PROGRESSO
-  CONCLUIDO
-  CANCELADO
+enum ScheduleStatus {
+  PENDING
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
 }
 
-enum TipoCentro {
-  SAUDE
-  ADMINISTRATIVO
-  EDUCACAO
-  SEGURANCA
-  OUTRO
+enum CenterType {
+  HEALTH
+  ADMINISTRATIVE
+  EDUCATION
+  SECURITY
+  OTHER
 }
 
 // ============ MODELS ============
@@ -39,65 +39,65 @@ enum TipoCentro {
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
-  nome      String
+  name      String
   password  String
-  role      Role     @default(CIDADAO)
-  ativo     Boolean  @default(true)
+  role      Role     @default(CITIZEN)
+  active    Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Relations
-  centro        Centro?
-  agendamentos  Agendamento[]
+  center     Center?
+  schedules  Schedule[]
   refreshTokens RefreshToken[]
 
   @@index([email])
   @@index([role])
 }
 
-model Centro {
+model Center {
   id              String   @id @default(cuid())
-  nome            String
-  descricao       String?
-  tipo            TipoCentro
-  endereco        String
-  telefone        String?
+  name            String
+  description     String?
+  type            CenterType
+  address         String
+  phone           String?
   email           String?
-  horaAbertura    String   @default("08:00")
-  horaFechamento  String   @default("17:00")
-  diasAtendimento String   @default("SEGUNDA,TERCA,QUARTA,QUINTA,SEXTA")
-  ativo           Boolean  @default(true)
+  openingTime     String   @default("08:00")
+  closingTime     String   @default("17:00")
+  attendanceDays  String   @default("MONDAY,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY")
+  active          Boolean  @default(true)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
   // Relations
-  userId        String  @unique
-  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  agendamentos  Agendamento[]
+  userId    String  @unique
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  schedules Schedule[]
 
   @@index([userId])
 }
 
-model Agendamento {
-  id              String   @id @default(cuid())
-  dataAgendamento DateTime
-  numeroVaga      Int?
-  descricao       String?
-  status          AgendamentoStatus @default(PENDENTE)
-  observacoes     String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+model Schedule {
+  id                String   @id @default(cuid())
+  scheduledDate     DateTime
+  slotNumber        Int?
+  description       String?
+  status            ScheduleStatus @default(PENDING)
+  notes             String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   // Relations
   userId    String
-  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  centroId  String
-  centro    Centro @relation(fields: [centroId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  centerId  String
+  center    Center    @relation(fields: [centerId], references: [id], onDelete: Cascade)
 
   @@index([userId])
-  @@index([centroId])
+  @@index([centerId])
   @@index([status])
-  @@index([dataAgendamento])
+  @@index([scheduledDate])
 }
 
 model RefreshToken {

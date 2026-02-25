@@ -8,7 +8,7 @@
 
 ## DIA 1 - Setup & Auth
 
-### ✅ Helio - Auth & Segurança
+### Helio - Auth & Segurança
 **Duração estimada: 4-5h**
 
 - [x] Validar estrutura do projeto gerada
@@ -21,7 +21,7 @@
 - [ ] Documentar endpoints auth em docs/ENDPOINTS.md
 - **PR**: `feature/helio-auth` → `develop`
 
-### ✅ Cleusio - Setup & Prisma
+### Cleusio - Setup & Prisma
 **Duração estimada: 3-4h**
 
 - [x] Validar estrutura do projeto gerada
@@ -38,7 +38,7 @@
 
 ## DIA 2 - Modulos Centros & Agendamentos
 
-### ✅ Helio - Agendamentos Fase 1 (Criação)
+### Helio - Agendamentos Fase 1 (Criação)
 **Duração estimada: 4-5h**
 
 - [ ] Finalizar CreateAgendamentoDto com todas validações
@@ -50,7 +50,7 @@
 - [ ] Documentar regras de negócio em docs/AGENDAMENTOS_REGRAS.md
 - **PR**: `feature/helio-agendamentos-create` → `develop`
 
-### ✅ Cleusio - Centros CRUD Completo
+### Cleusio - Centros CRUD Completo
 **Duração estimada: 4-5h**
 
 - [ ] Refinar CreateCentroDto com validações
@@ -66,7 +66,7 @@
 
 ## DIA 3 - Agendamentos (Leitura/Gestão) & Testes & Merge Final
 
-### ✅ Helio - Agendamentos Fase 2 (Leitura & Gestão)
+### Helio - Agendamentos Fase 2 (Leitura & Gestão)
 **Duração estimada: 3h**
 
 - [ ] Implementar AgendamentosService.findAll(), findByUser(), findByCentro()
@@ -78,7 +78,7 @@
 - [ ] Testes e2e para leitura e gestão
 - **PR**: `feature/helio-agendamentos-management` → `develop`
 
-### ✅ Cleusio - Validações Globais & Testes Endpoints
+### Cleusio - Validações Globais & Testes Endpoints
 **Duração estimada: 3h**
 
 - [ ] Implementar validadores customizados se necessário
@@ -190,15 +190,15 @@ git push origin feature/cleusio-database
 ## Recursos Disponíveis
 
 ### Estrutura Já Criada
-✅ Pastas organizadas  
-✅ NestJS configurado  
-✅ Prisma schema  
-✅ Módulos base  
-✅ Guards e Decorators  
-✅ DTOs estruturados  
-✅ ESLint e Prettier  
-✅ Jest configurado  
-✅ Documentação templates  
+Pastas organizadas  
+NestJS configurado  
+Prisma schema  
+Módulos base  
+Guards e Decorators  
+DTOs estruturados  
+ESLint e Prettier  
+Jest configurado  
+Documentação templates  
 
 ### Próximos Passos (Após v1.0.0)
 - [ ] Swagger automático

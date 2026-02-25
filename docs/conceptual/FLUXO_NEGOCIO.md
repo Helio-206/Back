@@ -141,13 +141,13 @@ ADMIN ACESSO TOTAL:
 
 | Ação | ADMIN | CENTRO | CIDADAO |
 |------|-------|--------|---------|
-| Ver todos os users | ✅ | ❌ | ❌ |
-| Ver todos os centros | ✅ | ✅ | ✅ |
-| Criar centro | ❌ | ✅ | ❌ |
-| Editar próprio centro | ✅ | ✅ | ❌ |
-| Criar agendamento | ❌ | ❌ | ✅ |
-| Ver próprios agendamentos | ✅ | ✅ | ✅ |
-| Ver agendamentos centro | ✅ | ✅ | ❌ |
-| Confirmar agendamento | ✅ | ✅ | ❌ |
-| Deletar agendamento | ✅ | ❌ | ✅ |
+| Ver todos os users | [completed] | [not-allowed] | [not-allowed] |
+| Ver todos os centros | [completed] | [completed] | [completed] |
+| Criar centro | [not-allowed] | [completed] | [not-allowed] |
+| Editar próprio centro | [completed] | [completed] | [not-allowed] |
+| Criar agendamento | [not-allowed] | [not-allowed] | [completed] |
+| Ver próprios agendamentos | [completed] | [completed] | [completed] |
+| Ver agendamentos centro | [completed] | [completed] | [not-allowed] |
+| Confirmar agendamento | [completed] | [completed] | [not-allowed] |
+| Deletar agendamento | [completed] | [not-allowed] | [completed] |
 

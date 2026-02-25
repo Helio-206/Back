@@ -3,8 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from '@database/database.module';
 import { AuthModule } from '@modules/auth/auth.module';
 import { UsersModule } from '@modules/users/users.module';
-import { CentrosModule } from '@modules/centros/centros.module';
-import { AgendamentosModule } from '@modules/agendamentos/agendamentos.module';
+import { CentersModule } from '@modules/centers/centers.module';
+import { SchedulesModule } from '@modules/schedules/schedules.module';
 
 @Module({
   imports: [
@@ -15,8 +15,8 @@ import { AgendamentosModule } from '@modules/agendamentos/agendamentos.module';
     DatabaseModule,
     AuthModule,
     UsersModule,
-    CentrosModule,
-    AgendamentosModule,
+    CentersModule,
+    SchedulesModule,
   ],
 })
 export class AppModule {}

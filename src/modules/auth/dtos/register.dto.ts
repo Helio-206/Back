@@ -6,10 +6,10 @@ export class RegisterDto {
 
   @IsString()
   @MinLength(3)
-  nome: string;
+  name: string;
 
   @IsString()
   @MinLength(6)
   @IsNotEmpty()
-  senha: string;
+  password: string;
 }

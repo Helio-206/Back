@@ -10,9 +10,9 @@ export class UsersService {
       select: {
         id: true,
         email: true,
-        nome: true,
+        name: true,
         role: true,
-        ativo: true,
+        active: true,
         createdAt: true,
       },
     });
@@ -24,9 +24,9 @@ export class UsersService {
       select: {
         id: true,
         email: true,
-        nome: true,
+        name: true,
         role: true,
-        ativo: true,
+        active: true,
         createdAt: true,
       },
     });
@@ -41,8 +41,8 @@ export class UsersService {
   async deactivate(id: string) {
     return this.prisma.user.update({
       where: { id },
-      data: { ativo: false },
-      select: { id: true, email: true, ativo: true },
+      data: { active: false },
+      select: { id: true, email: true, active: true },
     });
   }
 }
