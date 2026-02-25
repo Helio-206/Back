@@ -1,7 +1,7 @@
 {
-  "name": "agendamento-institucional-backend",
+  "name": "institutional-scheduling-backend",
   "version": "1.0.0",
-  "description": "Backend para sistema de agendamento institucional",
+  "description": "Backend for institutional scheduling system",
   "author": "Helio & Cleusio",
   "license": "MIT",
   "main": "dist/main.js",

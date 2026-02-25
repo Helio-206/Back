@@ -23,16 +23,16 @@ export class SchedulesController {
   @Post()
   @UseGuards(JwtAuthGuard)
   async create(
-    @Body() createAgendamentoDto: CreateScheduleDto,
+    @Body() createScheduleDto: CreateScheduleDto,
     @CurrentUser() user,
   ) {
-    return this.schedulesService.create(user.id, createAgendamentoDto);
+    return this.schedulesService.create(user.id, createScheduleDto);
   }
 
   @Get()
   async findAll(@Query('centerId') centerId?: string) {
     if (centerId) {
-      return this.schedulesService.findByCentro(centerId);
+      return this.schedulesService.findByCenter(centerId);
     }
     return this.schedulesService.findAll();
   }
@@ -52,9 +52,9 @@ export class SchedulesController {
   @UseGuards(JwtAuthGuard)
   async update(
     @Param('id') id: string,
-    @Body() updateAgendamentoDto: UpdateScheduleDto,
+    @Body() updateScheduleDto: UpdateScheduleDto,
   ) {
-    return this.schedulesService.update(id, updateAgendamentoDto);
+    return this.schedulesService.update(id, updateScheduleDto);
   }
 
   @Delete(':id/cancel')

@@ -1,212 +1,104 @@
-# Distribución de Tarefas - Backend Agendamento (3 dias)
+# Task Plan - Backend Scheduling (3 days)
 
 ## Overview
-- **Hélio**: Auth, Segurança, Agendamentos (Criação)
-- **Cleusio**: Centros, Agendamentos (Leitura/Gestão), Validações & Testes
+- **Helio**: Auth, security, schedule creation
+- **Cleusio**: Centers, schedule read/management, validations and endpoint tests
 
 ---
 
-## DIA 1 - Setup & Auth
+## Day 1 - Setup and Auth
 
-### Helio - Auth & Segurança
-**Duração estimada: 4-5h**
+### Helio - Auth and Security
+**Estimated time: 4-5h**
 
-- [x] Validar estrutura do projeto gerada
-- [x] Testar `npm install` e `npm run dev`
-- [ ] Implementar RegisterDto com validações completas
-- [ ] Implementar LoginDto com validações
-- [ ] Testar endpoints `/auth/register` e `/auth/login` manualmente
-- [ ] Configurar error handling correto para auth
-- [ ] Testes unitários para AuthService
-- [ ] Documentar endpoints auth em docs/ENDPOINTS.md
-- **PR**: `feature/helio-auth` → `develop`
+- [ ] Validate project structure and dependencies
+- [ ] Validate `npm install` and `npm run dev`
+- [ ] Complete `RegisterDto` validations
+- [ ] Complete `LoginDto` validations
+- [ ] Test `/auth/register` and `/auth/login`
+- [ ] Define proper error handling for auth
+- [ ] Unit tests for `AuthService`
+- **PR**: `feature/helio-backend` -> `develop`
 
-### Cleusio - Setup & Prisma
-**Duração estimada: 3-4h**
+### Cleusio - Prisma and Database
+**Estimated time: 3-4h**
 
-- [x] Validar estrutura do projeto gerada
-- [x] Testar npm install
-- [ ] Verificar relação User-Centro na schema
-- [ ] Criar migration inicial: `npm run prisma:migrate`
-- [ ] Testar Prisma Studio: `npm run prisma:studio`
-- [ ] Configurar database seed com dados de teste
-- [ ] Testar conexão com PostgreSQL
-- [ ] Documentar setup em docs/DATABASE_SETUP.md
-- **PR**: `feature/cleusio-database-setup` → `develop`
+- [ ] Validate project structure and dependencies
+- [ ] Test `npm install`
+- [ ] Review User/Center relation in schema
+- [ ] Create initial migration: `npm run prisma:migrate`
+- [ ] Validate Prisma Studio: `npm run prisma:studio`
+- [ ] Seed data for development
+- [ ] Test PostgreSQL connection
+- **PR**: `feature/cleusio-backend` -> `develop`
 
 ---
 
-## DIA 2 - Modulos Centros & Agendamentos
+## Day 2 - Centers and Schedules
 
-### Helio - Agendamentos Fase 1 (Criação)
-**Duração estimada: 4-5h**
+### Helio - Schedule Creation
+**Estimated time: 4-5h**
 
-- [ ] Finalizar CreateAgendamentoDto com todas validações
-- [ ] Implementar AgendamentosService.create()
-- [ ] Implementar AgendamentosController POST /agendamentos
-- [ ] Validar: data futura, centro existe, sem duplicatas
-- [ ] Testes unitários para create
-- [ ] Testes e2e para POST /agendamentos
-- [ ] Documentar regras de negócio em docs/AGENDAMENTOS_REGRAS.md
-- **PR**: `feature/helio-agendamentos-create` → `develop`
+- [ ] Finalize `CreateScheduleDto` validations
+- [ ] Implement `SchedulesService.create()`
+- [ ] Implement `POST /schedules`
+- [ ] Validate: future date, center exists, no duplicates
+- [ ] Unit tests for creation
+- [ ] E2E tests for `POST /schedules`
+- [ ] Update docs/SCHEDULE_RULES.md
 
-### Cleusio - Centros CRUD Completo
-**Duração estimada: 4-5h**
+### Cleusio - Centers CRUD
+**Estimated time: 4-5h**
 
-- [ ] Refinar CreateCentroDto com validações
-- [ ] Implementar CentrosService completo (create, read, update, delete)
-- [ ] Implementar CentrosController com todas rotas
-- [ ] Validar horários e dias de funcionamento
-- [ ] Testes unitários para CentrosService
-- [ ] Testes e2e para CRUD de centros
-- [ ] Documentar endpoints em docs/ENDPOINTS.md
-- **PR**: `feature/cleusio-centros-crud` → `develop`
+- [ ] Refine `CreateCenterDto` validations
+- [ ] Implement centers CRUD in service
+- [ ] Implement centers endpoints in controller
+- [ ] Validate hours and attendance days
+- [ ] Unit tests for `CentersService`
+- [ ] E2E tests for centers CRUD
 
 ---
 
-## DIA 3 - Agendamentos (Leitura/Gestão) & Testes & Merge Final
+## Day 3 - Schedule Read/Management and Final Review
 
-### Helio - Agendamentos Fase 2 (Leitura & Gestão)
-**Duração estimada: 3h**
+### Helio - Schedule Read and Management
+**Estimated time: 3h**
 
-- [ ] Implementar AgendamentosService.findAll(), findByUser(), findByCentro()
-- [ ] Implementar GET endpoints em controller
-- [ ] Implementar PUT para mudar status (confirm, progress, complete)
-- [ ] Implementar DELETE para cancelar e deletar
-- [ ] Validar permissões: cidadao só vê seus, centro só seu centro
-- [ ] Testes unitários para todas funções
-- [ ] Testes e2e para leitura e gestão
-- **PR**: `feature/helio-agendamentos-management` → `develop`
+- [ ] Implement `findAll`, `findByUser`, `findByCenter`
+- [ ] Implement GET endpoints
+- [ ] Implement status updates (confirm, in progress, complete)
+- [ ] Implement cancellation and deletion
+- [ ] Validate permissions by role
+- [ ] Unit tests for schedule management
+- [ ] E2E tests for read and management
 
-### Cleusio - Validações Globais & Testes Endpoints
-**Duração estimada: 3h**
+### Cleusio - Global Validation and Endpoint Tests
+**Estimated time: 3h**
 
-- [ ] Implementar validadores customizados se necessário
-- [ ] Tester TODOS endpoints implementados por Hélio
-- [ ] Tester TODOS endpoints implementados por Cleusio
-- [ ] Validar RBAC: admin > centro > cidadao
-- [ ] Testar cenários de erro (não autorizado, não encontrado, etc)
-- [ ] Testar fluxos completos (registro → login → agendamento)
-- [ ] Coverage de testes mínimo 70%
-- [ ] ESLint e Prettier passar sem erros
-- [ ] Documentação completa em /docs
+- [ ] Add custom validators if needed
+- [ ] Validate all endpoints created by both developers
+- [ ] Validate RBAC: ADMIN > CENTER > CITIZEN
+- [ ] Error handling scenarios (unauthorized, not found, invalid data)
+- [ ] End-to-end flow tests (register -> login -> schedule)
+- [ ] Ensure lint and format checks pass
 
 ---
 
-## Checklist Final (Dia 3 - Tarde)
+## Final Checklist
 
 ### Code Quality
-- [ ] `npm run lint` sem erros
-- [ ] `npm run format` check passing
-- [ ] `npm run test` 70%+ coverage
-- [ ] `npm run build` sem erros
-- [ ] Sem console.logs em producão
+- [ ] `npm run lint` passes
+- [ ] `npm run format:check` passes
+- [ ] `npm run test` reaches target coverage
+- [ ] `npm run build` passes
+- [ ] No debug logs in production paths
 
-### Documentação
-- [ ] README.md completo
-- [ ] ENDPOINTS.md com curl examples
-- [ ] AGENDAMENTOS_REGRAS.md
-- [ ] DATABASE_SETUP.md
-- [ ] CONTRIBUTING.md
-- [ ] /docs/conceptual/ completo
-- [ ] /docs/adr/ com decisões
-- [ ] /docs/api/ com swagger placeholder
+### Documentation
+- [ ] README.md updated
+- [ ] docs/SCHEDULE_RULES.md updated
+- [ ] docs/conceptual/ updated
 
-### Git & Collaboration
-- [ ] Branches strategy implementada
-- [ ] Templates de PR e Issues configurados
-- [ ] .gitignore correto
-- [ ] Conventional commits em todos PRs
-- [ ] Code reviews cruzados completos
-- [ ] PRs mergeados em develop
-- [ ] develop ready para produção
-- [ ] main tag com v1.0.0
-
-### Deployment Ready
-- [ ] Dockerfile criado (estrutura)
-- [ ] docker-compose.yml para dev
-- [ ] Scripts de deploy prontos
-- [ ] Variáveis de ambiente documentadas
-- [ ] Estrutura para logs preparada
-- [ ] Estrutura para rate-limiting preparada
-- [ ] Estrutura para caching preparada
-
----
-
-## Comunicação & Sincronização
-
-### Diário (Standup 10min cada manhã)
-- [9:30] O que cada um fez ontem?
-- [9:30] O que vai fazer hoje?
-- [9:40] Há blockers?
-- [9:50] Próximos passos
-
-### Merge Requests
-- Requerer review de cada outro
-- Mínimo 1 aprovação antes de merge
-- Não deixar PRs abertas overnight sem feedback
-
-### Pair Programming (se necessário)
-- Bloqueadores críticos
-- Decisões de design complexas
-- Integração entre módulos
-
----
-
-## Exemplo de Progresso Diário
-
-### DIA 1 - Manhã (Hélio)
-```
-git checkout develop && git pull
-git checkout -b feature/helio-auth
-# Implementar auth...
-npm run dev  # Testar
-npm run lint
-git commit -m "feat(auth): implementar registro e login com JWT"
-git push origin feature/helio-auth
-# Criar PR
-```
-
-### DIA 1 - Manhã (Cleusio)
-```
-git checkout develop && git pull
-git checkout -b feature/cleusio-database
-# Setupar prisma...
-npm run prisma:studio
-npm run prisma:seed
-# Validar dados...
-git commit -m "chore(database): configurar prisma e seed inicial"
-git push origin feature/cleusio-database
-# Criar PR
-```
-
-### DIA 1 - Tarde
-- Revisão cruzada dos PRs
-- Merge após aprovação
-- Sincronizar branches locais
-
----
-
-## Recursos Disponíveis
-
-### Estrutura Já Criada
-Pastas organizadas  
-NestJS configurado  
-Prisma schema  
-Módulos base  
-Guards e Decorators  
-DTOs estruturados  
-ESLint e Prettier  
-Jest configurado  
-Documentação templates  
-
-### Próximos Passos (Após v1.0.0)
-- [ ] Swagger automático
-- [ ] Docker & CI/CD
-- [ ] Logs estruturados com Winston
-- [ ] Rate limiting
-- [ ] Caching com Redis
-- [ ] Tests cobertos 90%+
-- [ ] API versioning
-- [ ] Load testing
-
+### Git and Collaboration
+- [ ] PR reviews completed
+- [ ] `develop` stable and tested
+- [ ] Merge to `main` after validation

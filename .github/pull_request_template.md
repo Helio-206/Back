@@ -1,23 +1,23 @@
-## Descrição
-[Descreva as alterações feitas neste PR]
+## Description
+[Describe the changes included in this PR]
 
-## Tipo de Mudança
-- [ ] Bug fix (não quebra funcionalidade existente)
-- [ ] Nova feature (não quebra funcionalidade existente)
-- [ ] Breaking change (quebra funcionalidade existente)
-- [ ] Refactoring
-- [ ] Documentação
+## Type of Change
+- [ ] Bug fix (no breaking changes)
+- [ ] New feature (no breaking changes)
+- [ ] Breaking change
+- [ ] Refactor
+- [ ] Documentation
 
 ## Checklist
-- [ ] Código segue as convenções de style do projeto
-- [ ] Executei `npm run lint` e `npm run format`
-- [ ] Adicionei/atualizei testes
-- [ ] Adicionei/atualizei documentação
-- [ ] Sem logs de debug no código
-- [ ] Testes passam localmente
+- [ ] Code follows project conventions
+- [ ] I ran `npm run lint` and `npm run format:check`
+- [ ] Tests added or updated
+- [ ] Documentation updated
+- [ ] No debug logs in production paths
+- [ ] Tests pass locally
 
 ## Testing
-[Como testar esta mudança?]
+[How to test this change]
 
 ```
 1. ...
@@ -25,11 +25,11 @@
 3. ...
 ```
 
-## Screenshots (se aplicável)
-[Cole screenshots ou gifs]
+## Screenshots (if applicable)
+[Paste screenshots or gifs]
 
-## Notas para Review
-[Pontos que gostaria que reviewers focassem]
+## Notes for Review
+[Focus points for reviewers]
 
 ## Closes
 Closes #[issue number]
