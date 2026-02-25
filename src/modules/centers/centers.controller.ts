@@ -9,7 +9,7 @@ import {
   UseGuards,
   HttpCode,
 } from '@nestjs/common';
-import { CentersService } from './centros.service';
+import { CentersService } from './centers.service';
 import { CreateCenterDto } from './dtos/create-center.dto';
 import { UpdateCenterDto } from './dtos/update-center.dto';
 import { JwtAuthGuard } from '@common/guards/jwt-auth.guard';

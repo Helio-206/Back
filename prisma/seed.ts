@@ -4,60 +4,57 @@ import bcrypt from 'bcrypt';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log(`Start seeding ...`);
+  console.log('Start seeding...');
 
-  // Seed admin user
-  const adminEmail = 'admin@agendamento.pt';
-  const hashedPassword = await bcrypt.hash('admin12345', 10);
+  const adminEmail = 'admin@schedule.local';
+  const adminPasswordHash = await bcrypt.hash('admin12345', 10);
 
   const admin = await prisma.user.upsert({
     where: { email: adminEmail },
     update: {},
     create: {
       email: adminEmail,
-      nome: 'Administrador',
+      name: 'System Administrator',
       role: 'ADMIN',
-      password: hashedPassword,
+      password: adminPasswordHash,
     },
   });
 
   console.log(`Seeded admin user: ${admin.id}`);
 
-  // Seed test centro user
-  const centroEmail = 'centro@agendamento.pt';
-  const centroHashedPassword = await bcrypt.hash('centro12345', 10);
+  const centerEmail = 'center@schedule.local';
+  const centerPasswordHash = await bcrypt.hash('center12345', 10);
 
-  const centroUser = await prisma.user.upsert({
-    where: { email: centroEmail },
+  const centerUser = await prisma.user.upsert({
+    where: { email: centerEmail },
     update: {},
     create: {
-      email: centroEmail,
-      nome: 'Centro de Saúde Principal',
-      role: 'CENTRO',
-      password: centroHashedPassword,
+      email: centerEmail,
+      name: 'Primary Health Center',
+      role: 'CENTER',
+      password: centerPasswordHash,
     },
   });
 
-  // Create a centro
-  const centro = await prisma.centro.upsert({
-    where: { userId: centroUser.id },
+  const center = await prisma.center.upsert({
+    where: { userId: centerUser.id },
     update: {},
     create: {
-      userId: centroUser.id,
-      nome: 'Centro de Saúde Principal',
-      tipo: 'SAUDE',
-      descricao: 'Centro de saúde principal da instituição',
-      endereco: 'Rua Principal, 123',
-      telefone: '212345678',
-      email: 'centro1@saude.pt',
-      horaAbertura: '08:00',
-      horaFechamento: '18:00',
-      diasAtendimento: 'SEGUNDA,TERCA,QUARTA,QUINTA,SEXTA',
+      userId: centerUser.id,
+      name: 'Primary Health Center',
+      type: 'HEALTH',
+      description: 'Primary institutional health center',
+      address: 'Main Street, 123',
+      phone: '212345678',
+      email: 'center1@health.local',
+      openingTime: '08:00',
+      closingTime: '18:00',
+      attendanceDays: 'MONDAY,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY',
     },
   });
 
-  console.log(`Seeded centro: ${centro.id}`);
-  console.log(`Finish seeding ...`);
+  console.log(`Seeded center: ${center.id}`);
+  console.log('Finish seeding...');
 }
 
 main()
