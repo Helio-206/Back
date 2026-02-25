@@ -1,0 +1,13 @@
+.prettierignore
+.env
+node_modules
+dist
+build
+coverage
+.git
+.gitignore
+.prettierrc
+.eslintrc.json
+prisma/migrations
+README.md
+LICENSE

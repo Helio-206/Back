@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Git commit message template com Conventional Commits
+
+# Estrutura: <tipo>(<escopo>): <subject>
+# Tipos: feat, fix, refactor, docs, test, chore, perf
+# Escopo: auth, users, centros, agendamentos, common, config
+# Subject: máximo 50 caracteres, imperative mood, sem ponto final
+
+# Exemplo:
+# feat(agendamentos): adicionar validação de data futura
+# fix(auth): corrigir erro de JWT expirado
+# refactor(users): simplificar serviço de users
+# docs: atualizar guia de contribuição
+# test(centros): adicionar testes para listagem de centros
+
+# Para usar:
+# 1. Salve este arquivo em: .gitmessage
+# 2. Configure Git: git config commit.template .gitmessage
+# 3. Commit normalmente: git commit
