@@ -1,8 +1,9 @@
-# Database Schema - Institutional Scheduling Backend
+# Database Schema - Sistema de Agendamento Público de Angola
 
 **Last Updated:** February 25, 2026  
 **Database System:** PostgreSQL  
-**ORM:** Prisma 5.6.0
+**ORM:** Prisma 5.6.0  
+**Country:** Angola
 
 ---
 
@@ -21,15 +22,16 @@
 
 ## Overview
 
-This document describes the complete database structure for the Institutional Scheduling Backend system. The database is designed to manage:
+This document describes the complete database structure for the Angolan Public Scheduling System. The database manages appointment scheduling across government institutions, healthcare facilities, and administrative services throughout Angola.
 
-- **User Management:** Administrative users, center managers, and citizens
-- **Center Management:** Registration and administration of public service centers
-- **Schedule Management:** Scheduling system for citizens to book appointments at centers
-- **Authentication:** JWT token refresh mechanism with expiration tracking
+- **User Management:** System administrators, center managers, and Angolan citizens
+- **Center Management:** Registration and administration of public service centers (healthcare, administrative, educational)
+- **Schedule Management:** Citizens can book appointments at government and institutional centers
+- **Authentication:** JWT token refresh mechanism with 24-hour validity
 
-**Database Name:** institutional_scheduling  
-**Environment Variable:** DATABASE_URL (PostgreSQL connection string)
+**Database Name:** sistema_agendamento_angola  
+**Environment Variable:** DATABASE_URL (PostgreSQL connection string)  
+**Supported Provinces:** All Angolan provinces and municipalities
 
 ---
 
@@ -71,11 +73,11 @@ Classification type for service centers.
 
 | Value | Description |
 |-------|-------------|
-| `HEALTH` | Health care centers (clinics, hospitals, health posts) |
-| `ADMINISTRATIVE` | Administrative services (government offices, registry) |
-| `EDUCATION` | Educational institutions (schools, universities) |
-| `SECURITY` | Security services (police, fire departments) |
-| `OTHER` | Other types of service centers |
+| `HEALTH` | Healthcare facilities (hospitals, clinics, health centers, pharmacies, diagnostic labs) |
+| `ADMINISTRATIVE` | Government services (Ministry offices, provincial government, civil registry, immigration, taxation) |
+| `EDUCATION` | Educational institutions (public universities, technical schools, vocational training centers) |
+| `SECURITY` | Security services (police stations, fire departments, border control) |
+| `OTHER` | Other institutional services |
 
 ---
 
@@ -462,8 +464,8 @@ npx prisma db seed
 ```
 
 Default test users created:
-- **Email:** admin@schedule.local
-- **Email:** center@schedule.local
+- **Email:** admin@agendamento.ao (System Administrator)
+- **Email:** centro@agendamento.ao (Center Manager)
 
 ### Environment Setup
 
@@ -476,7 +478,7 @@ postgresql://username:password@host:port/database_name?schema=public
 Set in `.env` file:
 
 ```
-DATABASE_URL="postgresql://user:pass@localhost:5432/institutional_scheduling"
+DATABASE_URL="postgresql://user:pass@localhost:5432/sistema_agendamento_angola"
 ```
 
 ---
@@ -485,11 +487,12 @@ DATABASE_URL="postgresql://user:pass@localhost:5432/institutional_scheduling"
 
 | Version | Date | Changes |
 |---------|------|---------|
-| 1.0 | 2026-02-25 | Initial database schema documentation |
+| 1.0 | 2026-02-25 | Initial database schema documentation for Angolan Public Scheduling System |
 
 ---
 
-**Document Prepared For:** Database Team  
+**Document Prepared For:** Database Team - Sistema de Agendamento de Angola  
 **Prepared By:** Backend Development Team  
 **Status:** Production Ready  
+**Jurisdiction:** Angola  
 **Last Review:** February 25, 2026
