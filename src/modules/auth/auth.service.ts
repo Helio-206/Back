@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ConflictException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '@database/prisma.service';
+import { Provincia } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dtos/login.dto';
 import { RegisterDto } from './dtos/register.dto';
@@ -13,14 +14,24 @@ export class AuthService {
   ) {}
 
   async register(registerDto: RegisterDto) {
-    const { email, password, name } = registerDto;
+    const {
+      email,
+      password,
+      name,
+      numeroBIAnterior,
+      dataNascimento,
+      provinciaNascimento,
+      provinciaResidencia,
+      filiacao,
+      genero,
+    } = registerDto;
 
     const userExists = await this.prisma.user.findUnique({
       where: { email },
     });
 
     if (userExists) {
-      throw new Error('User already exists');
+      throw new ConflictException('Utilizador já existe com este email');
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -31,6 +42,12 @@ export class AuthService {
         name,
         password: hashedPassword,
         role: 'CITIZEN',
+        numeroBIAnterior,
+        dataNascimento: dataNascimento ? new Date(dataNascimento) : undefined,
+        provinciaNascimento: provinciaNascimento as Provincia | undefined,
+        provinciaResidencia: provinciaResidencia as Provincia | undefined,
+        filiacao,
+        genero,
       },
     });
 
@@ -47,7 +64,7 @@ export class AuthService {
     });
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      throw new Error('Invalid credentials');
+      throw new UnauthorizedException('Credenciais inválidas');
     }
 
     const payload = { sub: user.id, email: user.email, role: user.role };

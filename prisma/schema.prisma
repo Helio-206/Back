@@ -208,6 +208,9 @@ model Protocolo {
   scheduleId        String   @unique
   schedule          Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
   
+  userId            String?
+  user              User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  
   // Tracking
   statusAnterior    BIScheduleStatus
   statusAtual       BIScheduleStatus
@@ -220,6 +223,7 @@ model Protocolo {
 
   @@index([numeroProtocolo])
   @@index([scheduleId])
+  @@index([userId])
 }
 
 model RefreshToken {
