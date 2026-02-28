@@ -114,21 +114,21 @@ UIGE, ZAI
 
 | Field | Type | Nullable | Default | Description |
 |-------|------|----------|---------|-------------|
-| `id` | CUID | ❌ | auto | Unique identifier |
-| `email` | String | ❌ | - | Email (UNIQUE) |
-| `name` | String | ❌ | - | Full name |
-| `password` | String | ❌ | - | Hashed (bcrypt) |
-| `role` | Role | ❌ | CITIZEN | User type (ADMIN/CENTER/CITIZEN) |
-| `active` | Boolean | ❌ | true | Account active status |
+| `id` | CUID | No | auto | Unique identifier |
+| `email` | String | No | - | Email (UNIQUE) |
+| `name` | String | No | - | Full name |
+| `password` | String | No | - | Hashed (bcrypt) |
+| `role` | Role | No | CITIZEN | User type (ADMIN/CENTER/CITIZEN) |
+| `active` | Boolean | No | true | Account active status |
 | **BI-Specific:** | | | | |
-| `dataNascimento` | DateTime | ✅ | null | Date of birth |
-| `provinciaNascimento` | Provincia | ✅ | null | Birth province |
-| `provinciaResidencia` | Provincia | ✅ | null | Current residence |
-| `numeroBIAnterior` | String | ✅ | null | Previous BI number (for renewals) |
-| `filiacao` | String | ✅ | null | Parents' names |
-| `genero` | String | ✅ | null | Gender (M/F/Outro) |
-| `createdAt` | DateTime | ❌ | now() | Registration date |
-| `updatedAt` | DateTime | ❌ | now() | Last modification |
+| `dataNascimento` | DateTime | Yes | null | Date of birth |
+| `provinciaNascimento` | Provincia | Yes | null | Birth province |
+| `provinciaResidencia` | Provincia | Yes | null | Current residence |
+| `numeroBIAnterior` | String | Yes | null | Previous BI number (for renewals) |
+| `filiacao` | String | Yes | null | Parents' names |
+| `genero` | String | Yes | null | Gender (M/F/Outro) |
+| `createdAt` | DateTime | No | now() | Registration date |
+| `updatedAt` | DateTime | No | now() | Last modification |
 
 **Indexes:**
 - `email` - Fast login lookup
@@ -147,21 +147,21 @@ UIGE, ZAI
 
 | Field | Type | Nullable | Default | Description |
 |-------|------|----------|---------|-------------|
-| `id` | CUID | ❌ | auto | Unique identifier |
-| `name` | String | ❌ | - | Center name (e.g., "Centro de BI Luanda - Maianga") |
-| `description` | String | ✅ | null | Services offered |
-| `type` | CenterType | ❌ | - | Center classification |
-| `provincia` | Provincia | ❌ | - | **Which province** (critical field) |
-| `address` | String | ❌ | - | Full address |
-| `phone` | String | ✅ | null | Contact phone |
-| `email` | String | ✅ | null | Contact email |
-| `openingTime` | String | ❌ | "08:00" | Opening time (HH:mm) |
-| `closingTime` | String | ❌ | "17:00" | Closing time (HH:mm) |
-| `attendanceDays` | String | ❌ | "MONDAY,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY" | Available days |
-| `capacidadeAgentos` | Int | ❌ | 5 | Max agents per day |
-| `active` | Boolean | ❌ | true | Center operational |
-| `createdAt` | DateTime | ❌ | now() | Created date |
-| `updatedAt` | DateTime | ❌ | now() | Updated date |
+| `id` | CUID | No | auto | Unique identifier |
+| `name` | String | No | - | Center name (e.g., "Centro de BI Luanda - Maianga") |
+| `description` | String | Yes | null | Services offered |
+| `type` | CenterType | No | - | Center classification |
+| `provincia` | Provincia | No | - | **Which province** (critical field) |
+| `address` | String | No | - | Full address |
+| `phone` | String | Yes | null | Contact phone |
+| `email` | String | Yes | null | Contact email |
+| `openingTime` | String | No | "08:00" | Opening time (HH:mm) |
+| `closingTime` | String | No | "17:00" | Closing time (HH:mm) |
+| `attendanceDays` | String | No | "MONDAY,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY" | Available days |
+| `capacidadeAgentos` | Int | No | 5 | Max agents per day |
+| `active` | Boolean | No | true | Center operational |
+| `createdAt` | DateTime | No | now() | Created date |
+| `updatedAt` | DateTime | No | now() | Updated date |
 
 **Indexes:**
 - `userId` - Find center manager
@@ -179,21 +179,21 @@ UIGE, ZAI
 
 | Field | Type | Nullable | Default | Description |
 |-------|------|----------|---------|-------------|
-| `id` | CUID | ❌ | auto | Unique identifier |
-| `userId` | String | ❌ | - | Citizen booking (FK) |
-| `centerId` | String | ❌ | - | Center location (FK) |
-| `scheduledDate` | DateTime | ❌ | - | **Appointment date & time** |
-| `slotNumber` | Int | ✅ | null | Queue position (1-N) |
-| `description` | String | ✅ | null | Citizen notes |
+| `id` | CUID | No | auto | Unique identifier |
+| `userId` | String | No | - | Citizen booking (FK) |
+| `centerId` | String | No | - | Center location (FK) |
+| `scheduledDate` | DateTime | No | - | **Appointment date & time** |
+| `slotNumber` | Int | Yes | null | Queue position (1-N) |
+| `description` | String | Yes | null | Citizen notes |
 | **Status Tracking:** | | | | |
-| `status` | ScheduleStatus | ❌ | PENDING | Generic status (legacy) |
-| `tipoBI` | TipoBI | ✅ | null | **BI type (NOVO/RENOVACAO/PERDA/EXTRAVIO/UPDATE)** |
-| `biStatus` | BIScheduleStatus | ❌ | AGENDADO | **BI-specific status** |
-| `dataRetirada` | DateTime | ✅ | null | When citizen picked up BI |
-| `nbiEmitido` | String | ✅ | null | Issued BI number (auto-generated) |
-| `notes` | String | ✅ | null | Center operator notes (rejection reason, etc) |
-| `createdAt` | DateTime | ❌ | now() | Scheduled date |
-| `updatedAt` | DateTime | ❌ | now() | Last status change |
+| `status` | ScheduleStatus | No | PENDING | Generic status (legacy) |
+| `tipoBI` | TipoBI | Yes | null | **BI type (NOVO/RENOVACAO/PERDA/EXTRAVIO/UPDATE)** |
+| `biStatus` | BIScheduleStatus | No | AGENDADO | **BI-specific status** |
+| `dataRetirada` | DateTime | Yes | null | When citizen picked up BI |
+| `nbiEmitido` | String | Yes | null | Issued BI number (auto-generated) |
+| `notes` | String | Yes | null | Center operator notes (rejection reason, etc) |
+| `createdAt` | DateTime | No | now() | Scheduled date |
+| `updatedAt` | DateTime | No | now() | Last status change |
 
 **Indexes:**
 - `userId` - Citizen's appointments
@@ -215,16 +215,16 @@ UIGE, ZAI
 
 | Field | Type | Nullable | Default | Description |
 |-------|------|----------|---------|-------------|
-| `id` | CUID | ❌ | auto | Unique identifier |
-| `fileName` | String | ❌ | - | Original file name from upload |
-| `fileUrl` | String | ❌ | - | **URL to access file** (S3/storage) |
-| `fileSize` | Int | ✅ | null | File size in bytes |
-| `filePath` | String | ✅ | null | Local storage path (if on-premise) |
-| `mimeType` | String | ✅ | null | File type (application/pdf, image/jpeg) |
-| `documentType` | DocumentType | ❌ | - | **RG / CERTIDAO / COMPROVANTE_RESIDENCIA** |
-| `userId` | String | ❌ | - | Uploader (FK) |
-| `scheduleId` | String | ❌ | - | Associated appointment (FK) |
-| `uploadedAt` | DateTime | ❌ | now() | Upload timestamp |
+| `id` | CUID | No | auto | Unique identifier |
+| `fileName` | String | No | - | Original file name from upload |
+| `fileUrl` | String | No | - | **URL to access file** (S3/storage) |
+| `fileSize` | Int | Yes | null | File size in bytes |
+| `filePath` | String | Yes | null | Local storage path (if on-premise) |
+| `mimeType` | String | Yes | null | File type (application/pdf, image/jpeg) |
+| `documentType` | DocumentType | No | - | **RG / CERTIDAO / COMPROVANTE_RESIDENCIA** |
+| `userId` | String | No | - | Uploader (FK) |
+| `scheduleId` | String | No | - | Associated appointment (FK) |
+| `uploadedAt` | DateTime | No | now() | Upload timestamp |
 
 **Indexes:**
 - `userId` - Citizen's documents
@@ -243,16 +243,16 @@ UIGE, ZAI
 
 | Field | Type | Nullable | Default | Description |
 |-------|------|----------|---------|-------------|
-| `id` | CUID | ❌ | auto | Unique ID |
-| `numeroProtocolo` | String | ❌ | UNIQUE | **Citizen receipt number** (format: BI-YYYY-MM-XXXXX) |
-| `scheduleId` | String | ❌ | UNIQUE | Associated appointment (FK) |
-| `statusAnterior` | BIScheduleStatus | ❌ | - | Previous status |
-| `statusAtual` | BIScheduleStatus | ❌ | - | Current status |
-| `agenteProcessador` | String | ✅ | null | Admin/Center user who updated |
-| `observacoes` | String | ✅ | null | Notes on status change |
-| `registradoEm` | DateTime | ❌ | now() | When scheduled |
-| `processadoEm` | DateTime | ✅ | null | When processed (status updated) |
-| `createdAt` | DateTime | ❌ | now() | Record creation |
+| `id` | CUID | No | auto | Unique ID |
+| `numeroProtocolo` | String | No | UNIQUE | **Citizen receipt number** (format: BI-YYYY-MM-XXXXX) |
+| `scheduleId` | String | No | UNIQUE | Associated appointment (FK) |
+| `statusAnterior` | BIScheduleStatus | No | - | Previous status |
+| `statusAtual` | BIScheduleStatus | No | - | Current status |
+| `agenteProcessador` | String | Yes | null | Admin/Center user who updated |
+| `observacoes` | String | Yes | null | Notes on status change |
+| `registradoEm` | DateTime | No | now() | When scheduled |
+| `processadoEm` | DateTime | Yes | null | When processed (status updated) |
+| `createdAt` | DateTime | No | now() | Record creation |
 
 **Indexes:**
 - `numeroProtocolo` - Citizen lookup by receipt
@@ -271,11 +271,11 @@ UIGE, ZAI
 
 | Field | Type | Nullable | Default | Description |
 |-------|------|----------|---------|-------------|
-| `id` | CUID | ❌ | auto | Token ID |
-| `token` | String | ❌ | UNIQUE | JWT refresh token |
-| `userId` | String | ❌ | - | Token owner (FK) |
-| `expiresAt` | DateTime | ❌ | - | Expiration timestamp |
-| `createdAt` | DateTime | ❌ | now() | Creation time |
+| `id` | CUID | No | auto | Token ID |
+| `token` | String | No | UNIQUE | JWT refresh token |
+| `userId` | String | No | - | Token owner (FK) |
+| `expiresAt` | DateTime | No | - | Expiration timestamp |
+| `createdAt` | DateTime | No | now() | Creation time |
 
 **Default TTL:** 24 hours
 
@@ -478,12 +478,12 @@ psql -d sistema_bi_angola < backup_20260228_143000.sql
 ### Database Team (DBA)
 
 **Setup & Maintenance:**
-- ✅ PostgreSQL installation & configuration
-- ✅ Create `sistema_bi_angola` database
-- ✅ Run initial migrations (`npx prisma migrate deploy`)
-- ✅ Set up daily backups
-- ✅ Monitor indexes for performance
-- ✅ Plan capacity for 24 provinces + citizens (~100K users/month projected)
+- PostgreSQL installation and configuration
+- Create `sistema_bi_angola` database
+- Run initial migrations (`npx prisma migrate deploy`)
+- Set up daily backups
+- Monitor indexes for performance
+- Plan capacity for 24 provinces and citizens (~100K users/month projected)
 
 **Monitoring:**
 ```sql
@@ -511,9 +511,9 @@ SELECT COUNT(*) FROM "Document";  -- Expect: 1M+
 ### Backend Development Team (Cleusio)
 
 **Implementation Tasks:**
-- ✅ Create DTOs for all models (UserCreateDto, ScheduleCreateDto, etc)
-- ✅ Implement PrismaService queries
-- ✅ Build REST endpoints:
+- Create DTOs for all models (UserCreateDto, ScheduleCreateDto, etc)
+- Implement PrismaService queries
+- Build REST endpoints:
   ```
   POST   /auth/register           -- Create citizen account
   POST   /schedules               -- Book appointment
@@ -523,10 +523,10 @@ SELECT COUNT(*) FROM "Document";  -- Expect: 1M+
   GET    /documents?scheduleId    -- List docs
   GET    /protocolo/:numeroProtocolo -- Lookup receipt
   ```
-- ✅ Add validators (TipoBI validation, date checks, doc requirements)
-- ✅ Error handling (friendly messages for DB errors)
-- ✅ Pagination for large queries (schedules, documents)
-- ✅ Authentication/Authorization (JWT, roles)
+- Add validators (TipoBI validation, date checks, doc requirements)
+- Error handling (friendly messages for DB errors)
+- Pagination for large queries (schedules, documents)
+- Authentication and Authorization (JWT, roles)
 
 **Key Backend Features Needed:**
 1. **Document Upload Handler**
