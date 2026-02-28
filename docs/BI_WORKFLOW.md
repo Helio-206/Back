@@ -28,7 +28,7 @@ Request:
   dataNascimento: Date,
   provinciaResidencia: Provincia,
   genero: "M" | "F" | "Outro",
-  numeroBIAnterior?: string  // if renovation
+  numeroBIAnterior?: string  // formato: #########LA### (ex.: 123456789LA123) para renovação
 }
 
 Response:
@@ -118,7 +118,7 @@ Response:
   numeroProtocolo: "BI-2026-02-00001",
   scheduledDate: DateTime,
   biStatus: "PRONTO_RETIRADA",
-  nbiEmitido: "BI123456789",
+  nbiEmitido: "123456789LA123",
   observacoes: "BI ready for pickup at center"
 }
 ```

@@ -124,7 +124,7 @@ UIGE, ZAI
 | `dataNascimento` | DateTime | Yes | null | Date of birth |
 | `provinciaNascimento` | Provincia | Yes | null | Birth province |
 | `provinciaResidencia` | Provincia | Yes | null | Current residence |
-| `numeroBIAnterior` | String | Yes | null | Previous BI number (for renewals) |
+| `numeroBIAnterior` | String | Yes | null | Previous BI number (format: #########LA###, for renewals) |
 | `filiacao` | String | Yes | null | Parents' names |
 | `genero` | String | Yes | null | Gender (M/F/Outro) |
 | `createdAt` | DateTime | No | now() | Registration date |
@@ -350,7 +350,7 @@ Schedule (1) ────────────── (1) Protocolo
 
 7. BI READY
    └─ Ministry issues BI number
-   └─ Update: Schedule.nbiEmitido = "BI123456789"
+   └─ Update: Schedule.nbiEmitido = "123456789LA123"
    └─ Schedule.biStatus = PRONTO_RETIRADA
    └─ Notify citizen (Email/SMS)
 
