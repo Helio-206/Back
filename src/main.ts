@@ -26,7 +26,7 @@ async function bootstrap() {
           errors: formattedErrors,
         });
       },
-    }),
+    })
   );
 
   // Global filters
@@ -34,9 +34,7 @@ async function bootstrap() {
 
   // CORS
   app.enableCors({
-    origin: process.env.NODE_ENV === 'production' 
-      ? process.env.CORS_ORIGIN?.split(',') 
-      : true,
+    origin: process.env.NODE_ENV === 'production' ? process.env.CORS_ORIGIN?.split(',') : true,
     credentials: true,
   });
 

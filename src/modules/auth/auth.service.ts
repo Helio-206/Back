@@ -9,7 +9,7 @@ import { RegisterDto } from './dtos/register.dto';
 export class AuthService {
   constructor(
     private prisma: PrismaService,
-    private jwtService: JwtService,
+    private jwtService: JwtService
   ) {}
 
   async register(registerDto: RegisterDto) {
@@ -34,7 +34,7 @@ export class AuthService {
       },
     });
 
-    const { password: _, ...result } = user;
+    const { password, ...result } = user;
     return result;
   }
 
