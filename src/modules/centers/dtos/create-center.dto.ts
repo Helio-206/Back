@@ -1,4 +1,5 @@
 import { IsString, IsOptional, IsEnum } from 'class-validator';
+import { Provincia } from '@prisma/client';
 
 enum CenterType {
   HEALTH = 'HEALTH',
@@ -21,6 +22,9 @@ export class CreateCenterDto {
 
   @IsString()
   address!: string;
+
+  @IsEnum(Provincia)
+  provincia!: Provincia;
 
   @IsOptional()
   @IsString()
