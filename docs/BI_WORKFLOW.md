@@ -8,13 +8,13 @@
 
 ## Fase Atual: MVP (Agora - Próximas 2-3 semanas)
 
-### O Que Está Pronto ✅
+### O Que Está Pronto
 - Backend base (NestJS, authenticated, builds com sucesso)
 - Database schema completo para BI Angola
 - User/Center/Schedule/Document/Protocolo models
 - Enums para provincias, tipos de BI, status
 
-### O Que Precisa Ser Implementado 🔧
+### O Que Precisa Ser Implementado
 
 #### [BACKEND] Endpoints Essenciais (Cleusio)
 
@@ -216,17 +216,17 @@ main().catch(console.error);
 ## Critical Success Factors for MVP
 
 ### Database
-- ✅ Schema reflects all BI fields (USER: dataNascimento, provinciaResidencia, etc)
-- ✅ Document foreign keys correct (Document → Schedule → User)
-- ✅ Protocol number unique per schedule
-- ✅ Backup strategy in place
+- Schema reflects all BI fields (USER: dataNascimento, provinciaResidencia, etc)
+- Document foreign keys correct (Document → Schedule → User)
+- Protocol number unique per schedule
+- Backup strategy in place
 
 ### Backend
-- ✅ Endpoints respond within 500ms (optimize queries)
-- ✅ Error messages in Portuguese (or English depending on client)
-- ✅ JWT tokens validate correctly
-- ✅ File uploads validate MIME type + size
-- ✅ Role-based access (CITIZEN can't see other schedules)
+- Endpoints respond within 500ms (optimize queries)
+- Error messages in Portuguese (or English depending on client)
+- JWT tokens validate correctly
+- File uploads validate MIME type + size
+- Role-based access (CITIZEN can't see other schedules)
 
 ### Testing
 - [ ] Create test account (register as CITIZEN)
@@ -354,9 +354,9 @@ export class CreateScheduleDto {
 - Plan for next phase
 
 ### When Stuck
-- **Backend issue?** → Ping database team for schema clarification
-- **Database issue?** → Ping backend team for data flow explanation
-- **Unsure about workflow?** → Review this document or ask
+- **Backend issue?** → Consult database team for schema details
+- **Database issue?** → Consult backend team for data flow
+- **Workflow questions?** → Review this document or contact team lead
 
 ---
 
@@ -375,19 +375,19 @@ export class CreateScheduleDto {
 
 ---
 
-## Success Looks Like
+## Success Criteria
 
 By end of MVP phase:
-✅ Citizen can register + create account  
-✅ Citizen can view centers in their province  
-✅ Citizen can book BI appointment  
-✅ Citizen can upload required documents  
-✅ Citizen can check appointment status  
-✅ Center operator can see queue + update status  
-✅ Admin can generate reports (appointments/province/day)  
-✅ System supports all 24 provinces  
-✅ Zero lint errors, all tests pass  
-✅ Build deploys without errors  
+- Citizen can register and create account
+- Citizen can view centers in their province
+- Citizen can book BI appointment
+- Citizen can upload required documents
+- Citizen can check appointment status
+- Center operator can see queue and update status
+- Admin can generate reports (appointments/province/day)
+- System supports all 24 provinces
+- Zero lint errors, all tests pass
+- Build deploys without errors  
 
 ---
 
