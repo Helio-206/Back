@@ -10,17 +10,17 @@ enum CenterType {
 
 export class CreateCenterDto {
   @IsString()
-  name: string;
+  name!: string;
 
   @IsOptional()
   @IsString()
   description?: string;
 
   @IsEnum(CenterType)
-  type: CenterType;
+  type!: CenterType;
 
   @IsString()
-  address: string;
+  address!: string;
 
   @IsOptional()
   @IsString()

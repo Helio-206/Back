@@ -24,7 +24,7 @@ export class SchedulesController {
   @UseGuards(JwtAuthGuard)
   async create(
     @Body() createScheduleDto: CreateScheduleDto,
-    @CurrentUser() user,
+    @CurrentUser() user: { id: string },
   ) {
     return this.schedulesService.create(user.id, createScheduleDto);
   }
@@ -39,7 +39,7 @@ export class SchedulesController {
 
   @Get('user/me')
   @UseGuards(JwtAuthGuard)
-  async findMySchedules(@CurrentUser() user) {
+  async findMySchedules(@CurrentUser() user: { id: string }) {
     return this.schedulesService.findByUser(user.id);
   }
 
