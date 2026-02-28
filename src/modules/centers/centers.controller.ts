@@ -21,7 +21,10 @@ export class CentersController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  async create(@Body() createCenterDto: CreateCenterDto, @CurrentUser() user) {
+  async create(
+    @Body() createCenterDto: CreateCenterDto,
+    @CurrentUser() user: { id: string },
+  ) {
     return this.centersService.create(user.id, createCenterDto);
   }
 
