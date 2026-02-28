@@ -6,7 +6,7 @@
 
 ---
 
-## Fase Atual: MVP (Agora - Próximas 2-3 semanas)
+
 
 ### O Que Está Pronto
 - Backend base (NestJS, authenticated, builds com sucesso)
