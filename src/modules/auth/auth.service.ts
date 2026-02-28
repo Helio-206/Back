@@ -34,7 +34,7 @@ export class AuthService {
       },
     });
 
-    const { password, ...result } = user;
+    const { password: _, ...result } = user;
     return result;
   }
 
