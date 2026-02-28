@@ -1,9 +1,10 @@
 # Database Schema - Sistema de Agendamento Público de Angola
 
-**Last Updated:** February 25, 2026  
+**Last Updated:** February 28, 2026  
 **Database System:** PostgreSQL  
 **ORM:** Prisma 5.6.0  
-**Country:** Angola
+**Country:** Angola  
+**Purpose:** Regularização e Emissão de Bilhete de Identidade (BI)
 
 ---
 
@@ -11,12 +12,615 @@
 
 1. [Overview](#overview)
 2. [Enums](#enums)
-3. [Data Models](#data-models)
+3. [Data Models](#data-models-detailed)
 4. [Relationships](#relationships)
-5. [Indexes](#indexes)
-6. [Data Types Reference](#data-types-reference)
-7. [Entity Relationship Diagram](#entity-relationship-diagram)
-8. [Constraints & Rules](#constraints--rules)
+5. [BI Workflow](#bi-workflow)
+6. [Database Indexes](#database-indexes)
+7. [Key Constraints](#key-constraints)
+8. [Migration Notes](#migration-notes)
+9. [Team Responsibilities](#team-responsibilities)
+
+---
+
+## Overview
+
+This database powers a complete **Bilhete de Identidade (BI) scheduling and management system for Angola**, covering:
+
+- **Citizen Registration:** Citizens create accounts and provide biographic data
+- **Document Upload:** Users attach required documents (RG, proof of residence, photos)
+- **Scheduling:** Citizens book appointments at local BI issuing centers
+- **Biometrics Collection:** Centers collect fingerprints and photos
+- **Status Tracking:** Real-time tracking from scheduling to BI pickup
+- **Protocol Management:** Full audit trail with receipt/protocol numbers
+- **Provincial Coordination:** Separate centers per Angolan province
+
+**Database Name:** sistema_bi_angola  
+**Environment Variable:** DATABASE_URL (PostgreSQL connection string)  
+**Scope:** All 24 Angolan provinces
+
+---
+
+## Enums
+
+### 1. Role (User Authorization)
+
+| Value | Description |
+|-------|-------------|
+| `ADMIN` | National system administrator (Ministry level) |
+| `CENTER` | Provincial BI center manager/operator |
+| `CITIZEN` | Regular citizen applying for/renewing BI |
+
+---
+
+### 2. TipoBI (BI Request Type)
+
+| Value | Description | Requirements |
+|-------|-------------|--------------|
+| `NOVO` | New BI application | Birth certificate + RG + proof of residence |
+| `RENOVACAO` | Renewal of expired BI | Old BI + residence proof |
+| `PERDA` | Lost BI replacement | Police report + residence proof + RG |
+| `EXTRAVIO` | Stolen BI replacement | Police report + residence proof + RG |
+| `ATUALIZACAO_DADOS` | Data correction/update | Current BI + documents supporting change |
+
+---
+
+### 3. BIScheduleStatus (BI Application Lifecycle)
+
+| Value | Description | Next Steps |
+|-------|-------------|-----------|
+| `AGENDADO` | Appointment scheduled | Citizen attends center on date |
+| `CONFIRMADO` | Citizen confirmed attendance | Proceed to biometrics |
+| `BIOMETRIA_RECOLHIDA` | Fingerprints & photos collected | Send to Ministry for processing |
+| `EM_PROCESSAMENTO` | Ministry processing BI | ~15-30 days |
+| `PRONTO_RETIRADA` | BI ready at center | Citizen notified to collect |
+| `RETIRADO` | BI picked up by citizen | Process complete |
+| `REJEITADO` | Application rejected | Documents incomplete or invalid |
+| `CANCELADO` | Appointment/application cancelled | Can reschedule |
+
+---
+
+### 4. Provincia (Angolan Provinces)
+
+All 24 provinces in enum form for data consistency:
+
+```
+BENGO, BENGUELA, BIES, CABINDA, CUANDO_CUBANGO,
+CUANZA_NORTE, CUANZA_SUL, CUNENE, HUAMBO, HUILA,
+KWANDO_KUBANGO, KWANZA_NORTE, KWANZA_SUL, LUANDA,
+LUNDA_NORTE, LUNDA_SUL, MALANJE, MOXICO, NAMIBE,
+UIGE, ZAI
+```
+
+---
+
+### 5. DocumentType (Required Files)
+
+| Value | Purpose | Format | Requirement |
+|-------|---------|--------|-------------|
+| `RG` | National registration card | PDF/JPEG | Mandatory |
+| `CERTIDAO_NASCIMENTO` | Birth certificate | PDF/JPEG | Mandatory for NOVO |
+| `COMPROVANTE_RESIDENCIA` | Proof of address | PDF/JPEG | Mandatory |
+| `COMPROVANTE_ENDERECO` | Alternative address proof | PDF/JPEG | If no utility bill |
+| `FOTO_3X4` | Biometric photo | JPEG | Mandatory |
+| `OUTRO` | Other documents | Any | Optional notes |
+
+---
+
+## Data Models Detailed
+
+### User (Extended for BI)
+
+**Purpose:** Represents citizens, center operators, and administrators
+
+| Field | Type | Nullable | Default | Description |
+|-------|------|----------|---------|-------------|
+| `id` | CUID | ❌ | auto | Unique identifier |
+| `email` | String | ❌ | - | Email (UNIQUE) |
+| `name` | String | ❌ | - | Full name |
+| `password` | String | ❌ | - | Hashed (bcrypt) |
+| `role` | Role | ❌ | CITIZEN | User type (ADMIN/CENTER/CITIZEN) |
+| `active` | Boolean | ❌ | true | Account active status |
+| **BI-Specific:** | | | | |
+| `dataNascimento` | DateTime | ✅ | null | Date of birth |
+| `provinciaNascimento` | Provincia | ✅ | null | Birth province |
+| `provinciaResidencia` | Provincia | ✅ | null | Current residence |
+| `numeroBIAnterior` | String | ✅ | null | Previous BI number (for renewals) |
+| `filiacao` | String | ✅ | null | Parents' names |
+| `genero` | String | ✅ | null | Gender (M/F/Outro) |
+| `createdAt` | DateTime | ❌ | now() | Registration date |
+| `updatedAt` | DateTime | ❌ | now() | Last modification |
+
+**Indexes:**
+- `email` - Fast login lookup
+- `role` - Filter by user type
+- `provinciaResidencia` - Provincial statistics
+
+**Relations:**
+- One-to-One: `Center` (if CENTER role)
+- One-to-Many: `Schedule`, `Document`, `Protocolo`, `RefreshToken`
+
+---
+
+### Center (Location for BI Issuance)
+
+**Purpose:** BI issuing center in each province
+
+| Field | Type | Nullable | Default | Description |
+|-------|------|----------|---------|-------------|
+| `id` | CUID | ❌ | auto | Unique identifier |
+| `name` | String | ❌ | - | Center name (e.g., "Centro de BI Luanda - Maianga") |
+| `description` | String | ✅ | null | Services offered |
+| `type` | CenterType | ❌ | - | Center classification |
+| `provincia` | Provincia | ❌ | - | **Which province** (critical field) |
+| `address` | String | ❌ | - | Full address |
+| `phone` | String | ✅ | null | Contact phone |
+| `email` | String | ✅ | null | Contact email |
+| `openingTime` | String | ❌ | "08:00" | Opening time (HH:mm) |
+| `closingTime` | String | ❌ | "17:00" | Closing time (HH:mm) |
+| `attendanceDays` | String | ❌ | "MONDAY,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY" | Available days |
+| `capacidadeAgentos` | Int | ❌ | 5 | Max agents per day |
+| `active` | Boolean | ❌ | true | Center operational |
+| `createdAt` | DateTime | ❌ | now() | Created date |
+| `updatedAt` | DateTime | ❌ | now() | Updated date |
+
+**Indexes:**
+- `userId` - Find center manager
+- `provincia` - Provincial queries
+
+**Relations:**
+- One-to-One: `User` (manager, CASCADE delete)
+- One-to-Many: `Schedule`
+
+---
+
+### Schedule (BI Appointment)
+
+**Purpose:** Citizen appointment for BI application/renewal
+
+| Field | Type | Nullable | Default | Description |
+|-------|------|----------|---------|-------------|
+| `id` | CUID | ❌ | auto | Unique identifier |
+| `userId` | String | ❌ | - | Citizen booking (FK) |
+| `centerId` | String | ❌ | - | Center location (FK) |
+| `scheduledDate` | DateTime | ❌ | - | **Appointment date & time** |
+| `slotNumber` | Int | ✅ | null | Queue position (1-N) |
+| `description` | String | ✅ | null | Citizen notes |
+| **Status Tracking:** | | | | |
+| `status` | ScheduleStatus | ❌ | PENDING | Generic status (legacy) |
+| `tipoBI` | TipoBI | ✅ | null | **BI type (NOVO/RENOVACAO/PERDA/EXTRAVIO/UPDATE)** |
+| `biStatus` | BIScheduleStatus | ❌ | AGENDADO | **BI-specific status** |
+| `dataRetirada` | DateTime | ✅ | null | When citizen picked up BI |
+| `nbiEmitido` | String | ✅ | null | Issued BI number (auto-generated) |
+| `notes` | String | ✅ | null | Center operator notes (rejection reason, etc) |
+| `createdAt` | DateTime | ❌ | now() | Scheduled date |
+| `updatedAt` | DateTime | ❌ | now() | Last status change |
+
+**Indexes:**
+- `userId` - Citizen's appointments
+- `centerId` - Center's queue
+- `status` & `biStatus` - Filter by state
+- `scheduledDate` - Date range queries
+
+**Relations:**
+- Many-to-One: `User` (FK → citizen, CASCADE delete)
+- Many-to-One: `Center` (FK → location, CASCADE delete)
+- One-to-Many: `Document` (attached files)
+- One-to-One: `Protocolo` (receipt/tracking)
+
+---
+
+### Document (Uploaded Files)
+
+**Purpose:** Store references to citizen-uploaded documents
+
+| Field | Type | Nullable | Default | Description |
+|-------|------|----------|---------|-------------|
+| `id` | CUID | ❌ | auto | Unique identifier |
+| `fileName` | String | ❌ | - | Original file name from upload |
+| `fileUrl` | String | ❌ | - | **URL to access file** (S3/storage) |
+| `fileSize` | Int | ✅ | null | File size in bytes |
+| `filePath` | String | ✅ | null | Local storage path (if on-premise) |
+| `mimeType` | String | ✅ | null | File type (application/pdf, image/jpeg) |
+| `documentType` | DocumentType | ❌ | - | **RG / CERTIDAO / COMPROVANTE_RESIDENCIA** |
+| `userId` | String | ❌ | - | Uploader (FK) |
+| `scheduleId` | String | ❌ | - | Associated appointment (FK) |
+| `uploadedAt` | DateTime | ❌ | now() | Upload timestamp |
+
+**Indexes:**
+- `userId` - Citizen's documents
+- `scheduleId` - Appointment's documents
+- `documentType` - Find specific documents
+
+**Relations:**
+- Many-to-One: `User` (FK, CASCADE delete)
+- Many-to-One: `Schedule` (FK, CASCADE delete)
+
+---
+
+### Protocolo (Receipt & Tracking)
+
+**Purpose:** Audit trail and receipt for each BI application
+
+| Field | Type | Nullable | Default | Description |
+|-------|------|----------|---------|-------------|
+| `id` | CUID | ❌ | auto | Unique ID |
+| `numeroProtocolo` | String | ❌ | UNIQUE | **Citizen receipt number** (format: BI-YYYY-MM-XXXXX) |
+| `scheduleId` | String | ❌ | UNIQUE | Associated appointment (FK) |
+| `statusAnterior` | BIScheduleStatus | ❌ | - | Previous status |
+| `statusAtual` | BIScheduleStatus | ❌ | - | Current status |
+| `agenteProcessador` | String | ✅ | null | Admin/Center user who updated |
+| `observacoes` | String | ✅ | null | Notes on status change |
+| `registradoEm` | DateTime | ❌ | now() | When scheduled |
+| `processadoEm` | DateTime | ✅ | null | When processed (status updated) |
+| `createdAt` | DateTime | ❌ | now() | Record creation |
+
+**Indexes:**
+- `numeroProtocolo` - Citizen lookup by receipt
+- `scheduleId` - Find protocol for appointment
+
+**Relations:**
+- One-to-One: `Schedule` (FK, CASCADE delete)
+
+**Example Protocol Number:** `BI-2026-02-00001` (BI-Year-Month-Sequential)
+
+---
+
+### RefreshToken (Session Management)
+
+**Purpose:** JWT refresh token storage for extended sessions
+
+| Field | Type | Nullable | Default | Description |
+|-------|------|----------|---------|-------------|
+| `id` | CUID | ❌ | auto | Token ID |
+| `token` | String | ❌ | UNIQUE | JWT refresh token |
+| `userId` | String | ❌ | - | Token owner (FK) |
+| `expiresAt` | DateTime | ❌ | - | Expiration timestamp |
+| `createdAt` | DateTime | ❌ | now() | Creation time |
+
+**Default TTL:** 24 hours
+
+---
+
+## Relationships
+
+```
+User (1) ──────── (1..1) Center
+  │                  └─ "manages"
+  │
+  ├─ (1) ────────── (0..*) Schedule
+  │                   └─ "applies for"
+  │
+  ├─ (1) ────────── (0..*) Document
+  │                   └─ "uploads"
+  │
+  ├─ (1) ────────── (0..*) Protocolo
+  │                   └─ "referenced in"
+  │
+  └─ (1) ────────── (0..*) RefreshToken
+                       └─ "owns"
+
+Center (1) ────────────── (0..*) Schedule
+                            └─ "hosts appointments"
+
+Schedule (1) ────────────── (0..*) Document
+               └─ "contains"
+
+Schedule (1) ────────────── (1) Protocolo
+               └─ "tracked by"
+```
+
+---
+
+## BI Workflow
+
+### Complete Appointment Lifecycle
+
+```
+1. CITIZEN REGISTRATION
+   └─ User creates account
+   └─ Provides: dataNascimento, provinciaResidencia, genero, etc
+   
+2. DOCUMENT UPLOAD
+   └─ Uploads: RG, Certidão de Nascimento, Comprovante de Residência, Foto 3x4
+   └─ Documents stored in `Document` table (with fileUrl pointing to storage)
+
+3. APPOINTMENT BOOKING
+   └─ SELECT Center by provincia
+   └─ View available slots (based on capacidadeAgentos & attendanceDays)
+   └─ CREATE Schedule with:
+      ├─ scheduledDate (citizen's preferred time)
+      ├─ tipoBI (NOVO, RENOVACAO, etc)
+      ├─ centerId (provincial center)
+      └─ biStatus = AGENDADO
+   └─ GENERATE Protocolo with numeroProtocolo (BI-2026-02-00001)
+
+4. APPOINTMENT DAY
+   └─ Schedule.biStatus = CONFIRMADO (when citizen arrives)
+   └─ Create/Update Protocolo with notes
+
+5. BIOMETRICS COLLECTION
+   └─ Center agent collects fingerprints & photos
+   └─ Schedule.biStatus = BIOMETRIA_RECOLHIDA
+   └─ Upload raw biometric files to Document table
+
+6. MINISTRY PROCESSING
+   └─ Ministry receives biometric data
+   └─ Processes application (~15-30 days)
+   └─ Schedule.biStatus = EM_PROCESSAMENTO
+
+7. BI READY
+   └─ Ministry issues BI number
+   └─ Update: Schedule.nbiEmitido = "BI123456789"
+   └─ Schedule.biStatus = PRONTO_RETIRADA
+   └─ Notify citizen (Email/SMS)
+
+8. PICKUP
+   └─ Citizen collects BI at center
+   └─ Schedule.dataRetirada = now()
+   └─ Schedule.biStatus = RETIRADO
+   └─ Protocolo complete
+
+EDGE CASES:
+─ REJEITADO: If docs incomplete, update Schedule.biStatus + Schedule.notes
+─ CANCELADO: Citizen cancels appointment, can reschedule
+```
+
+---
+
+## Database Indexes
+
+### Performance Optimization
+
+| Table | Columns | Purpose | Query Example |
+|-------|---------|---------|----------------|
+| `User` | `email` | Login lookup | Find user by email |
+| `User` | `role` | Filter by type | Get all CENTER operators |
+| `User` | `provinciaResidencia` | Statistics | Count citizens per province |
+| `Center` | `userId` | Find manager | Which center does this user manage? |
+| `Center` | `provincia` | Provincial queries | All centers in Luanda |
+| `Schedule` | `userId` | Citizen's appointments | Show my 5 appointments |
+| `Schedule` | `centerId` | Center's queue | Queue for Luanda center today |
+| `Schedule` | `biStatus` | Filter by state | Show all PRONTO_RETIRADA |
+| `Schedule` | `scheduledDate` | Date ranges | Appointments next 7 days |
+| `Schedule` | `tipoBI` | By type | Count renewals vs new |
+| `Document` | `userId` | Citizen's files | What docs did citizen upload? |
+| `Document` | `scheduleId` | Appointment docs | Docs required, submitted |
+| `Document` | `documentType` | By category | All birth certificates |
+| `Protocolo` | `numeroProtocolo` | Citizen receipt lookup | Find via receipt number |
+| `Protocolo` | `scheduleId` | Status history | Full audit trail |
+
+---
+
+## Key Constraints
+
+### Data Integrity Rules
+
+1. **Email Uniqueness**
+   - One email = one account
+   - Database enforces via UNIQUE
+
+2. **Center-User Relationship**
+   - Each CENTER-role user manages exactly one center
+   - Database enforces via UNIQUE foreignKey
+
+3. **Cascade Deletes**
+   - Delete User → Delete Center, Schedules, Documents, Protocolos
+   - Delete Schedule → Delete Documents (not reverse)
+
+4. **BI Status Progression**
+   - AGENDADO → CONFIRMADO → BIOMETRIA_RECOLHIDA → EM_PROCESSAMENTO → PRONTO_RETIRADA → RETIRADO
+   - Or any → REJEITADO / CANCELADO
+   - **Application enforces** (DB allows any)
+
+5. **Document Requirements**
+   ```
+   TipoBI = NOVO requires:
+     ✓ CERTIDAO_NASCIMENTO
+     ✓ COMPROVANTE_RESIDENCIA
+     ✓ FOTO_3X4
+     ✓ RG
+     
+   TipoBI = RENOVACAO requires:
+     ✓ COMPROVANTE_RESIDENCIA
+     ✓ FOTO_3X4
+   ```
+   **Application enforces** (DB allows flexibility)
+
+6. **Date Constraints**
+   - `scheduledDate` must be >= today + 1 day
+   - `scheduledDate` must align with Center's `attendanceDays`
+   - `scheduledDate` must be between `openingTime` and `closingTime`
+   - **Application enforces**
+
+---
+
+## Migration Notes
+
+### First Time Setup
+
+```bash
+# 1. Set environment variable
+export DATABASE_URL="postgresql://user:pass@localhost:5432/sistema_bi_angola"
+
+# 2. Run migrations
+npx prisma migrate deploy
+
+# 3. Generate Prisma Client
+npx prisma generate
+
+# 4. (Optional) Seed test data
+npx prisma db seed
+```
+
+### Updating Schema
+
+```bash
+# After modifying schema.prisma:
+npx prisma migrate dev --name [descriptive_name]
+# e.g.: npx prisma migrate dev --name add_bi_fields_to_user
+# e.g.: npx prisma migrate dev --name create_document_table
+```
+
+### Backup Before Major Changes
+
+```bash
+# PostgreSQL backup
+pg_dump sistema_bi_angola > backup_$(date +%Y%m%d_%H%M%S).sql
+
+# Restore:
+psql -d sistema_bi_angola < backup_20260228_143000.sql
+```
+
+---
+
+## Team Responsibilities
+
+### Database Team (DBA)
+
+**Setup & Maintenance:**
+- ✅ PostgreSQL installation & configuration
+- ✅ Create `sistema_bi_angola` database
+- ✅ Run initial migrations (`npx prisma migrate deploy`)
+- ✅ Set up daily backups
+- ✅ Monitor indexes for performance
+- ✅ Plan capacity for 24 provinces + citizens (~100K users/month projected)
+
+**Monitoring:**
+```sql
+-- Monitor slow queries
+SELECT query, calls, mean_exec_time FROM pg_stat_statements
+ORDER BY mean_exec_time DESC LIMIT 10;
+
+-- Check index usage
+SELECT schemaname, tablename, indexname, idx_scan
+FROM pg_stat_user_indexes ORDER BY idx_scan DESC;
+
+-- Count records
+SELECT COUNT(*) FROM "User";       -- Expect: 100K+
+SELECT COUNT(*) FROM "Schedule";  -- Expect: 500K+
+SELECT COUNT(*) FROM "Document";  -- Expect: 1M+
+```
+
+**Alert Thresholds:**
+- DB size > 50GB (investigate)
+- Query time > 1s (optimize)
+- Failed backups (critical)
+
+---
+
+### Backend Development Team (Cleusio)
+
+**Implementation Tasks:**
+- ✅ Create DTOs for all models (UserCreateDto, ScheduleCreateDto, etc)
+- ✅ Implement PrismaService queries
+- ✅ Build REST endpoints:
+  ```
+  POST   /auth/register           -- Create citizen account
+  POST   /schedules               -- Book appointment
+  GET    /schedules/:id           -- View appointment
+  PUT    /schedules/:id           -- Update appointment
+  POST   /documents               -- Upload document
+  GET    /documents?scheduleId    -- List docs
+  GET    /protocolo/:numeroProtocolo -- Lookup receipt
+  ```
+- ✅ Add validators (TipoBI validation, date checks, doc requirements)
+- ✅ Error handling (friendly messages for DB errors)
+- ✅ Pagination for large queries (schedules, documents)
+- ✅ Authentication/Authorization (JWT, roles)
+
+**Key Backend Features Needed:**
+1. **Document Upload Handler**
+   - Validate file size (max 5MB)
+   - Scan for viruses
+   - Upload to S3 or local storage
+   - Store reference in `Document.fileUrl`
+
+2. **Protocol Number Generator**
+   - Format: `BI-YYYY-MM-XXXXX`
+   - Sequential per month per province
+   - Unique constraint enforced
+
+3. **Status Transition Logic**
+   - Only CENTER/ADMIN can move status forward
+   - Reject if documents incomplete
+   - Notify citizen on key transitions
+
+4. **Notification Service** (Future)
+   - Email when BI ready (PRONTO_RETIRADA)
+   - SMS reminders
+   - Rejection notices
+
+5. **Reporting Queries**
+   - Appointments per province per day
+   - Pending vs completed
+   - Average processing time
+
+---
+
+## Example Queries for Team Reference
+
+### DBA: Create Initial Data
+
+```sql
+-- Province counts
+SELECT provincia, COUNT(*) FROM "Center" GROUP BY provincia;
+
+-- Busiest centers
+SELECT c.name, COUNT(s.id) as appointments
+FROM "Center" c
+LEFT JOIN "Schedule" s ON c.id = s."centerId"
+GROUP BY c.id, c.name
+ORDER BY appointments DESC;
+
+-- Document completion rate
+SELECT 
+  COUNT(DISTINCT s.id) as total_schedules,
+  COUNT(DISTINCT CASE WHEN d.id IS NOT NULL THEN s.id END) as with_docs
+FROM "Schedule" s
+LEFT JOIN "Document" d ON s.id = d."scheduleId"
+WHERE s."biStatus" IN ('AGENDADO', 'CONFIRMADO');
+```
+
+### Backend: Find Appointments by Type
+
+```typescript
+// Find all NOVO applications pending processing
+const newBIs = await prisma.schedule.findMany({
+  where: {
+    tipoBI: 'NOVO',
+    biStatus: 'EM_PROCESSAMENTO',
+  },
+  include: {
+    user: true,
+    center: true,
+    documents: true,
+  },
+});
+
+// Count by province
+const byProvince = await prisma.center.groupBy({
+  by: ['provincia'],
+  _count: {
+    schedules: true,
+  },
+});
+```
+
+---
+
+## Version History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.1 | 2026-02-28 | **MVP Release**: Add BI-specific models (Document, Protocolo), extend User/Schedule/Center with BI fields |
+| 1.0 | 2026-02-25 | Initial schema: Generic scheduling system |
+
+---
+
+**Document prepared for:** Database Team, Backend Team (Cleusio), DevOps  
+**Status:** Production Ready for MVP Phase  
+**Jurisdiction:** Angola (24 Provinces)  
+**Last Reviewed:** February 28, 2026
 
 ---
 
