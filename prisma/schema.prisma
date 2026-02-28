@@ -34,25 +34,90 @@ enum CenterType {
   OTHER
 }
 
+// Bilhete de Identidade Angola - Specific Enums
+enum TipoBI {
+  NOVO
+  RENOVACAO
+  PERDA
+  EXTRAVIO
+  ATUALIZACAO_DADOS
+}
+
+enum BIScheduleStatus {
+  AGENDADO
+  CONFIRMADO
+  BIOMETRIA_RECOLHIDA
+  EM_PROCESSAMENTO
+  PRONTO_RETIRADA
+  RETIRADO
+  REJEITADO
+  CANCELADO
+}
+
+enum Provincia {
+  BENGO
+  BENGUELA
+  BIES
+  CABINDA
+  CUANDO_CUBANGO
+  CUANZA_NORTE
+  CUANZA_SUL
+  CUNENE
+  HUAMBO
+  HUILA
+  KWANDO_KUBANGO
+  KWANZA_NORTE
+  KWANZA_SUL
+  LUANDA
+  LUNDA_NORTE
+  LUNDA_SUL
+  MALANJE
+  MOXICO
+  NAMIBE
+  UIGE
+  ZAI
+}
+
+enum DocumentType {
+  RG
+  CERTIDAO_NASCIMENTO
+  COMPROVANTE_RESIDENCIA
+  COMPROVANTE_ENDERECO
+  FOTO_3X4
+  OUTRO
+}
+
 // ============ MODELS ============
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String
-  password  String
-  role      Role     @default(CITIZEN)
-  active    Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                    String   @id @default(cuid())
+  email                 String   @unique
+  name                  String
+  password              String
+  role                  Role     @default(CITIZEN)
+  active                Boolean  @default(true)
+  
+  // BI-specific fields
+  dataNascimento        DateTime?
+  provinciaNascimento   Provincia?
+  provinciaResidencia   Provincia?
+  numeroBIAnterior      String?
+  filiacao              String? // Parent names
+  genero                String? // M, F, Outro
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 
   // Relations
-  center     Center?
-  schedules  Schedule[]
-  refreshTokens RefreshToken[]
+  center                Center?
+  schedules             Schedule[]
+  documents             Document[]
+  protocolos            Protocolo[]
+  refreshTokens         RefreshToken[]
 
   @@index([email])
   @@index([role])
+  @@index([provinciaResidencia])
 }
 
 model Center {
@@ -63,9 +128,11 @@ model Center {
   address         String
   phone           String?
   email           String?
+  provincia       Provincia
   openingTime     String   @default("08:00")
   closingTime     String   @default("17:00")
   attendanceDays  String   @default("MONDAY,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY")
+  capacidadeAgentos Int  @default(5)
   active          Boolean  @default(true)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -76,14 +143,24 @@ model Center {
   schedules Schedule[]
 
   @@index([userId])
+  @@index([provincia])
 }
 
 model Schedule {
-  id                String   @id @default(cuid())
+  id                String        @id @default(cuid())
   scheduledDate     DateTime
   slotNumber        Int?
   description       String?
+  
+  // Generic status (old)
   status            ScheduleStatus @default(PENDING)
+  
+  // BI-specific fields
+  tipoBI            TipoBI?
+  biStatus          BIScheduleStatus @default(AGENDADO)
+  dataRetirada      DateTime?
+  nbiEmitido        String? // Issued BI number
+  
   notes             String?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -93,11 +170,56 @@ model Schedule {
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   centerId  String
   center    Center    @relation(fields: [centerId], references: [id], onDelete: Cascade)
+  documents Document[]
+  protocolo Protocolo?
 
   @@index([userId])
   @@index([centerId])
   @@index([status])
+  @@index([biStatus])
   @@index([scheduledDate])
+  @@index([tipoBI])
+}
+
+model Document {
+  id            String       @id @default(cuid())
+  fileName      String
+  fileUrl       String
+  fileSize      Int? // bytes
+  filePath      String? // local or cloud storage path
+  mimeType      String? // application/pdf, image/jpeg, etc
+  documentType  DocumentType
+  uploadedAt    DateTime @default(now())
+  
+  // Relations
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  scheduleId String
+  schedule  Schedule  @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([scheduleId])
+  @@index([documentType])
+}
+
+model Protocolo {
+  id                String   @id @default(cuid())
+  numeroProtocolo   String   @unique
+  scheduleId        String   @unique
+  schedule          Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  
+  // Tracking
+  statusAnterior    BIScheduleStatus
+  statusAtual       BIScheduleStatus
+  agenteProcessador String? // Admin/Center user who processed
+  observacoes       String?
+  
+  registradoEm      DateTime @default(now())
+  processadoEm      DateTime?
+  createdAt         DateTime @default(now())
+
+  @@index([numeroProtocolo])
+  @@index([scheduleId])
 }
 
 model RefreshToken {
