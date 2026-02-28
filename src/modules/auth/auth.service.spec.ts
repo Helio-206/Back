@@ -60,7 +60,7 @@ describe('AuthService', () => {
       jest.spyOn(prisma.user, 'create').mockResolvedValue({
         ...user,
         password: 'hashed',
-      } as any);
+      } as never);
 
       const result = await service.register(registerDto);
 
@@ -75,7 +75,7 @@ describe('AuthService', () => {
         password: 'password123',
       };
 
-      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue({} as any);
+      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue({ id: 'existing-user' } as never);
 
       expect(service.register(registerDto)).rejects.toThrow('User already exists');
     });
