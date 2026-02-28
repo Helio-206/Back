@@ -10,10 +10,10 @@ enum ScheduleStatus {
 
 export class CreateScheduleDto {
   @IsDateString()
-  scheduledDate: string;
+  scheduledDate!: string;
 
   @IsString()
-  centerId: string;
+  centerId!: string;
 
   @IsOptional()
   @IsInt()
