@@ -21,10 +21,7 @@ export class CentersController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  async create(
-    @Body() createCenterDto: CreateCenterDto,
-    @CurrentUser() user: { id: string },
-  ) {
+  async create(@Body() createCenterDto: CreateCenterDto, @CurrentUser() user: { id: string }) {
     return this.centersService.create(user.id, createCenterDto);
   }
 
@@ -40,10 +37,7 @@ export class CentersController {
 
   @Put(':id')
   @UseGuards(JwtAuthGuard)
-  async update(
-    @Param('id') id: string,
-    @Body() updateCenterDto: UpdateCenterDto,
-  ) {
+  async update(@Param('id') id: string, @Body() updateCenterDto: UpdateCenterDto) {
     return this.centersService.update(id, updateCenterDto);
   }
 

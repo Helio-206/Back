@@ -22,10 +22,7 @@ export class SchedulesController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  async create(
-    @Body() createScheduleDto: CreateScheduleDto,
-    @CurrentUser() user: { id: string },
-  ) {
+  async create(@Body() createScheduleDto: CreateScheduleDto, @CurrentUser() user: { id: string }) {
     return this.schedulesService.create(user.id, createScheduleDto);
   }
 
@@ -50,10 +47,7 @@ export class SchedulesController {
 
   @Put(':id')
   @UseGuards(JwtAuthGuard)
-  async update(
-    @Param('id') id: string,
-    @Body() updateScheduleDto: UpdateScheduleDto,
-  ) {
+  async update(@Param('id') id: string, @Body() updateScheduleDto: UpdateScheduleDto) {
     return this.schedulesService.update(id, updateScheduleDto);
   }
 
