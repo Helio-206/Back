@@ -23,7 +23,6 @@ export class SchedulesService {
   async create(userId: string, createScheduleDto: CreateScheduleDto) {
     const { centerId, scheduledDate, tipoBI, slotNumber, description, notes } = createScheduleDto;
 
-    // Validate center exists
     const center = await this.prisma.center.findUnique({
       where: { id: centerId },
     });
@@ -32,11 +31,9 @@ export class SchedulesService {
       throw new NotFoundException(`Centro com ID ${centerId} não encontrado`);
     }
 
-    // Convert and validate scheduled date
     const scheduleDateTime = new Date(scheduledDate);
     this.validateScheduleDateTime(scheduleDateTime, center);
 
-    // Check for duplicate pending schedules
     const existingSchedule = await this.prisma.schedule.findFirst({
       where: {
         userId,
@@ -49,16 +46,13 @@ export class SchedulesService {
       throw InvalidScheduleException.duplicateSchedule();
     }
 
-    // Check available slots
     const availableSlots = await this.getAvailableSlots(centerId, scheduleDateTime);
     if (availableSlots <= 0) {
       throw InvalidScheduleException.noAvailableSlots(scheduleDateTime.toLocaleDateString('pt-AO'));
     }
 
-    // Generate protocol number
     const numeroProtocolo = this.generateProtocolNumber();
 
-    // Create schedule within transaction
     const schedule = await this.prisma.schedule.create({
       data: {
         userId,
@@ -81,7 +75,6 @@ export class SchedulesService {
       },
     });
 
-    // Create associated protocol
     await this.prisma.protocolo.create({
       data: {
         numeroProtocolo,
@@ -91,14 +84,9 @@ export class SchedulesService {
       },
     });
 
-    // Fetch schedule with protocol
     return this.enrichScheduleWithProtocol(schedule.id);
   }
 
-  /**
-   * Get all schedules (admin only)
-   * @returns All active schedules
-   */
   async findAll() {
     return this.prisma.schedule.findMany({
       include: {
@@ -231,7 +219,6 @@ export class SchedulesService {
       throw new NotFoundException(`Agendamento com ID ${id} não encontrado`);
     }
 
-    // Update schedule
     const updated = await this.prisma.schedule.update({
       where: { id },
       data: {
@@ -249,7 +236,6 @@ export class SchedulesService {
       },
     });
 
-    // Update protocol status if BI status changed
     if (updateScheduleDto.biStatus && updateScheduleDto.biStatus !== schedule.biStatus) {
       await this.prisma.protocolo.update({
         where: { scheduleId: id },
@@ -289,7 +275,6 @@ export class SchedulesService {
       },
     });
 
-    // Update protocol status
     await this.prisma.protocolo.update({
       where: { scheduleId: id },
       data: {
@@ -416,18 +401,15 @@ export class SchedulesService {
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
 
-    // Must be at least tomorrow
     if (scheduleDate < tomorrow) {
       throw InvalidScheduleException.tooSoon();
     }
 
-    // Check day of week (0=Sunday, 1=Monday, etc.)
     const dayOfWeek = scheduleDate.getDay();
     if (dayOfWeek === 0 || dayOfWeek === 6) {
       throw InvalidScheduleException.centerClosed('finais de semana');
     }
 
-    // Check center operating hours
     const [openHour, openMin] = center.openingTime.split(':').map(Number);
     const [closeHour, closeMin] = center.closingTime.split(':').map(Number);
 

@@ -172,7 +172,6 @@ export class CentersService {
       throw new NotFoundException(`Centro com ID ${id} não encontrado`);
     }
 
-    // Validate time format if provided
     if (updateCenterDto.openingTime && updateCenterDto.closingTime) {
       const open = updateCenterDto.openingTime.split(':').map(Number);
       const close = updateCenterDto.closingTime.split(':').map(Number);
