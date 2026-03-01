@@ -112,7 +112,6 @@ model User {
   center                Center?
   schedules             Schedule[]
   documents             Document[]
-  protocolos            Protocolo[]
   refreshTokens         RefreshToken[]
 
   @@index([email])
