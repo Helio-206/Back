@@ -47,6 +47,7 @@ async function main() {
       address: 'Main Street, 123',
       phone: '212345678',
       email: 'center1@health.local',
+      provincia: 'LUANDA',
       openingTime: '08:00',
       closingTime: '18:00',
       attendanceDays: 'MONDAY,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY',
