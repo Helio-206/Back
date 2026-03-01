@@ -8,42 +8,86 @@ import {
   Delete,
   UseGuards,
   HttpCode,
+  HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { CentersService } from './centers.service';
 import { CreateCenterDto } from './dtos/create-center.dto';
 import { UpdateCenterDto } from './dtos/update-center.dto';
 import { JwtAuthGuard } from '@common/guards/jwt-auth.guard';
 import { CurrentUser } from '@common/decorators/current-user.decorator';
+import { Provincia } from '@prisma/client';
 
 @Controller('centers')
 export class CentersController {
-  constructor(private centersService: CentersService) {}
+  constructor(private readonly centersService: CentersService) {}
 
+  /**
+   * Create new center (center manager only)
+   */
   @Post()
   @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.CREATED)
   async create(@Body() createCenterDto: CreateCenterDto, @CurrentUser() user: { id: string }) {
     return this.centersService.create(user.id, createCenterDto);
   }
 
+  /**
+   * Get all centers with optional filtering
+   */
   @Get()
-  async findAll() {
-    return this.centersService.findAll();
+  async findAll(
+    @Query('provincia') provincia?: Provincia,
+    @Query('type') type?: string,
+    @Query('active') active?: string
+  ) {
+    const filters = {
+      provincia,
+      type,
+      active: active === 'true' ? true : active === 'false' ? false : undefined,
+    };
+    return this.centersService.findAll(filters);
   }
 
+  /**
+   * Get centers by province (filtered endpoint)
+   */
+  @Get('provincia/:provincia')
+  async findByProvincia(@Param('provincia') provincia: Provincia) {
+    return this.centersService.findByProvincia(provincia);
+  }
+
+  /**
+   * Get center by ID
+   */
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.centersService.findOne(id);
   }
 
+  /**
+   * Get center statistics
+   */
+  @Get(':id/statistics')
+  async getStatistics(@Param('id') id: string) {
+    return this.centersService.getStatistics(id);
+  }
+
+  /**
+   * Update center details
+   */
   @Put(':id')
   @UseGuards(JwtAuthGuard)
   async update(@Param('id') id: string, @Body() updateCenterDto: UpdateCenterDto) {
     return this.centersService.update(id, updateCenterDto);
   }
 
+  /**
+   * Deactivate center (soft delete)
+   */
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  @HttpCode(204)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async deactivate(@Param('id') id: string) {
     return this.centersService.deactivate(id);
   }

@@ -1,26 +1,64 @@
-import { Controller, Get, Param, UseGuards, Delete, HttpCode } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  UseGuards,
+  Delete,
+  HttpCode,
+  HttpStatus,
+  Put,
+  Body,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '@common/guards/jwt-auth.guard';
+import { CurrentUser } from '@common/decorators/current-user.decorator';
 
 @Controller('users')
 export class UsersController {
-  constructor(private usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) {}
 
+  /**
+   * Get current user profile
+   */
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  async getProfile(@CurrentUser() user: any) {
+    return this.usersService.getProfile(user.sub);
+  }
+
+  /**
+   * Get all users (admin only)
+   */
   @Get()
   @UseGuards(JwtAuthGuard)
   async findAll() {
     return this.usersService.findAll();
   }
 
+  /**
+   * Get user by ID
+   */
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   async findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);
   }
 
+  /**
+   * Update user profile
+   */
+  @Put('me')
+  @UseGuards(JwtAuthGuard)
+  async updateProfile(@CurrentUser() user: any, @Body() updateDto: any) {
+    return this.usersService.updateProfile(user.sub, updateDto);
+  }
+
+  /**
+   * Deactivate user account
+   */
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  @HttpCode(204)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async deactivate(@Param('id') id: string) {
     return this.usersService.deactivate(id);
   }
