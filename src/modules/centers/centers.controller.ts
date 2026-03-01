@@ -22,9 +22,6 @@ import { Provincia } from '@prisma/client';
 export class CentersController {
   constructor(private readonly centersService: CentersService) {}
 
-  /**
-   * Create new center (center manager only)
-   */
   @Post()
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.CREATED)
@@ -32,9 +29,6 @@ export class CentersController {
     return this.centersService.create(user.id, createCenterDto);
   }
 
-  /**
-   * Get all centers with optional filtering
-   */
   @Get()
   async findAll(
     @Query('provincia') provincia?: Provincia,
@@ -49,42 +43,27 @@ export class CentersController {
     return this.centersService.findAll(filters);
   }
 
-  /**
-   * Get centers by province (filtered endpoint)
-   */
   @Get('provincia/:provincia')
   async findByProvincia(@Param('provincia') provincia: Provincia) {
     return this.centersService.findByProvincia(provincia);
   }
 
-  /**
-   * Get center by ID
-   */
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.centersService.findOne(id);
   }
 
-  /**
-   * Get center statistics
-   */
   @Get(':id/statistics')
   async getStatistics(@Param('id') id: string) {
     return this.centersService.getStatistics(id);
   }
 
-  /**
-   * Update center details
-   */
   @Put(':id')
   @UseGuards(JwtAuthGuard)
   async update(@Param('id') id: string, @Body() updateCenterDto: UpdateCenterDto) {
     return this.centersService.update(id, updateCenterDto);
   }
 
-  /**
-   * Deactivate center (soft delete)
-   */
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)

@@ -22,9 +22,6 @@ export interface LoginResponse {
   };
 }
 
-/**
- * Authentication service handling user registration, login, and token management
- */
 @Injectable()
 export class AuthService {
   constructor(

@@ -17,9 +17,6 @@ interface ChangePasswordDto {
   newPassword: string;
 }
 
-/**
- * Users service handling user profile management and queries
- */
 @Injectable()
 export class UsersService {
   constructor(private readonly prisma: PrismaService) {}

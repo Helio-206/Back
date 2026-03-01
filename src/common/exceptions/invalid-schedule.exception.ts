@@ -1,13 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
 
-/**
- * Exception thrown when schedule creation or update violates business rules:
- * - Invalid date (past date, too soon)
- * - Outside center operating hours
- * - Center closed on scheduled day
- * - No available slots
- * - Duplicate schedule attempts
- */
 export class InvalidScheduleException extends BadRequestException {
   constructor(reason: string) {
     super({

@@ -5,10 +5,6 @@ import {
   ValidatorConstraintInterface,
 } from 'class-validator';
 
-/**
- * Validates that a date falls on valid weekdays (Monday-Friday by default)
- * Useful for business hours scheduling
- */
 @ValidatorConstraint({ name: 'isValidWeekday', async: false })
 export class ValidWeekdayValidator implements ValidatorConstraintInterface {
   allowedDays: number[] = [1, 2, 3, 4, 5]; // Monday to Friday (0=Sunday, 6=Saturday)
@@ -32,12 +28,6 @@ export class ValidWeekdayValidator implements ValidatorConstraintInterface {
   }
 }
 
-/**
- * Decorator to validate that a date falls on allowed weekdays
- * @example
- * @IsValidWeekday()
- * scheduledDate: Date;
- */
 export function IsValidWeekday(validationOptions?: ValidationOptions): PropertyDecorator {
   return function (target: object, propertyName: string | symbol): void {
     registerDecorator({

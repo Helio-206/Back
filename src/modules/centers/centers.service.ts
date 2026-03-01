@@ -15,9 +15,6 @@ interface CenterFilterOptions {
   active?: boolean;
 }
 
-/**
- * Centers service managing BI appointment centers and their operations
- */
 @Injectable()
 export class CentersService {
   constructor(private readonly prisma: PrismaService) {}

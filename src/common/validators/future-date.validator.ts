@@ -5,10 +5,6 @@ import {
   ValidatorConstraintInterface,
 } from 'class-validator';
 
-/**
- * Validates that a date is at least N days in the future
- * Useful for scheduling to prevent past dates and ensure minimum advance notice
- */
 @ValidatorConstraint({ name: 'isFutureDate', async: false })
 export class FutureDateValidator implements ValidatorConstraintInterface {
   minDaysAhead: number = 1;
@@ -35,12 +31,6 @@ export class FutureDateValidator implements ValidatorConstraintInterface {
   }
 }
 
-/**
- * Decorator to validate that a date is at least N days in the future
- * @example
- * @IsFutureDate({ minDaysAhead: 1 })
- * scheduledDate: Date;
- */
 export function IsFutureDate(
   options?: { minDaysAhead?: number },
   validationOptions?: ValidationOptions

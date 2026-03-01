@@ -5,10 +5,6 @@ import {
   ValidatorConstraintInterface,
 } from 'class-validator';
 
-/**
- * Validates Angolan BI (Bilhete de Identidade) format: #########LA###
- * Example: 123456789LA012
- */
 @ValidatorConstraint({ name: 'isValidBIFormat', async: false })
 export class BIFormatValidator implements ValidatorConstraintInterface {
   validate(value: string | undefined): boolean {
@@ -23,12 +19,6 @@ export class BIFormatValidator implements ValidatorConstraintInterface {
   }
 }
 
-/**
- * Decorator to validate BI format in DTOs
- * @example
- * @IsBIFormat()
- * numeroBIAnterior?: string;
- */
 export function IsBIFormat(validationOptions?: ValidationOptions): PropertyDecorator {
   return function (target: object, propertyName: string | symbol): void {
     registerDecorator({

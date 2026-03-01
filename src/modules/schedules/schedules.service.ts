@@ -6,9 +6,6 @@ import { UpdateScheduleDto } from './dtos/update-schedule.dto';
 import { ScheduleStatus } from '@prisma/client';
 import * as crypto from 'crypto';
 
-/**
- * Schedules service managing BI appointment scheduling with complex business logic
- */
 @Injectable()
 export class SchedulesService {
   constructor(private readonly prisma: PrismaService) {}

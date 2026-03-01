@@ -1,8 +1,5 @@
 import { ConflictException } from '@nestjs/common';
 
-/**
- * Exception thrown when attempting to register a user with an email that already exists
- */
 export class UserAlreadyExistsException extends ConflictException {
   constructor(email: string) {
     super({

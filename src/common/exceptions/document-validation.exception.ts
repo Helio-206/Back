@@ -1,12 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
 
-/**
- * Exception thrown when document upload or validation fails:
- * - File too large
- * - Invalid file type
- * - Duplicate document
- * - Missing required documents
- */
 export class DocumentValidationException extends BadRequestException {
   constructor(reason: string) {
     super({
