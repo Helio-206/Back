@@ -1,4 +1,5 @@
-import { IsString, IsDateString, IsOptional, IsEnum, IsInt } from 'class-validator';
+import { IsString, IsDateString, IsOptional, IsEnum, IsInt, IsNotEmpty, Min } from 'class-validator';
+import { IsFutureDate } from '../../../common/validators';
 
 enum ScheduleStatus {
   PENDING = 'PENDING',
@@ -10,13 +11,20 @@ enum ScheduleStatus {
 
 export class CreateScheduleDto {
   @IsDateString()
+  @IsNotEmpty()
+  @IsFutureDate({
+    message: 'Data do agendamento deve ser no futuro',
+  })
   scheduledDate!: string;
 
+  @IsString()
+  @IsNotEmpty()
   @IsString()
   centerId!: string;
 
   @IsOptional()
   @IsInt()
+  @Min(1, { message: 'slotNumber deve ser maior que 0' })
   slotNumber?: number;
 
   @IsOptional()
@@ -28,6 +36,8 @@ export class CreateScheduleDto {
   notes?: string;
 
   @IsOptional()
-  @IsEnum(ScheduleStatus)
+  @IsEnum(ScheduleStatus, {
+    message: 'status deve ser um dos valores válidos: PENDING, CONFIRMED, IN_PROGRESS, COMPLETED, CANCELLED',
+  })
   status?: ScheduleStatus;
 }
