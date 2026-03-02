@@ -7,12 +7,12 @@ import {
 
 @ValidatorConstraint({ name: 'isFutureDate', async: false })
 export class IsFutureDateConstraint implements ValidatorConstraintInterface {
-  validate(value: any): boolean {
+  validate(value: unknown): boolean {
     if (!value) {
       return false;
     }
 
-    const date = new Date(value);
+    const date = new Date(value as string | number);
     if (isNaN(date.getTime())) {
       return false;
     }
@@ -30,7 +30,7 @@ export class IsFutureDateConstraint implements ValidatorConstraintInterface {
 }
 
 export function IsFutureDate(validationOptions?: ValidationOptions) {
-  return function (target: Object, propertyName: string) {
+  return function (target: object, propertyName: string) {
     registerDecorator({
       target: target.constructor,
       propertyName: propertyName,
