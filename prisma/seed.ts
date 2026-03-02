@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Start seeding...');
 
-  const adminEmail = 'admin@schedule.local';
+  const adminEmail = 'QuartelPolitico@gmail.com';
   const adminPasswordHash = await bcrypt.hash('admin12345', 10);
 
   const admin = await prisma.user.upsert({
@@ -30,7 +30,7 @@ async function main() {
     update: {},
     create: {
       email: centerEmail,
-      name: 'Primary Health Center',
+      name: 'Centro de Identificação Fiscal',
       role: 'CENTER',
       password: centerPasswordHash,
     },
@@ -41,12 +41,12 @@ async function main() {
     update: {},
     create: {
       userId: centerUser.id,
-      name: 'Primary Health Center',
-      type: 'HEALTH',
-      description: 'Primary institutional health center',
-      address: 'Main Street, 123',
-      phone: '212345678',
-      email: 'center1@health.local',
+      name: 'Centro de Identificação Fiscal',
+      type: 'ADMINISTRATIVE',
+      description: 'O Serviço de Identificação Civil é o órgão responsável pela emissão e controlo do Bilhete de Identidade (BI), garantindo a identificação oficial dos cidadãos.',
+      address: 'Mutamba, Luanda, Angola',
+      phone: '+244 912 345 678',
+      email: 'ser@identificacao.gov.ao',
       provincia: 'LUANDA',
       openingTime: '08:00',
       closingTime: '18:00',
