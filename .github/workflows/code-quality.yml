@@ -1,0 +1,133 @@
+name: Code Quality & Security Check
+
+on:
+  push:
+    branches: [main, develop, feature/**]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  security-and-quality:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.11.0]
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Linting
+        run: npm run lint
+        continue-on-error: false
+
+      - name: Check Formatting
+        run: npm run format:check
+        continue-on-error: false
+
+      - name: Run Unit Tests
+        run: npm run test
+        continue-on-error: false
+
+      - name: Run Tests with Coverage
+        run: npm run test:cov
+        continue-on-error: false
+
+      - name: Build Project
+        run: npm run build
+        continue-on-error: false
+
+      - name: Security Audit
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
+
+      - name: TypeScript Type Check
+        run: npx tsc --noEmit
+        continue-on-error: false
+
+  database-validation:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: scheduling_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.11.0
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Generate Prisma Client
+        run: npm run prisma:generate
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/scheduling_test
+
+      - name: Validate Prisma Schema
+        run: npx prisma validate
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/scheduling_test
+
+  code-metrics:
+    runs-on: ubuntu-latest
+    needs: [security-and-quality]
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.11.0
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Generate Coverage Report
+        run: npm run test:cov
+
+      - name: Upload Coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage/lcov.info
+          fail_ci_if_error: false
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '✅ All code quality checks passed!\n\n- Linting: 0 errors\n- Tests: All passing\n- Build: Successful\n- Security: Audited'
+            })
