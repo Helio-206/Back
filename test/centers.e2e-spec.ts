@@ -282,7 +282,7 @@ describe('Centers CRUD (e2e)', () => {
 
       expect(response.status).toBe(200);
       expect(Array.isArray(response.body)).toBe(true);
-      expect(response.body.every((c) => c.provincia === Provincia.LUANDA)).toBe(
+      expect(response.body.every((c: any) => c.provincia === Provincia.LUANDA)).toBe(
         true,
       );
     });
@@ -294,7 +294,7 @@ describe('Centers CRUD (e2e)', () => {
 
       expect(response.status).toBe(200);
       expect(Array.isArray(response.body)).toBe(true);
-      expect(response.body.every((c) => c.active === true)).toBe(true);
+      expect(response.body.every((c: any) => c.active === true)).toBe(true);
     });
 
     it('should apply multiple filters', async () => {
@@ -306,7 +306,7 @@ describe('Centers CRUD (e2e)', () => {
       expect(Array.isArray(response.body)).toBe(true);
       expect(
         response.body.every(
-          (c) => c.provincia === Provincia.LUANDA && c.active === true,
+          (c: any) => c.provincia === Provincia.LUANDA && c.active === true,
         ),
       ).toBe(true);
     });
@@ -327,7 +327,7 @@ describe('Centers CRUD (e2e)', () => {
 
       expect(response.status).toBe(200);
       expect(Array.isArray(response.body)).toBe(true);
-      expect(response.body.every((c) => c.provincia === Provincia.LUANDA)).toBe(
+      expect(response.body.every((c: any) => c.provincia === Provincia.LUANDA)).toBe(
         true,
       );
     });
@@ -592,7 +592,7 @@ describe('Centers CRUD (e2e)', () => {
 
       expect(benguelaFilter.status).toBe(200);
       expect(
-        benguelaFilter.body.some((c) => c.name === 'Serviço de Identificação Civil Benguela'),
+        benguelaFilter.body.some((c: any) => c.name === 'Serviço de Identificação Civil Benguela'),
       ).toBe(true);
 
       // Filter by Huila
@@ -601,7 +601,7 @@ describe('Centers CRUD (e2e)', () => {
         .query({ provincia: Provincia.HUILA });
 
       expect(huilaFilter.status).toBe(200);
-      expect(huilaFilter.body.some((c) => c.name === 'Serviço de Identificação Civil Huila')).toBe(true);
+      expect(huilaFilter.body.some((c: any) => c.name === 'Serviço de Identificação Civil Huila')).toBe(true);
     });
   });
 
