@@ -126,9 +126,7 @@ describe('CentersService', () => {
 
       jest.spyOn(prisma.center, 'findUnique').mockResolvedValue(null);
 
-      await expect(
-        service.create('user-1', createCenterDto),
-      ).rejects.toThrow(BadRequestException);
+      await expect(service.create('user-1', createCenterDto)).rejects.toThrow(BadRequestException);
     });
 
     it('should throw if opening time equals closing time', async () => {
@@ -143,9 +141,7 @@ describe('CentersService', () => {
 
       jest.spyOn(prisma.center, 'findUnique').mockResolvedValue(null);
 
-      await expect(
-        service.create('user-1', createCenterDto),
-      ).rejects.toThrow(BadRequestException);
+      await expect(service.create('user-1', createCenterDto)).rejects.toThrow(BadRequestException);
     });
 
     it('should throw if attendance days are invalid', async () => {
@@ -159,9 +155,7 @@ describe('CentersService', () => {
 
       jest.spyOn(prisma.center, 'findUnique').mockResolvedValue(null);
 
-      await expect(
-        service.create('user-1', createCenterDto),
-      ).rejects.toThrow(BadRequestException);
+      await expect(service.create('user-1', createCenterDto)).rejects.toThrow(BadRequestException);
     });
 
     it('should throw if user already has a center', async () => {
@@ -176,9 +170,7 @@ describe('CentersService', () => {
         id: 'existing-center',
       } as never);
 
-      await expect(
-        service.create('user-1', createCenterDto),
-      ).rejects.toThrow(BadRequestException);
+      await expect(service.create('user-1', createCenterDto)).rejects.toThrow(BadRequestException);
     });
 
     it('should throw if user not found', async () => {
@@ -190,16 +182,16 @@ describe('CentersService', () => {
       };
 
       jest.spyOn(prisma.center, 'findUnique').mockResolvedValue(null);
-      
-      const prismaError = new Error('User not found');
-      (prismaError as any).code = 'P2025';
+
+      const prismaError = new Error(
+        'User not found'
+      ) as unknown as Prisma.PrismaClientKnownRequestError;
+      (prismaError as { code: string }).code = 'P2025';
       Object.setPrototypeOf(prismaError, Prisma.PrismaClientKnownRequestError.prototype);
-      
+
       jest.spyOn(prisma.center, 'create').mockRejectedValue(prismaError as never);
 
-      await expect(
-        service.create('user-1', createCenterDto),
-      ).rejects.toThrow(NotFoundException);
+      await expect(service.create('user-1', createCenterDto)).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -296,9 +288,7 @@ describe('CentersService', () => {
     it('should throw if center not found', async () => {
       jest.spyOn(prisma.center, 'findUnique').mockResolvedValue(null);
 
-      await expect(service.findOne('nonexistent-id')).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(service.findOne('nonexistent-id')).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -323,9 +313,9 @@ describe('CentersService', () => {
     it('should throw if center not found', async () => {
       jest.spyOn(prisma.center, 'findUnique').mockResolvedValue(null);
 
-      await expect(
-        service.update('nonexistent-id', { name: 'Updated' }),
-      ).rejects.toThrow(NotFoundException);
+      await expect(service.update('nonexistent-id', { name: 'Updated' })).rejects.toThrow(
+        NotFoundException
+      );
     });
 
     it('should validate new time range on update', async () => {
@@ -335,7 +325,7 @@ describe('CentersService', () => {
         service.update('center-1', {
           openingTime: '17:00',
           closingTime: '08:00',
-        }),
+        })
       ).rejects.toThrow(BadRequestException);
     });
 
@@ -345,7 +335,7 @@ describe('CentersService', () => {
       await expect(
         service.update('center-1', {
           attendanceDays: 'MONDAY,INVALIDDAY',
-        }),
+        })
       ).rejects.toThrow(BadRequestException);
     });
   });
@@ -371,9 +361,7 @@ describe('CentersService', () => {
     it('should throw if center not found', async () => {
       jest.spyOn(prisma.center, 'findUnique').mockResolvedValue(null);
 
-      await expect(service.deactivate('nonexistent-id')).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(service.deactivate('nonexistent-id')).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -413,9 +401,7 @@ describe('CentersService', () => {
     it('should throw if center not found', async () => {
       jest.spyOn(prisma.center, 'findUnique').mockResolvedValue(null);
 
-      await expect(service.delete('nonexistent-id')).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(service.delete('nonexistent-id')).rejects.toThrow(NotFoundException);
     });
   });
 

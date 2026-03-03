@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "../",
+    "outDir": "../dist-test"
+  },
+  "include": [
+    "*.spec.ts",
+    "*.e2e-spec.ts",
+    "../src/**/*.spec.ts"
+  ]
+}

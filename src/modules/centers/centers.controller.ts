@@ -17,7 +17,6 @@ import { CreateCenterDto } from './dtos/create-center.dto';
 import { UpdateCenterDto } from './dtos/update-center.dto';
 import { JwtAuthGuard } from '@common/guards/jwt-auth.guard';
 import { CurrentUser } from '@common/decorators/current-user.decorator';
-import { Roles } from '@common/decorators/roles.decorator';
 import { Provincia } from '@prisma/client';
 
 interface AuthenticatedUser {
@@ -42,15 +41,10 @@ export class CentersController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @HttpCode(201)
-  async create(
-    @Body() createCenterDto: CreateCenterDto,
-    @CurrentUser() user: AuthenticatedUser,
-  ) {
+  async create(@Body() createCenterDto: CreateCenterDto, @CurrentUser() user: AuthenticatedUser) {
     // Validate user role
     if (!['CENTER', 'ADMIN'].includes(user.role)) {
-      throw new BadRequestException(
-        'Only users with CENTER or ADMIN role can create centers',
-      );
+      throw new BadRequestException('Only users with CENTER or ADMIN role can create centers');
     }
 
     return this.centersService.create(user.id, createCenterDto);
@@ -65,17 +59,14 @@ export class CentersController {
    */
   @Get()
   @HttpCode(200)
-  async findAll(
-    @Query('provincia') provincia?: Provincia,
-    @Query('active') active?: string,
-  ) {
+  async findAll(@Query('provincia') provincia?: Provincia, @Query('active') active?: string) {
     const filters: { provincia?: Provincia; active?: boolean } = {};
 
     if (provincia) {
       // Validate provincia enum
       if (!Object.values(Provincia).includes(provincia)) {
         throw new BadRequestException(
-          `Invalid province. Must be one of: ${Object.values(Provincia).join(', ')}`,
+          `Invalid province. Must be one of: ${Object.values(Provincia).join(', ')}`
         );
       }
       filters.provincia = provincia;
@@ -97,16 +88,14 @@ export class CentersController {
   async findByProvince(@Param('provincia') provincia: Provincia) {
     if (!Object.values(Provincia).includes(provincia)) {
       throw new NotFoundException(
-        `Invalid province. Must be one of: ${Object.values(Provincia).join(', ')}`,
+        `Invalid province. Must be one of: ${Object.values(Provincia).join(', ')}`
       );
     }
 
     const centers = await this.centersService.findByProvince(provincia);
 
     if (centers.length === 0) {
-      throw new NotFoundException(
-        `No centers found in province: ${provincia}`,
-      );
+      throw new NotFoundException(`No centers found in province: ${provincia}`);
     }
 
     return centers;
@@ -134,13 +123,11 @@ export class CentersController {
   async update(
     @Param('id') id: string,
     @Body() updateCenterDto: UpdateCenterDto,
-    @CurrentUser() user: AuthenticatedUser,
+    @CurrentUser() user: AuthenticatedUser
   ) {
     // Authorization check: only CENTER (own) or ADMIN can update
     if (!['CENTER', 'ADMIN'].includes(user.role)) {
-      throw new BadRequestException(
-        'Only users with CENTER or ADMIN role can update centers',
-      );
+      throw new BadRequestException('Only users with CENTER or ADMIN role can update centers');
     }
 
     // If CENTER role, verify it's their own center
@@ -148,9 +135,7 @@ export class CentersController {
       const center = await this.centersService.findOne(id);
 
       if (center.userId !== user.id) {
-        throw new BadRequestException(
-          'You can only update your own center',
-        );
+        throw new BadRequestException('You can only update your own center');
       }
     }
 
@@ -166,15 +151,10 @@ export class CentersController {
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   @HttpCode(204)
-  async deactivate(
-    @Param('id') id: string,
-    @CurrentUser() user: AuthenticatedUser,
-  ) {
+  async deactivate(@Param('id') id: string, @CurrentUser() user: AuthenticatedUser) {
     // Authorization check
     if (!['CENTER', 'ADMIN'].includes(user.role)) {
-      throw new BadRequestException(
-        'Only users with CENTER or ADMIN role can deactivate centers',
-      );
+      throw new BadRequestException('Only users with CENTER or ADMIN role can deactivate centers');
     }
 
     // If CENTER role, verify it's their own center
@@ -182,9 +162,7 @@ export class CentersController {
       const center = await this.centersService.findOne(id);
 
       if (center.userId !== user.id) {
-        throw new BadRequestException(
-          'You can only deactivate your own center',
-        );
+        throw new BadRequestException('You can only deactivate your own center');
       }
     }
 
@@ -199,15 +177,10 @@ export class CentersController {
   @Post(':id/reactivate')
   @UseGuards(JwtAuthGuard)
   @HttpCode(200)
-  async reactivate(
-    @Param('id') id: string,
-    @CurrentUser() user: AuthenticatedUser,
-  ) {
+  async reactivate(@Param('id') id: string, @CurrentUser() user: AuthenticatedUser) {
     // Authorization check
     if (!['CENTER', 'ADMIN'].includes(user.role)) {
-      throw new BadRequestException(
-        'Only users with CENTER or ADMIN role can reactivate centers',
-      );
+      throw new BadRequestException('Only users with CENTER or ADMIN role can reactivate centers');
     }
 
     // If CENTER role, verify it's their own center
@@ -215,9 +188,7 @@ export class CentersController {
       const center = await this.centersService.findOne(id);
 
       if (center.userId !== user.id) {
-        throw new BadRequestException(
-          'You can only reactivate your own center',
-        );
+        throw new BadRequestException('You can only reactivate your own center');
       }
     }
 
@@ -234,9 +205,7 @@ export class CentersController {
   @HttpCode(200)
   async getStatistics(@CurrentUser() user: AuthenticatedUser) {
     if (user.role !== 'ADMIN') {
-      throw new BadRequestException(
-        'Only ADMIN users can access statistics',
-      );
+      throw new BadRequestException('Only ADMIN users can access statistics');
     }
 
     return this.centersService.getStatistics();

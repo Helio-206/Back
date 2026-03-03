@@ -20,9 +20,7 @@ export class CentersService {
     const closing = parseInt(closingTime.replace(':', ''), 10);
 
     if (opening >= closing) {
-      throw new BadRequestException(
-        'Opening time must be before closing time',
-      );
+      throw new BadRequestException('Opening time must be before closing time');
     }
   }
 
@@ -43,9 +41,7 @@ export class CentersService {
 
     const allValid = providedDays.every((day) => validDays.includes(day));
     if (!allValid) {
-      throw new BadRequestException(
-        `Invalid attendance days. Use: ${validDays.join(', ')}`,
-      );
+      throw new BadRequestException(`Invalid attendance days. Use: ${validDays.join(', ')}`);
     }
 
     if (providedDays.length === 0) {
@@ -73,9 +69,7 @@ export class CentersService {
     });
 
     if (existingCenter) {
-      throw new BadRequestException(
-        'User already has a center. One center per user allowed.',
-      );
+      throw new BadRequestException('User already has a center. One center per user allowed.');
     }
 
     try {
@@ -96,9 +90,7 @@ export class CentersService {
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
-          throw new BadRequestException(
-            'A center with this data already exists',
-          );
+          throw new BadRequestException('A center with this data already exists');
         }
         if (error.code === 'P2025') {
           throw new NotFoundException('User not found');
@@ -208,9 +200,7 @@ export class CentersService {
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
-          throw new BadRequestException(
-            'A center with this data already exists',
-          );
+          throw new BadRequestException('A center with this data already exists');
         }
       }
       throw error;

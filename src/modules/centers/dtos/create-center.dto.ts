@@ -10,7 +10,6 @@ import {
   IsInt,
   Min,
   Max,
-  ValidateIf,
 } from 'class-validator';
 import { CenterType, Provincia } from '@prisma/client';
 import { Type } from 'class-transformer';
@@ -52,8 +51,7 @@ export class CreateCenterDto {
   @IsOptional()
   @IsString({ message: 'Phone must be a string' })
   @Matches(/^(\+244)?9\d{8}$/, {
-    message:
-      'Phone must be a valid Angolan number (9XXXXXXXX or +2449XXXXXXXX)',
+    message: 'Phone must be a valid Angolan number (9XXXXXXXX or +2449XXXXXXXX)',
   })
   phone?: string;
 
@@ -82,7 +80,7 @@ export class CreateCenterDto {
     {
       message:
         'Attendance days must be comma-separated day names: MONDAY,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY,SATURDAY,SUNDAY',
-    },
+    }
   )
   attendanceDays?: string;
 
