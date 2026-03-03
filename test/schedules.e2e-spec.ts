@@ -34,18 +34,28 @@ describe('Schedules E2E Tests', () => {
         name: 'Test User',
         email: 'test@example.com',
         password: hashPassword,
-        numeroBi: '123456789LA123',
       },
     });
     userId = user.id;
 
-    // Create test center
+    // Create test center (associated with a center admin user)
+    const centerAdminPassword = require('bcryptjs').hashSync('CenterAdmin123!', 10);
+    const centerAdmin = await prisma.user.create({
+      data: {
+        name: 'Center Admin',
+        email: 'admin@center.com',
+        password: centerAdminPassword,
+        role: 'CENTER',
+      },
+    });
+
     const center = await prisma.center.create({
       data: {
         name: 'Test Center',
         address: 'Test Address',
         provincia: 'LUANDA',
-        type: 'IDENTIFICATION',
+        type: 'ADMINISTRATIVE',
+        userId: centerAdmin.id,
       },
     });
     centerId = center.id;
@@ -367,6 +377,291 @@ describe('Schedules E2E Tests', () => {
 
       expect(response.status).toBe(400);
       expect(response.body.message).toContain('Cannot cancel a completed schedule');
+    });
+  });
+
+  describe('Permission Tests - RBAC', () => {
+    let citizenUserId: string;
+    let citizenToken: string;
+    let anotherCitizenToken: string;
+    let centerAdminToken: string;
+    let anotherCenterAdminToken: string;
+    let anotherCenterId: string;
+    let citizenScheduleId: string;
+
+    beforeAll(async () => {
+      // Create second citizen
+      const citizenPassword = require('bcryptjs').hashSync('Citizen123!', 10);
+      const citizenUser = await prisma.user.create({
+        data: {
+          name: 'Another Citizen',
+          email: 'citizen@example.com',
+          password: citizenPassword,
+          role: 'CITIZEN',
+        },
+      });
+
+      // Login as second citizen
+      let loginResponse = await request(app.getHttpServer())
+        .post('/auth/login')
+        .send({
+          email: 'citizen@example.com',
+          password: 'Citizen123!',
+        });
+
+      anotherCitizenToken = loginResponse.body.access_token;
+
+      // Create another center with different admin
+      const anotherCenterAdminPassword = require('bcryptjs').hashSync('CenterAdmin2!', 10);
+      const anotherCenterAdmin = await prisma.user.create({
+        data: {
+          name: 'Another Center Admin',
+          email: 'admin2@center.com',
+          password: anotherCenterAdminPassword,
+          role: 'CENTER',
+        },
+      });
+
+      const anotherCenter = await prisma.center.create({
+        data: {
+          name: 'Another Test Center',
+          address: 'Another Test Address',
+          provincia: 'BENGUELA',
+          type: 'ADMINISTRATIVE',
+          userId: anotherCenterAdmin.id,
+        },
+      });
+      anotherCenterId = anotherCenter.id;
+
+      // Login as another center admin
+      loginResponse = await request(app.getHttpServer())
+        .post('/auth/login')
+        .send({
+          email: 'admin2@center.com',
+          password: 'CenterAdmin2!',
+        });
+
+      anotherCenterAdminToken = loginResponse.body.access_token;
+
+      // Login as center admin (from beforeAll)
+      loginResponse = await request(app.getHttpServer())
+        .post('/auth/login')
+        .send({
+          email: 'admin@center.com',
+          password: 'CenterAdmin123!',
+        });
+
+      centerAdminToken = loginResponse.body.access_token;
+
+      // Create a schedule for the user to test permissions
+      const futureDate = new Date();
+      futureDate.setDate(futureDate.getDate() + 35);
+
+      const scheduleResponse = await request(app.getHttpServer())
+        .post('/schedules')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          centerId,
+          scheduledDate: futureDate.toISOString(),
+          slotNumber: 1,
+        });
+
+      citizenScheduleId = scheduleResponse.body.id;
+    });
+
+    describe('Schedule Access - CITIZEN Role', () => {
+      it('CITIZEN should be able to update their own schedule', async () => {
+        const response = await request(app.getHttpServer())
+          .put(`/schedules/${citizenScheduleId}`)
+          .set('Authorization', `Bearer ${authToken}`)
+          .send({
+            status: 'CONFIRMED',
+          });
+
+        expect(response.status).toBe(200);
+        expect(response.body.status).toBe('CONFIRMED');
+      });
+
+      it('CITIZEN should NOT be able to update another citizen schedule', async () => {
+        const futureDate = new Date();
+        futureDate.setDate(futureDate.getDate() + 40);
+
+        // Create a schedule as another citizen
+        const scheduleResponse = await request(app.getHttpServer())
+          .post('/schedules')
+          .set('Authorization', `Bearer ${anotherCitizenToken}`)
+          .send({
+            centerId,
+            scheduledDate: futureDate.toISOString(),
+            slotNumber: 1,
+          });
+
+        const otherCitizenScheduleId = scheduleResponse.body.id;
+
+        // Try to update as original citizen
+        const response = await request(app.getHttpServer())
+          .put(`/schedules/${otherCitizenScheduleId}`)
+          .set('Authorization', `Bearer ${authToken}`)
+          .send({
+            status: 'CONFIRMED',
+          });
+
+        expect(response.status).toBe(403);
+        expect(response.body.message).toContain('can only access your own schedules');
+      });
+
+      it('CITIZEN should NOT be able to cancel another citizen schedule', async () => {
+        const futureDate = new Date();
+        futureDate.setDate(futureDate.getDate() + 45);
+
+        // Create a schedule as another citizen
+        const scheduleResponse = await request(app.getHttpServer())
+          .post('/schedules')
+          .set('Authorization', `Bearer ${anotherCitizenToken}`)
+          .send({
+            centerId,
+            scheduledDate: futureDate.toISOString(),
+            slotNumber: 1,
+          });
+
+        const otherCitizenScheduleId = scheduleResponse.body.id;
+
+        // Try to cancel as original citizen
+        const response = await request(app.getHttpServer())
+          .delete(`/schedules/${otherCitizenScheduleId}/cancel`)
+          .set('Authorization', `Bearer ${authToken}`);
+
+        expect(response.status).toBe(403);
+        expect(response.body.message).toContain('can only access your own schedules');
+      });
+    });
+
+    describe('Schedule Access - CENTER Role', () => {
+      it('CENTER should be able to access schedules of their center', async () => {
+        const response = await request(app.getHttpServer())
+          .get('/schedules')
+          .set('Authorization', `Bearer ${centerAdminToken}`);
+
+        expect(response.status).toBe(200);
+        expect(Array.isArray(response.body)).toBe(true);
+      });
+
+      it('CENTER should NOT be able to update schedule from another center', async () => {
+        // Create a schedule in another center
+        const futureDate = new Date();
+        futureDate.setDate(futureDate.getDate() + 50);
+
+        const scheduleResponse = await request(app.getHttpServer())
+          .post('/schedules')
+          .set('Authorization', `Bearer ${anotherCitizenToken}`)
+          .send({
+            centerId: anotherCenterId,
+            scheduledDate: futureDate.toISOString(),
+            slotNumber: 1,
+          });
+
+        const otherCenterScheduleId = scheduleResponse.body.id;
+
+        // Try to update as center admin from different center
+        const response = await request(app.getHttpServer())
+          .put(`/schedules/${otherCenterScheduleId}`)
+          .set('Authorization', `Bearer ${centerAdminToken}`)
+          .send({
+            status: 'CONFIRMED',
+          });
+
+        expect(response.status).toBe(403);
+        expect(response.body.message).toContain(
+          'can only access schedules of your center'
+        );
+      });
+    });
+
+    describe('Schedule Access - ADMIN Role', () => {
+      let adminToken: string;
+
+      beforeAll(async () => {
+        // Create an admin user
+        const adminPassword = require('bcryptjs').hashSync('Admin123!', 10);
+        const adminUser = await prisma.user.create({
+          data: {
+            name: 'Admin User',
+            email: 'admin@system.com',
+            password: adminPassword,
+            role: 'ADMIN',
+          },
+        });
+
+        // Login as admin
+        const loginResponse = await request(app.getHttpServer())
+          .post('/auth/login')
+          .send({
+            email: 'admin@system.com',
+            password: 'Admin123!',
+          });
+
+        adminToken = loginResponse.body.access_token;
+      });
+
+      it('ADMIN should be able to update any schedule', async () => {
+        const response = await request(app.getHttpServer())
+          .put(`/schedules/${citizenScheduleId}`)
+          .set('Authorization', `Bearer ${adminToken}`)
+          .send({
+            status: 'IN_PROGRESS',
+          });
+
+        expect(response.status).toBe(200);
+        expect(response.body.status).toBe('IN_PROGRESS');
+      });
+
+      it('ADMIN should be able to cancel any schedule', async () => {
+        const futureDate = new Date();
+        futureDate.setDate(futureDate.getDate() + 55);
+
+        // Create a schedule as citizen
+        const scheduleResponse = await request(app.getHttpServer())
+          .post('/schedules')
+          .set('Authorization', `Bearer ${anotherCitizenToken}`)
+          .send({
+            centerId,
+            scheduledDate: futureDate.toISOString(),
+            slotNumber: 1,
+          });
+
+        const scheduleId = scheduleResponse.body.id;
+
+        // Admin cancels it
+        const response = await request(app.getHttpServer())
+          .delete(`/schedules/${scheduleId}/cancel`)
+          .set('Authorization', `Bearer ${adminToken}`);
+
+        expect(response.status).toBe(200);
+        expect(response.body.status).toBe('CANCELLED');
+      });
+    });
+
+    describe('Authentication Tests', () => {
+      it('should reject request without authentication', async () => {
+        const response = await request(app.getHttpServer())
+          .put(`/schedules/${citizenScheduleId}`)
+          .send({
+            status: 'COMPLETED',
+          });
+
+        expect(response.status).toBe(401);
+      });
+
+      it('should reject request with invalid token', async () => {
+        const response = await request(app.getHttpServer())
+          .put(`/schedules/${citizenScheduleId}`)
+          .set('Authorization', 'Bearer invalid-token')
+          .send({
+            status: 'COMPLETED',
+          });
+
+        expect(response.status).toBe(401);
+      });
     });
   });
 });

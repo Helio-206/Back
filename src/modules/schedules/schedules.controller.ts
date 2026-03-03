@@ -14,7 +14,10 @@ import { SchedulesService } from './schedules.service';
 import { CreateScheduleDto } from './dtos/create-schedule.dto';
 import { UpdateScheduleDto } from './dtos/update-schedule.dto';
 import { JwtAuthGuard } from '@common/guards/jwt-auth.guard';
+import { RolesGuard } from '@common/guards/roles.guard';
+import { ScheduleAccessGuard } from '@common/guards/schedule-access.guard';
 import { CurrentUser } from '@common/decorators/current-user.decorator';
+import { Roles } from '@common/decorators/roles.decorator';
 
 @Controller('schedules')
 export class SchedulesController {
@@ -46,20 +49,23 @@ export class SchedulesController {
   }
 
   @Put(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, ScheduleAccessGuard)
+  @Roles('ADMIN', 'CITIZEN', 'CENTER')
   async update(@Param('id') id: string, @Body() updateScheduleDto: UpdateScheduleDto) {
     return this.schedulesService.update(id, updateScheduleDto);
   }
 
   @Delete(':id/cancel')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, ScheduleAccessGuard)
+  @Roles('ADMIN', 'CITIZEN', 'CENTER')
   @HttpCode(200)
   async cancel(@Param('id') id: string) {
     return this.schedulesService.cancel(id);
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, ScheduleAccessGuard)
+  @Roles('ADMIN', 'CITIZEN', 'CENTER')
   @HttpCode(204)
   async delete(@Param('id') id: string) {
     return this.schedulesService.delete(id);
