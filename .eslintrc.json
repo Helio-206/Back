@@ -1,7 +1,7 @@
 {
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "project": "tsconfig.json",
+    "project": ["tsconfig.json", "test/tsconfig.json"],
     "sourceType": "module"
   },
   "plugins": [
@@ -19,7 +19,8 @@
   },
   "ignorePatterns": [
     ".eslintrc.js",
-    "dist"
+    "dist",
+    "test/**/*.e2e-spec.ts"
   ],
   "rules": {
     "@typescript-eslint/interface-name-prefix": "off",
@@ -32,5 +33,13 @@
         "endOfLine": "lf"
       }
     ]
-  }
+  },
+  "overrides": [
+    {
+      "files": ["test/**/*.ts"],
+      "parserOptions": {
+        "project": "test/tsconfig.json"
+      }
+    }
+  ]
 }
