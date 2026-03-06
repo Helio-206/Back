@@ -6,7 +6,9 @@ import {
   IsOptional,
   Matches,
   IsDateString,
+  IsEnum,
 } from 'class-validator';
+import { Role } from '@prisma/client';
 
 export class RegisterDto {
   @IsEmail()
@@ -53,4 +55,8 @@ export class RegisterDto {
     message: 'genero deve ser M, F ou Outro',
   })
   genero?: string;
+
+  @IsOptional()
+  @IsEnum(Role)
+  role?: Role;
 }

@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/database/prisma.service';
 import { CenterType, Provincia } from '@prisma/client';
@@ -14,6 +14,7 @@ describe('Centers CRUD (e2e)', () => {
   let prismaService: PrismaService;
   let centerAuthToken: string;
   let adminAuthToken: string;
+  let citizenAuthToken: string;
   let centerId: string;
   let userId: string;
   let adminUserId: string;
@@ -33,6 +34,12 @@ describe('Centers CRUD (e2e)', () => {
     role: 'ADMIN',
   };
 
+  const citizenUser = {
+    email: 'citizenuser@test.com',
+    name: 'Citizen User Test',
+    password: 'CitizenPassword123!',
+  };
+
   const createCenterDto = {
     name: 'Serviço de Identificação Civil Luanda',
     description: 'Serviço de Identificação Civil responsável pela emissão de Bilhetes de Identidade e outros registos civis para os cidadãos da província de Luanda.',
@@ -45,6 +52,30 @@ describe('Centers CRUD (e2e)', () => {
     closingTime: '17:00',
     attendanceDays: 'MONDAY,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY',
     capacidadeAgentos: 10,
+  };
+
+  const createAdminToken = async (suffix: string) => {
+    const unique = `${suffix}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    const email = `admin-${unique}@test.com`;
+    const password = 'AdminPassword123!';
+
+    await request(app.getHttpServer())
+      .post('/auth/register')
+      .send({
+        email,
+        name: `Admin ${unique}`,
+        password,
+        role: 'ADMIN',
+      });
+
+    const loginResponse = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({
+        email,
+        password,
+      });
+
+    return loginResponse.body.access_token;
   };
 
   beforeAll(async () => {
@@ -105,6 +136,25 @@ describe('Centers CRUD (e2e)', () => {
       });
 
     adminAuthToken = loginResponse2.body.access_token;
+
+    // Create citizen user
+    await request(app.getHttpServer())
+      .post('/auth/register')
+      .send({
+        email: citizenUser.email,
+        name: citizenUser.name,
+        password: citizenUser.password,
+      });
+
+    // Get citizen token
+    const citizenLoginResponse = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({
+        email: citizenUser.email,
+        password: citizenUser.password,
+      });
+
+    citizenAuthToken = citizenLoginResponse.body.access_token;
   });
 
   afterAll(async () => {
@@ -506,10 +556,12 @@ describe('Centers CRUD (e2e)', () => {
 
   describe('Complete CRUD workflow', () => {
     it('should complete full CRUD cycle', async () => {
+      const workflowAdminToken = await createAdminToken('workflow');
+
       // 1. Create
       const createResponse = await request(app.getHttpServer())
         .post('/centers')
-        .set('Authorization', `Bearer ${adminAuthToken}`)
+        .set('Authorization', `Bearer ${workflowAdminToken}`)
         .send({
           name: 'Serviço de Identificação Civil de Teste Completo',
           type: CenterType.ADMINISTRATIVE,
@@ -532,7 +584,7 @@ describe('Centers CRUD (e2e)', () => {
       // 3. Update
       const updateResponse = await request(app.getHttpServer())
         .put(`/centers/${newCenterId}`)
-        .set('Authorization', `Bearer ${adminAuthToken}`)
+        .set('Authorization', `Bearer ${workflowAdminToken}`)
         .send({
           name: 'Updated Test Center',
         });
@@ -543,14 +595,14 @@ describe('Centers CRUD (e2e)', () => {
       // 4. Deactivate
       const deactivateResponse = await request(app.getHttpServer())
         .delete(`/centers/${newCenterId}`)
-        .set('Authorization', `Bearer ${adminAuthToken}`);
+        .set('Authorization', `Bearer ${workflowAdminToken}`);
 
       expect(deactivateResponse.status).toBe(204);
 
       // 5. Reactivate
       const reactivateResponse = await request(app.getHttpServer())
         .post(`/centers/${newCenterId}/reactivate`)
-        .set('Authorization', `Bearer ${adminAuthToken}`);
+        .set('Authorization', `Bearer ${workflowAdminToken}`);
 
       expect(reactivateResponse.status).toBe(200);
       expect(reactivateResponse.body.active).toBe(true);
@@ -559,10 +611,13 @@ describe('Centers CRUD (e2e)', () => {
 
   describe('Provincial Filter Integration', () => {
     it('should create centers in different provinces and filter correctly', async () => {
+      const benguelaAdminToken = await createAdminToken('benguela');
+      const huilaAdminToken = await createAdminToken('huila');
+
       // Create center in Benguela
       const benguelaCenter = await request(app.getHttpServer())
         .post('/centers')
-        .set('Authorization', `Bearer ${adminAuthToken}`)
+        .set('Authorization', `Bearer ${benguelaAdminToken}`)
         .send({
           name: 'Serviço de Identificação Civil Benguela',
           type: CenterType.ADMINISTRATIVE,
@@ -575,7 +630,7 @@ describe('Centers CRUD (e2e)', () => {
       // Create center in Huila
       const huilaCenter = await request(app.getHttpServer())
         .post('/centers')
-        .set('Authorization', `Bearer ${adminAuthToken}`)
+        .set('Authorization', `Bearer ${huilaAdminToken}`)
         .send({
           name: 'Serviço de Identificação Civil Huila',
           type: CenterType.ADMINISTRATIVE,
@@ -613,10 +668,12 @@ describe('Centers CRUD (e2e)', () => {
         'MONDAY,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY,SATURDAY,SUNDAY',
       ];
 
+      let index = 0;
       for (const days of validCombinations) {
+        const token = await createAdminToken(`days-${index}`);
         const response = await request(app.getHttpServer())
           .post('/centers')
-          .set('Authorization', `Bearer ${adminAuthToken}`)
+          .set('Authorization', `Bearer ${token}`)
           .send({
             name: `Center with days ${days}`,
             type: CenterType.ADMINISTRATIVE,
@@ -625,6 +682,8 @@ describe('Centers CRUD (e2e)', () => {
             attendanceDays: days,
           });
 
+        index += 1;
+
         expect(response.status).toBe(201);
       }
     });
@@ -632,10 +691,12 @@ describe('Centers CRUD (e2e)', () => {
     it('should accept all valid Angolan phone number formats', async () => {
       const validPhones = ['923456789', '+244923456789'];
 
+      let index = 0;
       for (const phone of validPhones) {
+        const token = await createAdminToken(`phone-${index}`);
         const response = await request(app.getHttpServer())
           .post('/centers')
-          .set('Authorization', `Bearer ${adminAuthToken}`)
+          .set('Authorization', `Bearer ${token}`)
           .send({
             name: `Center with phone ${phone}`,
             type: CenterType.ADMINISTRATIVE,
@@ -644,8 +705,98 @@ describe('Centers CRUD (e2e)', () => {
             phone,
           });
 
+        index += 1;
+
         expect(response.status).toBe(201);
       }
+    });
+  });
+
+  describe('Day 3 - RBAC, Errors and Main Flow', () => {
+    it('should enforce RBAC hierarchy for admin statistics', async () => {
+      const centerStatsResponse = await request(app.getHttpServer())
+        .get('/centers/admin/statistics')
+        .set('Authorization', `Bearer ${centerAuthToken}`);
+
+      expect(centerStatsResponse.status).toBe(403);
+
+      const citizenStatsResponse = await request(app.getHttpServer())
+        .get('/centers/admin/statistics')
+        .set('Authorization', `Bearer ${citizenAuthToken}`);
+
+      expect(citizenStatsResponse.status).toBe(403);
+
+      const adminStatsResponse = await request(app.getHttpServer())
+        .get('/centers/admin/statistics')
+        .set('Authorization', `Bearer ${adminAuthToken}`);
+
+      expect(adminStatsResponse.status).toBe(200);
+      expect(adminStatsResponse.body).toHaveProperty('total');
+      expect(adminStatsResponse.body).toHaveProperty('active');
+    });
+
+    it('should block citizen from creating center', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/centers')
+        .set('Authorization', `Bearer ${citizenAuthToken}`)
+        .send({
+          name: 'Citizen Attempt Center',
+          type: CenterType.ADMINISTRATIVE,
+          address: 'Forbidden Address',
+          provincia: Provincia.LUANDA,
+        });
+
+      expect(response.status).toBe(403);
+    });
+
+    it('should validate main e2e flow: register -> login -> schedule', async () => {
+      const flowUser = {
+        email: 'flow-user@test.com',
+        name: 'Flow User',
+        password: 'FlowPass123!',
+      };
+
+      const registerResponse = await request(app.getHttpServer())
+        .post('/auth/register')
+        .send(flowUser);
+
+      expect(registerResponse.status).toBe(201);
+
+      const loginResponse = await request(app.getHttpServer())
+        .post('/auth/login')
+        .send({ email: flowUser.email, password: flowUser.password });
+
+      expect(loginResponse.status).toBe(200);
+      expect(loginResponse.body).toHaveProperty('access_token');
+
+      const futureDate = new Date();
+      futureDate.setDate(futureDate.getDate() + 2);
+
+      const scheduleResponse = await request(app.getHttpServer())
+        .post('/schedules')
+        .set('Authorization', `Bearer ${loginResponse.body.access_token}`)
+        .send({
+          centerId,
+          scheduledDate: futureDate.toISOString(),
+          slotNumber: 3,
+          description: 'Main Day 3 Flow',
+        });
+
+      expect(scheduleResponse.status).toBe(201);
+      expect(scheduleResponse.body).toHaveProperty('id');
+      expect(scheduleResponse.body.centerId).toBe(centerId);
+    });
+
+    it('should return invalid data errors on schedule creation', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/schedules')
+        .set('Authorization', `Bearer ${citizenAuthToken}`)
+        .send({
+          centerId,
+          scheduledDate: 'invalid-date',
+        });
+
+      expect(response.status).toBe(400);
     });
   });
 });

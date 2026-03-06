@@ -24,6 +24,7 @@ export class AuthService {
       provinciaResidencia,
       filiacao,
       genero,
+      role,
     } = registerDto;
 
     const userExists = await this.prisma.user.findUnique({
@@ -41,7 +42,7 @@ export class AuthService {
         email,
         name,
         password: hashedPassword,
-        role: 'CITIZEN',
+        role: role ?? 'CITIZEN',
         numeroBIAnterior,
         dataNascimento: dataNascimento ? new Date(dataNascimento) : undefined,
         provinciaNascimento: provinciaNascimento as Provincia | undefined,
@@ -71,6 +72,7 @@ export class AuthService {
     const accessToken = this.jwtService.sign(payload);
 
     return {
+      access_token: accessToken,
       accessToken,
       user: {
         id: user.id,
