@@ -1,0 +1,143 @@
+.container {
+  min-height: 100vh;
+}
+
+.header {
+  text-align: center;
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  background: var(--color-bg-white);
+  border-bottom: 3px solid var(--color-primary-blue);
+}
+
+.body {
+  padding: var(--spacing-xl) var(--spacing-2xl);
+}
+
+.sectionTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-primary-red);
+  margin-bottom: var(--spacing-md);
+}
+
+/* ========== SCHEDULE CARDS ========== */
+.scheduleList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.scheduleCard {
+  background: var(--color-bg-white);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: border-color 0.2s;
+}
+
+.scheduleCard:hover {
+  border-color: var(--color-primary-blue);
+}
+
+.scheduleInfo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.scheduleType {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.scheduleDetail {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.scheduleDetail strong {
+  color: var(--color-text-primary);
+}
+
+.scheduleActions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--spacing-sm);
+}
+
+.statusBadge {
+  padding: 4px 14px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.statusAgendado {
+  background: #DCFCE7;
+  color: #166534;
+}
+
+.statusConfirmado {
+  background: #DBEAFE;
+  color: #1E40AF;
+}
+
+.statusCancelado {
+  background: #FEE2E2;
+  color: #991B1B;
+}
+
+.statusProcessando {
+  background: #FEF3C7;
+  color: #92400E;
+}
+
+.statusDefault {
+  background: #F3F4F6;
+  color: #374151;
+}
+
+.cancelBtn {
+  padding: 6px 16px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-text-danger);
+  background: transparent;
+  color: var(--color-text-danger);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancelBtn:hover {
+  background: #FEF2F2;
+}
+
+.cancelBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.emptyState {
+  text-align: center;
+  padding: var(--spacing-2xl);
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.loadingState {
+  text-align: center;
+  padding: var(--spacing-2xl);
+  color: var(--color-text-muted);
+  font-size: 14px;
+}

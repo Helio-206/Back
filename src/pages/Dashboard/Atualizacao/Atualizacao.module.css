@@ -1,0 +1,121 @@
+.container {
+  min-height: 100vh;
+}
+
+.header {
+  text-align: center;
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  background: var(--color-bg-white);
+  border-bottom: 3px solid var(--color-primary-blue);
+}
+
+.body {
+  padding: var(--spacing-xl) var(--spacing-2xl);
+}
+
+.sectionTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-primary-red);
+  margin-bottom: var(--spacing-lg);
+}
+
+.formCard {
+  background: var(--color-bg-white);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  max-width: 600px;
+}
+
+.formGroup {
+  margin-bottom: var(--spacing-md);
+}
+
+.formLabel {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 6px;
+}
+
+.formInput {
+  width: 100%;
+  height: 42px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0 var(--spacing-md);
+  font-size: 13px;
+  color: var(--color-text-primary);
+  background: var(--color-bg-white);
+  transition: border-color 0.2s;
+}
+
+.formInput:focus {
+  border-color: var(--color-primary-blue);
+}
+
+.formInput::placeholder {
+  color: var(--color-text-muted);
+}
+
+.formInput:disabled {
+  background: #F9F9F9;
+  color: var(--color-text-muted);
+}
+
+.submitBtn {
+  width: 100%;
+  height: 44px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-blue);
+  color: var(--color-text-white);
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: var(--spacing-lg);
+}
+
+.submitBtn:hover {
+  background: var(--color-primary-blue-hover);
+}
+
+.submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.successMessage {
+  background: #F0FDF4;
+  border: 1px solid #BBF7D0;
+  color: var(--color-text-success);
+  font-size: 13px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-md);
+  text-align: center;
+}
+
+.errorMessage {
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
+  color: var(--color-text-danger);
+  font-size: 13px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-md);
+  text-align: center;
+}
+
+.infoText {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin-top: var(--spacing-lg);
+  line-height: 1.6;
+}
