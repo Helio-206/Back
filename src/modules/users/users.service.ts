@@ -10,10 +10,15 @@ export class UsersService {
       select: {
         id: true,
         email: true,
-        name: true,
         role: true,
         active: true,
         createdAt: true,
+        cidadao: {
+          select: {
+            nome: true,
+            sobrenome: true,
+          },
+        },
       },
     });
   }
@@ -24,10 +29,15 @@ export class UsersService {
       select: {
         id: true,
         email: true,
-        name: true,
         role: true,
         active: true,
         createdAt: true,
+        cidadao: {
+          select: {
+            nome: true,
+            sobrenome: true,
+          },
+        },
       },
     });
   }

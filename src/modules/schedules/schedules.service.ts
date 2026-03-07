@@ -28,7 +28,9 @@ export class SchedulesService {
     });
 
     if (!estadoAgendamento) {
-      throw new NotFoundException(`EstadoAgendamento with ID ${createScheduleDto.estadoAgendamentoId} not found`);
+      throw new NotFoundException(
+        `EstadoAgendamento with ID ${createScheduleDto.estadoAgendamentoId} not found`
+      );
     }
 
     // Validate tipoServico if provided
@@ -155,14 +157,16 @@ export class SchedulesService {
       throw new NotFoundException(`Schedule with ID ${id} not found`);
     }
 
-    // Validate estadoAgendamento transition if estadoAgendamentoId is being updated
+    // Validate status transition when estadoAgendamentoId is updated
     if (updateScheduleDto.estadoAgendamentoId && updateScheduleDto.estadoAgendamentoId !== current.estadoAgendamentoId) {
       const newEstado = await this.prisma.estadoAgendamento.findUnique({
         where: { id: updateScheduleDto.estadoAgendamentoId },
       });
 
       if (!newEstado) {
-        throw new NotFoundException(`EstadoAgendamento with ID ${updateScheduleDto.estadoAgendamentoId} not found`);
+        throw new NotFoundException(
+          `EstadoAgendamento with ID ${updateScheduleDto.estadoAgendamentoId} not found`
+        );
       }
 
       this.validateStatusTransition(current.estadoAgendamento.status, newEstado.status);
@@ -199,13 +203,13 @@ export class SchedulesService {
       throw new BadRequestException('Cannot cancel a completed or already cancelled schedule');
     }
 
-    // Find the 'CANCELADO' estado
+    // Find the CANCELADO state
     const canceladoEstado = await this.prisma.estadoAgendamento.findFirst({
       where: { status: 'CANCELADO' },
     });
 
     if (!canceladoEstado) {
-      throw new Error('CANCELADO estado not found in database');
+      throw new Error('CANCELADO state not found in database');
     }
 
     return this.prisma.schedule.update({

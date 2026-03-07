@@ -5,6 +5,8 @@ import { AuthModule } from '@modules/auth/auth.module';
 import { UsersModule } from '@modules/users/users.module';
 import { CentersModule } from '@modules/centers/centers.module';
 import { SchedulesModule } from '@modules/schedules/schedules.module';
+import { TipoServicoModule } from '@modules/tipo-servico/tipo-servico.module';
+import { EstadoAgendamentoModule } from '@modules/estado-agendamento/estado-agendamento.module';
 
 @Module({
   imports: [
@@ -17,6 +19,8 @@ import { SchedulesModule } from '@modules/schedules/schedules.module';
     UsersModule,
     CentersModule,
     SchedulesModule,
+    TipoServicoModule,
+    EstadoAgendamentoModule,
   ],
 })
 export class AppModule {}

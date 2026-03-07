@@ -25,7 +25,7 @@ export class AuthService {
     });
 
     if (userExists) {
-      throw new ConflictException('Utilizador já existe com este email');
+      throw new ConflictException('User already exists with this email');
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -78,7 +78,7 @@ export class AuthService {
     });
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      throw new UnauthorizedException('Credenciais inválidas');
+      throw new UnauthorizedException('Invalid credentials');
     }
 
     const payload = { sub: user.id, email: user.email, role: user.role };

@@ -29,7 +29,7 @@ export class CreateCidadaoDto {
   @IsString()
   @IsNotEmpty()
   @Matches(/^(M|F|Outro)$/, {
-    message: 'sexo deve ser M, F ou Outro',
+    message: 'sexo must be M, F, or Outro',
   })
   sexo!: string;
 
@@ -92,7 +92,7 @@ export class CreateCidadaoDto {
   @IsOptional()
   @IsString()
   @Matches(/^\d{9}LA\d{3}$/, {
-    message: 'numeroBIAnterior deve seguir o formato #########LA### (ex.: 123456789LA123)',
+    message: 'numeroBIAnterior must match #########LA### (example: 123456789LA123)',
   })
   numeroBIAnterior?: string;
 }

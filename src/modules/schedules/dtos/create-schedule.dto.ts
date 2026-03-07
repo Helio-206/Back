@@ -12,7 +12,7 @@ export class CreateScheduleDto {
   @IsDateString()
   @IsNotEmpty()
   @IsFutureDate({
-    message: 'Data do agendamento deve ser no futuro',
+    message: 'Schedule date must be in the future',
   })
   scheduledDate!: string;
 
@@ -30,7 +30,7 @@ export class CreateScheduleDto {
 
   @IsOptional()
   @IsInt()
-  @Min(1, { message: 'slotNumber deve ser maior que 0' })
+  @Min(1, { message: 'slotNumber must be greater than 0' })
   slotNumber?: number;
 
   @IsOptional()

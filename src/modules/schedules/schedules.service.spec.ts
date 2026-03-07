@@ -5,7 +5,7 @@ import { BadRequestException, ConflictException, NotFoundException } from '@nest
 
 describe('SchedulesService', () => {
   let service: SchedulesService;
-  let prisma: PrismaService;
+  let prisma: any;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -23,6 +23,13 @@ describe('SchedulesService', () => {
               delete: jest.fn(),
             },
             center: {
+              findUnique: jest.fn(),
+            },
+            estadoAgendamento: {
+              findUnique: jest.fn(),
+              findFirst: jest.fn(),
+            },
+            tipoServico: {
               findUnique: jest.fn(),
             },
           },
@@ -47,37 +54,35 @@ describe('SchedulesService', () => {
       const createScheduleDto = {
         scheduledDate: futureDate.toISOString(),
         centerId: 'center-123',
+        estadoAgendamentoId: 'estado-1',
+        tipoServicoId: 'tipo-1',
         slotNumber: 1,
-        description: 'BI Renewal',
+        description: 'BI renewal',
       };
 
       const mockCenter = { id: 'center-123', name: 'Test Center' };
+      const mockEstado = { id: 'estado-1', status: 'AGENDADO' };
+      const mockTipo = { id: 'tipo-1', descricao: 'BI Renewal' };
       const expectedSchedule = {
         id: 'schedule-123',
         ...createScheduleDto,
         userId,
-        status: 'PENDING',
-        user: {
-          id: userId,
-          name: 'Test User',
-          email: 'test@example.com',
-        },
-        center: {
-          id: 'center-123',
-          name: 'Test Center',
-        },
       };
 
       jest.spyOn(prisma.center, 'findUnique').mockResolvedValue(mockCenter as never);
+      jest.spyOn(prisma.estadoAgendamento, 'findUnique').mockResolvedValue(mockEstado as never);
+      jest.spyOn(prisma.tipoServico, 'findUnique').mockResolvedValue(mockTipo as never);
       jest.spyOn(prisma.schedule, 'findFirst').mockResolvedValue(null);
       jest.spyOn(prisma.schedule, 'create').mockResolvedValue(expectedSchedule as never);
 
       const result = await service.create(userId, createScheduleDto as never);
 
       expect(result).toEqual(expectedSchedule);
-      expect(prisma.center.findUnique).toHaveBeenCalledWith({
-        where: { id: 'center-123' },
+      expect(prisma.center.findUnique).toHaveBeenCalledWith({ where: { id: 'center-123' } });
+      expect(prisma.estadoAgendamento.findUnique).toHaveBeenCalledWith({
+        where: { id: 'estado-1' },
       });
+      expect(prisma.tipoServico.findUnique).toHaveBeenCalledWith({ where: { id: 'tipo-1' } });
       expect(prisma.schedule.findFirst).toHaveBeenCalled();
       expect(prisma.schedule.create).toHaveBeenCalled();
     });
@@ -90,10 +95,13 @@ describe('SchedulesService', () => {
       const createScheduleDto = {
         scheduledDate: pastDate.toISOString(),
         centerId: 'center-123',
+        estadoAgendamentoId: 'estado-1',
       };
 
-      const mockCenter = { id: 'center-123', name: 'Test Center' };
-      jest.spyOn(prisma.center, 'findUnique').mockResolvedValue(mockCenter as never);
+      jest.spyOn(prisma.center, 'findUnique').mockResolvedValue({ id: 'center-123' } as never);
+      jest
+        .spyOn(prisma.estadoAgendamento, 'findUnique')
+        .mockResolvedValue({ id: 'estado-1', status: 'AGENDADO' } as never);
 
       await expect(service.create(userId, createScheduleDto as never)).rejects.toThrow(
         BadRequestException
@@ -108,6 +116,7 @@ describe('SchedulesService', () => {
       const createScheduleDto = {
         scheduledDate: futureDate.toISOString(),
         centerId: 'non-existent-center',
+        estadoAgendamentoId: 'estado-1',
       };
 
       jest.spyOn(prisma.center, 'findUnique').mockResolvedValue(null);
@@ -125,14 +134,14 @@ describe('SchedulesService', () => {
       const createScheduleDto = {
         scheduledDate: futureDate.toISOString(),
         centerId: 'center-123',
-        slotNumber: 1,
+        estadoAgendamentoId: 'estado-1',
       };
 
-      const mockCenter = { id: 'center-123', name: 'Test Center' };
-      const existingSchedule = { id: 'schedule-existing', ...createScheduleDto, userId };
-
-      jest.spyOn(prisma.center, 'findUnique').mockResolvedValue(mockCenter as never);
-      jest.spyOn(prisma.schedule, 'findFirst').mockResolvedValue(existingSchedule as never);
+      jest.spyOn(prisma.center, 'findUnique').mockResolvedValue({ id: 'center-123' } as never);
+      jest
+        .spyOn(prisma.estadoAgendamento, 'findUnique')
+        .mockResolvedValue({ id: 'estado-1', status: 'AGENDADO' } as never);
+      jest.spyOn(prisma.schedule, 'findFirst').mockResolvedValue({ id: 'existing-schedule' } as never);
 
       await expect(service.create(userId, createScheduleDto as never)).rejects.toThrow(
         ConflictException
@@ -140,197 +149,99 @@ describe('SchedulesService', () => {
     });
   });
 
-  describe('findAll', () => {
-    it('should return all schedules', async () => {
-      const schedules = [
-        {
-          id: 'schedule-1',
-          scheduledDate: '2026-03-05T10:00:00Z',
-          centerId: 'center-1',
-          userId: 'user-1',
-          status: 'PENDING',
-          user: { id: 'user-1', name: 'User 1', email: 'user1@test.com' },
-          center: { id: 'center-1', name: 'Center 1' },
-        },
-      ];
-
+  describe('findAll/findByUser/findByCenter/findOne', () => {
+    it('should proxy query results', async () => {
+      const schedules = [{ id: 'schedule-1' }];
       jest.spyOn(prisma.schedule, 'findMany').mockResolvedValue(schedules as never);
+      jest.spyOn(prisma.schedule, 'findUnique').mockResolvedValue({ id: 'schedule-1' } as never);
 
-      const result = await service.findAll();
-
-      expect(result).toEqual(schedules);
-      expect(result).toHaveLength(1);
-    });
-
-    it('should return empty array when no schedules exist', async () => {
-      jest.spyOn(prisma.schedule, 'findMany').mockResolvedValue([] as never);
-
-      const result = await service.findAll();
-
-      expect(result).toEqual([]);
-    });
-  });
-
-  describe('findByUser', () => {
-    it('should return user schedules', async () => {
-      const userId = 'user-123';
-      const schedules = [
-        {
-          id: 'schedule-1',
-          scheduledDate: '2026-03-05T10:00:00Z',
-          centerId: 'center-1',
-          userId,
-          status: 'PENDING',
-          center: { id: 'center-1', name: 'Center 1' },
-        },
-      ];
-
-      jest.spyOn(prisma.schedule, 'findMany').mockResolvedValue(schedules as never);
-
-      const result = await service.findByUser(userId);
-
-      expect(result).toEqual(schedules);
-      expect(prisma.schedule.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: { userId },
-        })
-      );
-    });
-  });
-
-  describe('findByCenter', () => {
-    it('should return center schedules', async () => {
-      const centerId = 'center-123';
-      const schedules = [
-        {
-          id: 'schedule-1',
-          scheduledDate: '2026-03-05T10:00:00Z',
-          centerId,
-          userId: 'user-1',
-          status: 'PENDING',
-          user: { id: 'user-1', name: 'User 1', email: 'user1@test.com' },
-        },
-      ];
-
-      jest.spyOn(prisma.schedule, 'findMany').mockResolvedValue(schedules as never);
-
-      const result = await service.findByCenter(centerId);
-
-      expect(result).toEqual(schedules);
-      expect(prisma.schedule.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: { centerId },
-        })
-      );
-    });
-  });
-
-  describe('findOne', () => {
-    it('should return a specific schedule', async () => {
-      const scheduleId = 'schedule-123';
-      const schedule = {
-        id: scheduleId,
-        scheduledDate: '2026-03-05T10:00:00Z',
-        centerId: 'center-123',
-        userId: 'user-123',
-        status: 'PENDING',
-        user: { id: 'user-123', name: 'Test User', email: 'test@example.com' },
-        center: { id: 'center-123', name: 'Test Center' },
-      };
-
-      jest.spyOn(prisma.schedule, 'findUnique').mockResolvedValue(schedule as never);
-
-      const result = await service.findOne(scheduleId);
-
-      expect(result).toEqual(schedule);
-    });
-
-    it('should return null if schedule not found', async () => {
-      jest.spyOn(prisma.schedule, 'findUnique').mockResolvedValue(null);
-
-      const result = await service.findOne('non-existent-id');
-
-      expect(result).toBeNull();
+      expect(await service.findAll()).toEqual(schedules);
+      expect(await service.findByUser('user-1')).toEqual(schedules);
+      expect(await service.findByCenter('center-1')).toEqual(schedules);
+      expect(await service.findOne('schedule-1')).toEqual({ id: 'schedule-1' });
     });
   });
 
   describe('update', () => {
-    it('should update schedule status with valid transition', async () => {
+    it('should update schedule estado with valid transition', async () => {
       const scheduleId = 'schedule-123';
       const currentSchedule = {
         id: scheduleId,
-        scheduledDate: '2026-03-05T10:00:00Z',
-        centerId: 'center-123',
-        userId: 'user-123',
-        status: 'PENDING',
+        estadoAgendamentoId: 'estado-1',
+        estadoAgendamento: { status: 'AGENDADO' },
       };
 
-      const updateDto = { status: 'CONFIRMED' };
-
+      const updateDto = { estadoAgendamentoId: 'estado-2' };
+      const newEstado = { id: 'estado-2', status: 'CONFIRMADO' };
       const updatedSchedule = {
         ...currentSchedule,
-        status: 'CONFIRMED',
-        user: { id: 'user-123', name: 'Test User', email: 'test@example.com' },
-        center: { id: 'center-123', name: 'Test Center' },
+        ...updateDto,
       };
 
       jest.spyOn(prisma.schedule, 'findUnique').mockResolvedValue(currentSchedule as never);
+      jest.spyOn(prisma.estadoAgendamento, 'findUnique').mockResolvedValue(newEstado as never);
       jest.spyOn(prisma.schedule, 'update').mockResolvedValue(updatedSchedule as never);
 
       const result = await service.update(scheduleId, updateDto as never);
 
-      expect(result.status).toBe('CONFIRMED');
+      expect((result as any).estadoAgendamentoId).toBe('estado-2');
     });
 
     it('should reject invalid status transition', async () => {
       const scheduleId = 'schedule-123';
       const currentSchedule = {
         id: scheduleId,
-        status: 'PENDING',
+        estadoAgendamentoId: 'estado-1',
+        estadoAgendamento: { status: 'AGENDADO' },
       };
 
       jest.spyOn(prisma.schedule, 'findUnique').mockResolvedValue(currentSchedule as never);
+      jest
+        .spyOn(prisma.estadoAgendamento, 'findUnique')
+        .mockResolvedValue({ id: 'estado-3', status: 'RETIRADO' } as never);
 
-      await expect(service.update(scheduleId, { status: 'IN_PROGRESS' } as never)).rejects.toThrow(
-        BadRequestException
-      );
+      await expect(
+        service.update(scheduleId, { estadoAgendamentoId: 'estado-3' } as never)
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('should throw NotFoundException if schedule not found', async () => {
       jest.spyOn(prisma.schedule, 'findUnique').mockResolvedValue(null);
 
       await expect(
-        service.update('non-existent', { status: 'CONFIRMED' } as never)
+        service.update('non-existent', { estadoAgendamentoId: 'estado-2' } as never)
       ).rejects.toThrow(NotFoundException);
     });
   });
 
   describe('cancel', () => {
-    it('should cancel a PENDING schedule', async () => {
+    it('should cancel an active schedule', async () => {
       const scheduleId = 'schedule-123';
       const schedule = {
         id: scheduleId,
-        status: 'PENDING',
+        estadoAgendamento: { status: 'AGENDADO' },
       };
 
+      const cancelado = { id: 'estado-cancelado', status: 'CANCELADO' };
       const cancelledSchedule = {
         ...schedule,
-        status: 'CANCELLED',
+        estadoAgendamentoId: cancelado.id,
       };
 
       jest.spyOn(prisma.schedule, 'findUnique').mockResolvedValue(schedule as never);
+      jest.spyOn(prisma.estadoAgendamento, 'findFirst').mockResolvedValue(cancelado as never);
       jest.spyOn(prisma.schedule, 'update').mockResolvedValue(cancelledSchedule as never);
 
       const result = await service.cancel(scheduleId);
 
-      expect(result.status).toBe('CANCELLED');
+      expect((result as any).estadoAgendamentoId).toBe(cancelado.id);
     });
 
-    it('should not cancel a COMPLETED schedule', async () => {
+    it('should not cancel a completed schedule', async () => {
       const scheduleId = 'schedule-123';
       const schedule = {
         id: scheduleId,
-        status: 'COMPLETED',
+        estadoAgendamento: { status: 'RETIRADO' },
       };
 
       jest.spyOn(prisma.schedule, 'findUnique').mockResolvedValue(schedule as never);

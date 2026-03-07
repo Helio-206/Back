@@ -3,15 +3,20 @@ import { plainToInstance } from 'class-transformer';
 import { CreateScheduleDto } from './create-schedule.dto';
 
 describe('CreateScheduleDto Validations', () => {
+  const validPayload = () => {
+    const futureDate = new Date();
+    futureDate.setDate(futureDate.getDate() + 1);
+
+    return {
+      scheduledDate: futureDate.toISOString(),
+      centerId: 'valid-center-id',
+      estadoAgendamentoId: 'estado-1',
+    };
+  };
+
   describe('scheduledDate', () => {
     it('should accept a valid future date', async () => {
-      const futureDate = new Date();
-      futureDate.setDate(futureDate.getDate() + 1);
-
-      const dto = plainToInstance(CreateScheduleDto, {
-        scheduledDate: futureDate.toISOString(),
-        centerId: 'valid-center-id',
-      });
+      const dto = plainToInstance(CreateScheduleDto, validPayload());
 
       const errors = await validate(dto);
       expect(errors).toHaveLength(0);
@@ -22,8 +27,8 @@ describe('CreateScheduleDto Validations', () => {
       pastDate.setDate(pastDate.getDate() - 1);
 
       const dto = plainToInstance(CreateScheduleDto, {
+        ...validPayload(),
         scheduledDate: pastDate.toISOString(),
-        centerId: 'valid-center-id',
       });
 
       const errors = await validate(dto);
@@ -35,8 +40,8 @@ describe('CreateScheduleDto Validations', () => {
       const today = new Date();
 
       const dto = plainToInstance(CreateScheduleDto, {
+        ...validPayload(),
         scheduledDate: today.toISOString(),
-        centerId: 'valid-center-id',
       });
 
       const errors = await validate(dto);
@@ -45,8 +50,8 @@ describe('CreateScheduleDto Validations', () => {
 
     it('should reject invalid date format', async () => {
       const dto = plainToInstance(CreateScheduleDto, {
+        ...validPayload(),
         scheduledDate: 'not-a-date',
-        centerId: 'valid-center-id',
       });
 
       const errors = await validate(dto);
@@ -55,7 +60,8 @@ describe('CreateScheduleDto Validations', () => {
 
     it('should require scheduledDate', async () => {
       const dto = plainToInstance(CreateScheduleDto, {
-        centerId: 'valid-center-id',
+        ...validPayload(),
+        scheduledDate: undefined,
       });
 
       const errors = await validate(dto);
@@ -65,11 +71,8 @@ describe('CreateScheduleDto Validations', () => {
 
   describe('centerId', () => {
     it('should accept a valid centerId', async () => {
-      const futureDate = new Date();
-      futureDate.setDate(futureDate.getDate() + 1);
-
       const dto = plainToInstance(CreateScheduleDto, {
-        scheduledDate: futureDate.toISOString(),
+        ...validPayload(),
         centerId: 'valid-center-id-123',
       });
 
@@ -78,11 +81,9 @@ describe('CreateScheduleDto Validations', () => {
     });
 
     it('should require centerId', async () => {
-      const futureDate = new Date();
-      futureDate.setDate(futureDate.getDate() + 1);
-
       const dto = plainToInstance(CreateScheduleDto, {
-        scheduledDate: futureDate.toISOString(),
+        ...validPayload(),
+        centerId: undefined,
       });
 
       const errors = await validate(dto);
@@ -90,11 +91,8 @@ describe('CreateScheduleDto Validations', () => {
     });
 
     it('should reject non-string centerId', async () => {
-      const futureDate = new Date();
-      futureDate.setDate(futureDate.getDate() + 1);
-
       const dto = plainToInstance(CreateScheduleDto, {
-        scheduledDate: futureDate.toISOString(),
+        ...validPayload(),
         centerId: 123,
       });
 
@@ -105,12 +103,8 @@ describe('CreateScheduleDto Validations', () => {
 
   describe('slotNumber', () => {
     it('should accept valid slotNumber', async () => {
-      const futureDate = new Date();
-      futureDate.setDate(futureDate.getDate() + 1);
-
       const dto = plainToInstance(CreateScheduleDto, {
-        scheduledDate: futureDate.toISOString(),
-        centerId: 'valid-center-id',
+        ...validPayload(),
         slotNumber: 5,
       });
 
@@ -119,12 +113,8 @@ describe('CreateScheduleDto Validations', () => {
     });
 
     it('should reject slotNumber of 0', async () => {
-      const futureDate = new Date();
-      futureDate.setDate(futureDate.getDate() + 1);
-
       const dto = plainToInstance(CreateScheduleDto, {
-        scheduledDate: futureDate.toISOString(),
-        centerId: 'valid-center-id',
+        ...validPayload(),
         slotNumber: 0,
       });
 
@@ -133,13 +123,7 @@ describe('CreateScheduleDto Validations', () => {
     });
 
     it('should allow optional slotNumber', async () => {
-      const futureDate = new Date();
-      futureDate.setDate(futureDate.getDate() + 1);
-
-      const dto = plainToInstance(CreateScheduleDto, {
-        scheduledDate: futureDate.toISOString(),
-        centerId: 'valid-center-id',
-      });
+      const dto = plainToInstance(CreateScheduleDto, validPayload());
 
       const errors = await validate(dto);
       expect(errors.filter((e) => e.property === 'slotNumber')).toHaveLength(0);
@@ -148,14 +132,10 @@ describe('CreateScheduleDto Validations', () => {
 
   describe('description and notes', () => {
     it('should allow optional description and notes', async () => {
-      const futureDate = new Date();
-      futureDate.setDate(futureDate.getDate() + 1);
-
       const dto = plainToInstance(CreateScheduleDto, {
-        scheduledDate: futureDate.toISOString(),
-        centerId: 'valid-center-id',
+        ...validPayload(),
         description: 'Renewal appointment',
-        notes: 'Bring identify documents',
+        notes: 'Bring identity documents',
       });
 
       const errors = await validate(dto);
@@ -163,49 +143,44 @@ describe('CreateScheduleDto Validations', () => {
     });
   });
 
-  describe('status', () => {
-    it('should accept valid status values', async () => {
-      const futureDate = new Date();
-      futureDate.setDate(futureDate.getDate() + 1);
-      const validStatuses = ['PENDING', 'CONFIRMED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'];
-
-      for (const status of validStatuses) {
-        const dto = plainToInstance(CreateScheduleDto, {
-          scheduledDate: futureDate.toISOString(),
-          centerId: 'valid-center-id',
-          status,
-        });
-
-        const errors = await validate(dto);
-        expect(errors.filter((e) => e.property === 'status')).toHaveLength(0);
-      }
-    });
-
-    it('should reject invalid status values', async () => {
-      const futureDate = new Date();
-      futureDate.setDate(futureDate.getDate() + 1);
-
+  describe('estadoAgendamentoId', () => {
+    it('should require estadoAgendamentoId', async () => {
       const dto = plainToInstance(CreateScheduleDto, {
-        scheduledDate: futureDate.toISOString(),
-        centerId: 'valid-center-id',
-        status: 'INVALID_STATUS',
+        ...validPayload(),
+        estadoAgendamentoId: undefined,
       });
 
       const errors = await validate(dto);
-      expect(errors.some((e) => e.property === 'status')).toBeTruthy();
+      expect(errors.some((e) => e.property === 'estadoAgendamentoId')).toBeTruthy();
     });
 
-    it('should allow optional status', async () => {
-      const futureDate = new Date();
-      futureDate.setDate(futureDate.getDate() + 1);
-
+    it('should reject non-string estadoAgendamentoId', async () => {
       const dto = plainToInstance(CreateScheduleDto, {
-        scheduledDate: futureDate.toISOString(),
-        centerId: 'valid-center-id',
+        ...validPayload(),
+        estadoAgendamentoId: 123,
       });
 
       const errors = await validate(dto);
-      expect(errors.filter((e) => e.property === 'status')).toHaveLength(0);
+      expect(errors.some((e) => e.property === 'estadoAgendamentoId')).toBeTruthy();
+    });
+  });
+
+  describe('tipoServicoId', () => {
+    it('should allow optional tipoServicoId', async () => {
+      const dto = plainToInstance(CreateScheduleDto, validPayload());
+
+      const errors = await validate(dto);
+      expect(errors.filter((e) => e.property === 'tipoServicoId')).toHaveLength(0);
+    });
+
+    it('should reject non-string tipoServicoId', async () => {
+      const dto = plainToInstance(CreateScheduleDto, {
+        ...validPayload(),
+        tipoServicoId: 123,
+      });
+
+      const errors = await validate(dto);
+      expect(errors.some((e) => e.property === 'tipoServicoId')).toBeTruthy();
     });
   });
 });

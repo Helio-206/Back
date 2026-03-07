@@ -5,15 +5,15 @@ import { UpdateCenterDto } from './dtos/update-center.dto';
 import { Prisma, Provincia } from '@prisma/client';
 
 /**
- * CentersService - Gerencia todas as operações CRUD para centros
- * Inclui validações de horários de abertura/fechamento e dias de atendimento
+ * CentersService - Handles CRUD operations for centers.
+ * Includes opening/closing time and attendance days validations.
  */
 @Injectable()
 export class CentersService {
   constructor(private prisma: PrismaService) {}
 
   /**
-   * Valida que o horário de abertura seja anterior ao horário de fechamento
+   * Validates that opening time is before closing time.
    */
   private validateTimeRange(openingTime: string, closingTime: string): void {
     const opening = parseInt(openingTime.replace(':', ''), 10);
@@ -25,7 +25,7 @@ export class CentersService {
   }
 
   /**
-   * Valida o formato dos dias de atendimento
+   * Validates attendance days format.
    */
   private validateAttendanceDays(days: string): void {
     const validDays = [
@@ -50,7 +50,7 @@ export class CentersService {
   }
 
   /**
-   * Cria um novo centro (apenas disponível para usuários com papel CENTER)
+   * Creates a new center (only available for CENTER role users).
    */
   async create(userId: string, createCenterDto: CreateCenterDto) {
     // Validate time range if both times provided
@@ -83,7 +83,12 @@ export class CentersService {
         },
         include: {
           user: {
-            select: { id: true, email: true, name: true },
+            select: { id: true, email: true },
+            include: {
+              cidadao: {
+                select: { nome: true, sobrenome: true },
+              },
+            },
           },
         },
       });
@@ -101,7 +106,7 @@ export class CentersService {
   }
 
   /**
-   * Busca todos os centros com filtros opcionais
+   * Returns all centers with optional filters.
    */
   async findAll(filters?: { provincia?: Provincia; active?: boolean }) {
     const where: Prisma.CenterWhereInput = {};
@@ -118,7 +123,12 @@ export class CentersService {
       where,
       include: {
         user: {
-          select: { id: true, email: true, name: true },
+          select: { id: true, email: true },
+          include: {
+            cidadao: {
+              select: { nome: true, sobrenome: true },
+            },
+          },
         },
       },
       orderBy: { createdAt: 'desc' },
@@ -126,14 +136,19 @@ export class CentersService {
   }
 
   /**
-   * Busca centros por província
+   * Returns active centers by province.
    */
   async findByProvince(provincia: Provincia) {
     return this.prisma.center.findMany({
       where: { provincia, active: true },
       include: {
         user: {
-          select: { id: true, email: true, name: true },
+          select: { id: true, email: true },
+          include: {
+            cidadao: {
+              select: { nome: true, sobrenome: true },
+            },
+          },
         },
       },
       orderBy: { name: 'asc' },
@@ -141,14 +156,19 @@ export class CentersService {
   }
 
   /**
-   * Busca um único centro por ID com agendas
+   * Returns one center by id with recent schedules.
    */
   async findOne(id: string) {
     const center = await this.prisma.center.findUnique({
       where: { id },
       include: {
         user: {
-          select: { id: true, email: true, name: true },
+          select: { id: true, email: true },
+          include: {
+            cidadao: {
+              select: { nome: true, sobrenome: true },
+            },
+          },
         },
         schedules: {
           orderBy: { scheduledDate: 'desc' },
@@ -165,7 +185,7 @@ export class CentersService {
   }
 
   /**
-   * Atualiza um centro (atualizações parciais permitidas)
+   * Updates a center (partial updates supported).
    */
   async update(id: string, updateCenterDto: UpdateCenterDto) {
     // Verify center exists
@@ -193,7 +213,12 @@ export class CentersService {
         data: updateCenterDto,
         include: {
           user: {
-            select: { id: true, email: true, name: true },
+            select: { id: true, email: true },
+            include: {
+              cidadao: {
+                select: { nome: true, sobrenome: true },
+              },
+            },
           },
         },
       });
@@ -208,7 +233,7 @@ export class CentersService {
   }
 
   /**
-   * Desativa um centro (soft delete)
+   * Deactivates a center (soft delete).
    */
   async deactivate(id: string) {
     const center = await this.prisma.center.findUnique({ where: { id } });
@@ -221,14 +246,19 @@ export class CentersService {
       data: { active: false },
       include: {
         user: {
-          select: { id: true, email: true, name: true },
+          select: { id: true, email: true },
+          include: {
+            cidadao: {
+              select: { nome: true, sobrenome: true },
+            },
+          },
         },
       },
     });
   }
 
   /**
-   * Reativa um centro (reverte soft delete)
+   * Reactivates a center.
    */
   async reactivate(id: string) {
     const center = await this.prisma.center.findUnique({ where: { id } });
@@ -241,14 +271,19 @@ export class CentersService {
       data: { active: true },
       include: {
         user: {
-          select: { id: true, email: true, name: true },
+          select: { id: true, email: true },
+          include: {
+            cidadao: {
+              select: { nome: true, sobrenome: true },
+            },
+          },
         },
       },
     });
   }
 
   /**
-   * Exclui um centro permanentemente (hard delete)
+   * Permanently deletes a center.
    */
   async delete(id: string) {
     const center = await this.prisma.center.findUnique({ where: { id } });
@@ -272,7 +307,7 @@ export class CentersService {
   }
 
   /**
-   * Obtém estatísticas de centros (para painel de administração)
+   * Returns center statistics for admin dashboard.
    */
   async getStatistics() {
     const [total, active, byProvince] = await Promise.all([
