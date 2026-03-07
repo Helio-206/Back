@@ -22,6 +22,26 @@ export class SchedulesService {
       throw new NotFoundException(`Center with ID ${createScheduleDto.centerId} not found`);
     }
 
+    // Validate estadoAgendamento exists
+    const estadoAgendamento = await this.prisma.estadoAgendamento.findUnique({
+      where: { id: createScheduleDto.estadoAgendamentoId },
+    });
+
+    if (!estadoAgendamento) {
+      throw new NotFoundException(`EstadoAgendamento with ID ${createScheduleDto.estadoAgendamentoId} not found`);
+    }
+
+    // Validate tipoServico if provided
+    if (createScheduleDto.tipoServicoId) {
+      const tipoServico = await this.prisma.tipoServico.findUnique({
+        where: { id: createScheduleDto.tipoServicoId },
+      });
+
+      if (!tipoServico) {
+        throw new NotFoundException(`TipoServico with ID ${createScheduleDto.tipoServicoId} not found`);
+      }
+    }
+
     // Validate that scheduled date is in the future
     const scheduledDate = new Date(createScheduleDto.scheduledDate);
     if (scheduledDate <= new Date()) {
@@ -34,8 +54,10 @@ export class SchedulesService {
         userId,
         centerId: createScheduleDto.centerId,
         scheduledDate: createScheduleDto.scheduledDate,
-        status: {
-          in: ['PENDING', 'CONFIRMED'],
+        estadoAgendamento: {
+          status: {
+            in: ['AGENDADO', 'CONFIRMADO'],
+          },
         },
       },
     });
@@ -51,11 +73,14 @@ export class SchedulesService {
       },
       include: {
         user: {
-          select: { id: true, name: true, email: true },
+          select: { id: true, email: true },
+          include: { cidadao: true },
         },
         center: {
           select: { id: true, name: true },
         },
+        tipoServico: true,
+        estadoAgendamento: true,
       },
     });
   }
@@ -64,11 +89,14 @@ export class SchedulesService {
     return this.prisma.schedule.findMany({
       include: {
         user: {
-          select: { id: true, name: true, email: true },
+          select: { id: true, email: true },
+          include: { cidadao: true },
         },
         center: {
           select: { id: true, name: true },
         },
+        tipoServico: true,
+        estadoAgendamento: true,
       },
     });
   }
@@ -80,6 +108,8 @@ export class SchedulesService {
         center: {
           select: { id: true, name: true },
         },
+        tipoServico: true,
+        estadoAgendamento: true,
       },
     });
   }
@@ -89,8 +119,11 @@ export class SchedulesService {
       where: { centerId },
       include: {
         user: {
-          select: { id: true, name: true, email: true },
+          select: { id: true, email: true },
+          include: { cidadao: true },
         },
+        tipoServico: true,
+        estadoAgendamento: true,
       },
     });
   }
@@ -100,11 +133,14 @@ export class SchedulesService {
       where: { id },
       include: {
         user: {
-          select: { id: true, name: true, email: true },
+          select: { id: true, email: true },
+          include: { cidadao: true },
         },
         center: {
           select: { id: true, name: true },
         },
+        tipoServico: true,
+        estadoAgendamento: true,
       },
     });
   }
@@ -112,15 +148,24 @@ export class SchedulesService {
   async update(id: string, updateScheduleDto: UpdateScheduleDto) {
     const current = await this.prisma.schedule.findUnique({
       where: { id },
+      include: { estadoAgendamento: true },
     });
 
     if (!current) {
       throw new NotFoundException(`Schedule with ID ${id} not found`);
     }
 
-    // Validate status transition if status is being updated
-    if (updateScheduleDto.status && updateScheduleDto.status !== current.status) {
-      this.validateStatusTransition(current.status, updateScheduleDto.status);
+    // Validate estadoAgendamento transition if estadoAgendamentoId is being updated
+    if (updateScheduleDto.estadoAgendamentoId && updateScheduleDto.estadoAgendamentoId !== current.estadoAgendamentoId) {
+      const newEstado = await this.prisma.estadoAgendamento.findUnique({
+        where: { id: updateScheduleDto.estadoAgendamentoId },
+      });
+
+      if (!newEstado) {
+        throw new NotFoundException(`EstadoAgendamento with ID ${updateScheduleDto.estadoAgendamentoId} not found`);
+      }
+
+      this.validateStatusTransition(current.estadoAgendamento.status, newEstado.status);
     }
 
     return this.prisma.schedule.update({
@@ -128,11 +173,14 @@ export class SchedulesService {
       data: updateScheduleDto,
       include: {
         user: {
-          select: { id: true, name: true, email: true },
+          select: { id: true, email: true },
+          include: { cidadao: true },
         },
         center: {
           select: { id: true, name: true },
         },
+        tipoServico: true,
+        estadoAgendamento: true,
       },
     });
   }
@@ -140,29 +188,42 @@ export class SchedulesService {
   async cancel(id: string) {
     const schedule = await this.prisma.schedule.findUnique({
       where: { id },
+      include: { estadoAgendamento: true },
     });
 
     if (!schedule) {
       throw new NotFoundException(`Schedule with ID ${id} not found`);
     }
 
-    if (schedule.status === 'COMPLETED') {
-      throw new BadRequestException('Cannot cancel a completed schedule');
+    if (schedule.estadoAgendamento.status === 'RETIRADO' || schedule.estadoAgendamento.status === 'CANCELADO') {
+      throw new BadRequestException('Cannot cancel a completed or already cancelled schedule');
+    }
+
+    // Find the 'CANCELADO' estado
+    const canceladoEstado = await this.prisma.estadoAgendamento.findFirst({
+      where: { status: 'CANCELADO' },
+    });
+
+    if (!canceladoEstado) {
+      throw new Error('CANCELADO estado not found in database');
     }
 
     return this.prisma.schedule.update({
       where: { id },
-      data: { status: 'CANCELLED' },
+      data: { estadoAgendamentoId: canceladoEstado.id },
     });
   }
 
   private validateStatusTransition(currentStatus: string, newStatus: string): void {
     const validTransitions: Record<string, string[]> = {
-      PENDING: ['CONFIRMED', 'CANCELLED'],
-      CONFIRMED: ['IN_PROGRESS', 'CANCELLED'],
-      IN_PROGRESS: ['COMPLETED', 'CANCELLED'],
-      COMPLETED: [],
-      CANCELLED: [],
+      AGENDADO: ['CONFIRMADO', 'CANCELADO'],
+      CONFIRMADO: ['BIOMETRIA_RECOLHIDA', 'CANCELADO'],
+      BIOMETRIA_RECOLHIDA: ['EM_PROCESSAMENTO', 'CANCELADO'],
+      EM_PROCESSAMENTO: ['PRONTO_RETIRADA', 'REJEITADO'],
+      PRONTO_RETIRADA: ['RETIRADO'],
+      RETIRADO: [],
+      REJEITADO: [],
+      CANCELADO: [],
     };
 
     const allowedTransitions = validTransitions[currentStatus] || [];

@@ -54,10 +54,11 @@ enum BIScheduleStatus {
   CANCELADO
 }
 
+// 21 Províncias oficiais de Angola (fonte: Time de BD - 07/03/2026)
 enum Provincia {
   BENGO
   BENGUELA
-  BIES
+  BIE
   CABINDA
   CUANDO_CUBANGO
   CUANZA_NORTE
@@ -65,9 +66,6 @@ enum Provincia {
   CUNENE
   HUAMBO
   HUILA
-  KWANDO_KUBANGO
-  KWANZA_NORTE
-  KWANZA_SUL
   LUANDA
   LUNDA_NORTE
   LUNDA_SUL
@@ -75,7 +73,10 @@ enum Provincia {
   MOXICO
   NAMIBE
   UIGE
-  ZAI
+  ZAIRE
+  ICOLO_E_BENGO
+  MUXICO_LESTE
+  CASSAI_ZAMBEZE
 }
 
 enum DocumentType {
@@ -90,111 +91,231 @@ enum DocumentType {
 // ============ MODELS ============
 
 model User {
-  id                    String   @id @default(cuid())
-  email                 String   @unique
-  name                  String
-  password              String
-  role                  Role     @default(CITIZEN)
-  active                Boolean  @default(true)
-  
-  // BI-specific fields
-  dataNascimento        DateTime?
-  provinciaNascimento   Provincia?
-  provinciaResidencia   Provincia?
-  numeroBIAnterior      String?
-  filiacao              String? // Parent names
-  genero                String? // M, F, Outro
-  
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  id       String  @id @default(cuid())
+  email    String  @unique
+  password String
+  role     Role    @default(CITIZEN)
+  active   Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  center                Center?
-  schedules             Schedule[]
-  documents             Document[]
-  refreshTokens         RefreshToken[]
+  cidadao       Cidadao?
+  center        Center?
+  schedules     Schedule[]
+  documents     Document[]
+  protocolos    Protocolo[]
+  refreshTokens RefreshToken[]
 
   @@index([email])
   @@index([role])
-  @@index([provinciaResidencia])
 }
 
-model Center {
+model Cidadao {
+  id String @id @default(cuid())
+
+  // Dados pessoais (completos conforme MER/DER)
+  nome           String
+  sobrenome      String
+  dataNascimento DateTime
+  sexo           String // M, F, Outro
+  email          String? // backup de contato
+
+  // Endereço residencial
+  provinciaResidencia Provincia
+  municipioResidencia String?
+  bairroResidencia    String?
+  ruaResidencia       String?
+  numeroCasa          String?
+
+  // Dados de nascimento
+  provinciaNascimento Provincia?
+  municipioNascimento String?
+
+  // Dados familiares
+  estadoCivil  String? // Solteiro, Casado, etc
+  nomePai      String?
+  sobrenomePai String?
+  nomeMae      String?
+  sobrenomeMae String?
+  altura       Decimal? @db.Decimal(5, 2) // em cm
+
+  // BI anterior (se existir)
+  numeroBIAnterior String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relação com User (1:1)
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Relação com DocumentoBI
+  documentoBI DocumentoBI?
+
+  @@index([userId])
+  @@index([provinciaResidencia])
+  @@index([dataNascimento])
+}
+
+model DocumentoBI {
+  id           String   @id @default(cuid())
+  numeroBI     String   @unique
+  dataEmissao  DateTime
+  dataValidade DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relação com Cidadao (1:1)
+  cidadaoId String  @unique
+  cidadao   Cidadao @relation(fields: [cidadaoId], references: [id], onDelete: Cascade)
+
+  @@index([numeroBI])
+  @@index([dataValidade])
+}
+
+model TipoServico {
+  id        String   @id @default(cuid())
+  descricao String   @unique
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  schedules Schedule[]
+
+  @@index([descricao])
+}
+
+model EstadoAgendamento {
+  id        String   @id @default(cuid())
+  descricao String   @unique
+  status    String // AGENDADO, CONFIRMADO, EM_PROCESSAMENTO, etc.
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  schedules Schedule[]
+
+  @@index([status])
+}
+
+model Funcionario {
+  id        String   @id @default(cuid())
+  nome      String
+  sobrenome String
+  cargo     String
+  email     String?  @unique
+  telefone  String?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  postoId      String
+  posto        Center        @relation(fields: [postoId], references: [id], onDelete: Cascade)
+  atendimentos Atendimento[]
+
+  @@index([postoId])
+  @@index([email])
+}
+
+model Atendimento {
   id              String   @id @default(cuid())
-  name            String
-  description     String?
-  type            CenterType
-  address         String
-  phone           String?
-  email           String?
-  provincia       Provincia
-  openingTime     String   @default("08:00")
-  closingTime     String   @default("17:00")
-  attendanceDays  String   @default("MONDAY,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY")
-  capacidadeAgentos Int  @default(5)
-  active          Boolean  @default(true)
+  dataAtendimento DateTime @default(now())
+  observacao      String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
   // Relations
-  userId    String  @unique
-  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  schedules Schedule[]
+  agendamentoId String      @unique
+  agendamento   Schedule    @relation(fields: [agendamentoId], references: [id], onDelete: Cascade)
+  funcionarioId String
+  funcionario   Funcionario @relation(fields: [funcionarioId], references: [id])
+
+  @@index([agendamentoId])
+  @@index([funcionarioId])
+  @@index([dataAtendimento])
+}
+
+model Center {
+  id                String     @id @default(cuid())
+  name              String
+  description       String?
+  type              CenterType
+  address           String
+  phone             String?
+  email             String?
+  provincia         Provincia
+  openingTime       String     @default("08:00")
+  closingTime       String     @default("17:00")
+  attendanceDays    String     @default("MONDAY,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY")
+  capacidadeAgentos Int        @default(5)
+  active            Boolean    @default(true)
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  // Relations
+  userId       String        @unique
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  schedules    Schedule[]
+  funcionarios Funcionario[]
 
   @@index([userId])
   @@index([provincia])
 }
 
 model Schedule {
-  id                String        @id @default(cuid())
-  scheduledDate     DateTime
-  slotNumber        Int?
-  description       String?
-  
-  // Generic status (old)
-  status            ScheduleStatus @default(PENDING)
-  
+  id            String   @id @default(cuid())
+  scheduledDate DateTime
+  slotNumber    Int?
+  description   String?
+
   // BI-specific fields
-  tipoBI            TipoBI?
-  biStatus          BIScheduleStatus @default(AGENDADO)
-  dataRetirada      DateTime?
-  nbiEmitido        String? // Issued BI number
-  
-  notes             String?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  dataRetirada DateTime?
+  nbiEmitido   String? // Issued BI number
+
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  userId    String
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  centerId  String
-  center    Center    @relation(fields: [centerId], references: [id], onDelete: Cascade)
-  documents Document[]
-  protocolo Protocolo?
+  userId              String
+  user                User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  centerId            String
+  center              Center            @relation(fields: [centerId], references: [id], onDelete: Cascade)
+  tipoServicoId       String?
+  tipoServico         TipoServico?      @relation(fields: [tipoServicoId], references: [id], onDelete: SetNull)
+  estadoAgendamentoId String
+  estadoAgendamento   EstadoAgendamento @relation(fields: [estadoAgendamentoId], references: [id])
+  documents           Document[]
+  protocolo           Protocolo?
+  atendimento         Atendimento?
 
   @@index([userId])
   @@index([centerId])
-  @@index([status])
-  @@index([biStatus])
+  @@index([tipoServicoId])
+  @@index([estadoAgendamentoId])
   @@index([scheduledDate])
-  @@index([tipoBI])
 }
 
 model Document {
-  id            String       @id @default(cuid())
-  fileName      String
-  fileUrl       String
-  fileSize      Int? // bytes
-  filePath      String? // local or cloud storage path
-  mimeType      String? // application/pdf, image/jpeg, etc
-  documentType  DocumentType
-  uploadedAt    DateTime @default(now())
-  
+  id           String       @id @default(cuid())
+  fileName     String
+  fileUrl      String
+  fileSize     Int? // bytes
+  filePath     String? // local or cloud storage path
+  mimeType     String? // application/pdf, image/jpeg, etc
+  documentType DocumentType
+  uploadedAt   DateTime     @default(now())
+
   // Relations
-  userId    String
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   scheduleId String
-  schedule  Schedule  @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  schedule   Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([scheduleId])
@@ -202,23 +323,23 @@ model Document {
 }
 
 model Protocolo {
-  id                String   @id @default(cuid())
-  numeroProtocolo   String   @unique
-  scheduleId        String   @unique
-  schedule          Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
-  
-  userId            String?
-  user              User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
-  
+  id              String   @id @default(cuid())
+  numeroProtocolo String   @unique
+  scheduleId      String   @unique
+  schedule        Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
   // Tracking
   statusAnterior    BIScheduleStatus
   statusAtual       BIScheduleStatus
   agenteProcessador String? // Admin/Center user who processed
   observacoes       String?
-  
-  registradoEm      DateTime @default(now())
-  processadoEm      DateTime?
-  createdAt         DateTime @default(now())
+
+  registradoEm DateTime  @default(now())
+  processadoEm DateTime?
+  createdAt    DateTime  @default(now())
 
   @@index([numeroProtocolo])
   @@index([scheduleId])

@@ -2,20 +2,11 @@ import {
   IsString,
   IsDateString,
   IsOptional,
-  IsEnum,
   IsInt,
   IsNotEmpty,
   Min,
 } from 'class-validator';
 import { IsFutureDate } from '../../../common/validators';
-
-enum ScheduleStatus {
-  PENDING = 'PENDING',
-  CONFIRMED = 'CONFIRMED',
-  IN_PROGRESS = 'IN_PROGRESS',
-  COMPLETED = 'COMPLETED',
-  CANCELLED = 'CANCELLED',
-}
 
 export class CreateScheduleDto {
   @IsDateString()
@@ -27,8 +18,15 @@ export class CreateScheduleDto {
 
   @IsString()
   @IsNotEmpty()
-  @IsString()
   centerId!: string;
+
+  @IsOptional()
+  @IsString()
+  tipoServicoId?: string;
+
+  @IsString()
+  @IsNotEmpty()
+  estadoAgendamentoId!: string;
 
   @IsOptional()
   @IsInt()
@@ -42,11 +40,4 @@ export class CreateScheduleDto {
   @IsOptional()
   @IsString()
   notes?: string;
-
-  @IsOptional()
-  @IsEnum(ScheduleStatus, {
-    message:
-      'status deve ser um dos valores válidos: PENDING, CONFIRMED, IN_PROGRESS, COMPLETED, CANCELLED',
-  })
-  status?: ScheduleStatus;
 }

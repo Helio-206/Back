@@ -1,7 +1,6 @@
 import { Injectable, ConflictException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '@database/prisma.service';
-import { Provincia } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
 import { LoginDto } from './dtos/login.dto';
 import { RegisterDto } from './dtos/register.dto';
@@ -17,14 +16,8 @@ export class AuthService {
     const {
       email,
       password,
-      name,
-      numeroBIAnterior,
-      dataNascimento,
-      provinciaNascimento,
-      provinciaResidencia,
-      filiacao,
-      genero,
       role,
+      cidadao,
     } = registerDto;
 
     const userExists = await this.prisma.user.findUnique({
@@ -40,15 +33,34 @@ export class AuthService {
     const user = await this.prisma.user.create({
       data: {
         email,
-        name,
         password: hashedPassword,
         role: role ?? 'CITIZEN',
-        numeroBIAnterior,
-        dataNascimento: dataNascimento ? new Date(dataNascimento) : undefined,
-        provinciaNascimento: provinciaNascimento as Provincia | undefined,
-        provinciaResidencia: provinciaResidencia as Provincia | undefined,
-        filiacao,
-        genero,
+        cidadao: {
+          create: {
+            nome: cidadao.nome,
+            sobrenome: cidadao.sobrenome,
+            dataNascimento: new Date(cidadao.dataNascimento),
+            sexo: cidadao.sexo,
+            email: cidadao.email,
+            provinciaResidencia: cidadao.provinciaResidencia,
+            municipioResidencia: cidadao.municipioResidencia,
+            bairroResidencia: cidadao.bairroResidencia,
+            ruaResidencia: cidadao.ruaResidencia,
+            numeroCasa: cidadao.numeroCasa,
+            provinciaNascimento: cidadao.provinciaNascimento,
+            municipioNascimento: cidadao.municipioNascimento,
+            estadoCivil: cidadao.estadoCivil,
+            nomePai: cidadao.nomePai,
+            sobrenomePai: cidadao.sobrenomePai,
+            nomeMae: cidadao.nomeMae,
+            sobrenomeMae: cidadao.sobrenomeMae,
+            altura: cidadao.altura,
+            numeroBIAnterior: cidadao.numeroBIAnterior,
+          },
+        },
+      },
+      include: {
+        cidadao: true,
       },
     });
 
@@ -62,6 +74,7 @@ export class AuthService {
 
     const user = await this.prisma.user.findUnique({
       where: { email },
+      include: { cidadao: true },
     });
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
@@ -77,8 +90,8 @@ export class AuthService {
       user: {
         id: user.id,
         email: user.email,
-        name: user.name,
         role: user.role,
+        cidadao: user.cidadao,
       },
     };
   }
@@ -86,7 +99,12 @@ export class AuthService {
   async validateUser(userId: string) {
     return this.prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, email: true, name: true, role: true },
+      select: { 
+        id: true, 
+        email: true, 
+        role: true,
+        cidadao: true,
+      },
     });
   }
 }
