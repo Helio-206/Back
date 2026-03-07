@@ -41,6 +41,28 @@ Sistema web de agendamento e gestão de **Bilhete de Identidade (BI)** para Ango
 
 ---
 
+## ✅ Alinhamento com o backend principal (develop)
+
+**Última verificação técnica:** 6 de março de 2026
+
+### Implementado no backend atual
+- Autenticação JWT (`/auth/register`, `/auth/login`)
+- Gestão de utilizadores (`/users`)
+- Gestão de centros (`/centers`)
+- Agendamentos (`/schedules`)
+- RBAC com papéis `CITIZEN`, `CENTER`, `ADMIN`
+- Guards de acesso por recurso para agendamentos
+
+### Ainda não implementado no backend atual (apenas roadmap neste documento)
+- Upload e gestão de documentos
+- Rastreamento de protocolo
+- Relatórios e dashboards avançados
+- Refresh token
+- MFA e notificações
+- Swagger/OpenAPI
+
+---
+
 ## 🎯 Funcionalidades Principais
 
 ### 1️⃣ **Autenticação e Controlo de Acesso**
@@ -48,7 +70,7 @@ Sistema web de agendamento e gestão de **Bilhete de Identidade (BI)** para Ango
 #### Login
 - Autenticação JWT com email e palavra-passe
 - Tokens de acesso com validade de **24 horas**
-- Tokens de refresh para renovação de sessão
+- Tokens de refresh para renovação de sessão (**roadmap; não implementado no backend atual**)
 - Endpoints públicos e privados
 
 #### Níveis de Acesso
@@ -154,6 +176,8 @@ Sistema web de agendamento e gestão de **Bilhete de Identidade (BI)** para Ango
 
 ### 5️⃣ **Upload e Gestão de Documentos**
 
+> **Estado no backend principal (develop):** Não implementado (roadmap)
+
 #### Documentos Obrigatórios
 1. **RG** (Registado na Conservatória)
 2. **Certidão de Nascimento**
@@ -188,6 +212,8 @@ Sistema web de agendamento e gestão de **Bilhete de Identidade (BI)** para Ango
 ---
 
 ### 6️⃣ **Rastreamento de Protocolo**
+
+> **Estado no backend principal (develop):** Não implementado (roadmap)
 
 #### Número de Protocolo
 - **Formato**: `BI-YYYY-MM-XXXXX`
@@ -292,6 +318,8 @@ Sistema web de agendamento e gestão de **Bilhete de Identidade (BI)** para Ango
 ---
 
 ### 8️⃣ **Relatórios e Estatísticas**
+
+> **Estado no backend principal (develop):** Não implementado (roadmap)
 
 #### Dashboards Disponíveis
 
@@ -671,32 +699,32 @@ StatusChangeEvent {
 | Schema de BD | ✅ Completo | Prisma schema definido |
 | Modelos ORM | ✅ Completo | Todas as entidades |
 | Enums/Tipos | ✅ Completo | Províncias, estados, tipos |
-| Autenticação | ⏳ Em progresso | JWT + Refresh tokens |
-| CRUD Utilizadores | ⏳ Em progresso | Registo, login, perfil |
-| CRUD Centros | ⏳ Em progresso | Cadastro, listagem, edição |
-| Agendamentos | ⏳ Em progresso | Criar, listar, mudar estado |
-| Upload Documentos | ⏳ Em progresso | S3 + validações |
-| Protocolo | ⏳ Em progresso | Geração + rastreamento |
-| Relatórios | ⏳ Planejado | Dashboards de dados |
-| Testes | ⏳ Em progresso | Testes unitários e E2E |
+| Autenticação | ✅ Completo | JWT (register/login) |
+| CRUD Utilizadores | ✅ Parcial | Listar, buscar por id, desativar |
+| CRUD Centros | ✅ Completo | Cadastro, listagem, edição, desativar/reativar |
+| Agendamentos | ✅ Completo | Criar, listar, atualizar estado, cancelar, eliminar |
+| Upload Documentos | ⏳ Planejado | Ainda não implementado no backend |
+| Protocolo | ⏳ Planejado | Ainda não implementado no backend |
+| Relatórios | ⚠️ Parcial | Endpoint de estatísticas de centros para ADMIN |
+| Testes | ⚠️ Parcial | 69 unitários OK; 41 E2E OK + 1 suite E2E com erro de import |
 | Documentação API | ⏳ Planejado | Swagger/OpenAPI |
 
 ---
 
 ## 🚀 Próximas Etapas
 
-1. **Implementar todos os endpoints REST** com validação completa
-2. **Adicionar autenticação multi-factor** (SMS + Email)
-3. **Sistema de notificações** (Email, SMS, Push Notification)
-4. **Integração com BI** (Se houver API externa)
-5. **Pagamento online** (Se aplicável)
-6. **Mobile app** (React Native / Flutter)
-7. **Admin dashboard completo** com relatórios avançados
-8. **Escalabilidade**: Cache (Redis), Filas (Bull/RabbitMQ)
+1. **Corrigir suite E2E de agendamentos** (`import request from 'supertest'`)
+2. **Implementar módulo de documentos** (upload, validação, armazenamento)
+3. **Implementar módulo de protocolo** (geração e rastreamento)
+4. **Expandir relatórios** para além das estatísticas de centros
+5. **Adicionar refresh tokens** e gestão de sessão
+6. **Adicionar documentação Swagger/OpenAPI**
+7. **Integrar notificações** (email/SMS/push)
+8. **Escalabilidade**: cache e filas
 
 ---
 
-**Versão do Documento:** 1.0  
-**Data:** 5 de março de 2026  
+**Versão do Documento:** 1.1  
+**Data:** 6 de março de 2026  
 **Autor:** Time de Desenvolvimento
 
