@@ -1,4 +1,5 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { User, LogOut } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import styles from './DashboardLayout.module.css';
 
@@ -33,20 +34,22 @@ export default function DashboardLayout() {
 
         <nav className={styles.sidebarNav}>
           {navItems.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={({ isActive }) =>
-                `${styles.navLink} ${isActive ? styles.navLinkActive : ''}`
-              }
-            >
-              {item.label}
-            </NavLink>
+              <NavLink
+                key={item.path}
+                to={item.path}
+                className={({ isActive }) =>
+                  `${styles.navLink} ${isActive ? styles.navLinkActive : ''}`
+                }
+              >
+                <User size={15} strokeWidth={1.8} />
+                {item.label}
+              </NavLink>
           ))}
         </nav>
 
         <div className={styles.sidebarFooter}>
           <button className={styles.logoutBtn} onClick={handleLogout}>
+            <LogOut size={17} strokeWidth={2} />
             Logout
           </button>
         </div>

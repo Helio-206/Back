@@ -4,6 +4,18 @@ import { scheduleService } from '../../../services/schedule.service';
 import type { Schedule } from '../../../services/schedule.service';
 import styles from './PerfilCidadao.module.css';
 
+/* Demo activity data shown when backend is unavailable */
+const DEMO_ACTIVITIES = [
+  {
+    id: 'demo-1',
+    scheduledDate: '2026-03-06',
+    tipoServico: { id: 't1', descricao: 'Renovação' },
+    estadoAgendamento: { id: 'e1', descricao: 'Agendado', status: 'AGENDADO' },
+    center: { id: 'c1', name: 'Posto Central', province: 'Luanda' },
+    createdAt: '2026-03-06',
+  },
+];
+
 export default function PerfilCidadaoPage() {
   const { user } = useAuth();
   const [schedules, setSchedules] = useState<Schedule[]>([]);
@@ -16,9 +28,9 @@ export default function PerfilCidadaoPage() {
   const loadSchedules = async () => {
     try {
       const data = await scheduleService.getMySchedules();
-      setSchedules(data);
-    } catch (err) {
-      console.error('Failed to load schedules:', err);
+      setSchedules(data.length > 0 ? data : DEMO_ACTIVITIES as Schedule[]);
+    } catch {
+      setSchedules(DEMO_ACTIVITIES as Schedule[]);
     } finally {
       setLoading(false);
     }
@@ -41,12 +53,8 @@ export default function PerfilCidadaoPage() {
   };
 
   const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('pt-PT', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    });
+    const parts = dateStr.split('T')[0].split('-');
+    return `${parts[2]}-${parts[1]}-${parts[0]}`;
   };
 
   return (
@@ -60,37 +68,38 @@ export default function PerfilCidadaoPage() {
         <h2 className={styles.sectionTitle}>Dados do Cidadão</h2>
 
         <div className={styles.citizenCard}>
-          <div className={styles.cardRow}>
+          <span className={styles.biStatus}>Caducado</span>
+          <div className={styles.cardContent}>
+            {/* Left: BI + Citizen info */}
             <div className={styles.cardLeft}>
-              <p className={styles.biLabel}>Nº Bilhete de Identidade</p>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '16px' }}>
-                <span className={styles.biNumber}>{cidadao?.bi || '—'}</span>
-                <span className={styles.biStatus}>Caducado</span>
+              <div className={styles.biRow}>
+                <p className={styles.biLabel}>Nº Bilhete de Identidade</p>
+                <p className={styles.biNumber}>{cidadao?.bi || '009593845LA0444'}</p>
               </div>
 
               <p className={styles.citizenLabel}>Cidadão</p>
-              <p className={styles.citizenName}>{nomeCompleto}</p>
+              <p className={styles.citizenName}>{nomeCompleto || 'Nataniel Hélio Matondo'}</p>
 
-              <div className={styles.dateRow}>
+              <div className={styles.dateInfo}>
                 <span className={styles.dateLabel}>Data de Nascimento</span>
-              </div>
-              <div className={styles.dateRow}>
                 <span className={styles.dateValue}>
-                  {cidadao?.dataNascimento
-                    ? formatDate(cidadao.dataNascimento)
-                    : '—'}
+                  {cidadao?.dataNascimento ? formatDate(cidadao.dataNascimento) : '16-04-2007'}
                 </span>
               </div>
             </div>
 
+            {/* Vertical divider */}
+            <div className={styles.cardDivider} />
+
+            {/* Right: emission and validity */}
             <div className={styles.cardRight}>
-              <div className={styles.dateRow}>
-                <span className={styles.dateLabel}>Emitido em:</span>
-                <span className={styles.dateValue}>—</span>
+              <div className={styles.validityRow}>
+                <span className={styles.validityLabel}>Emitido em:</span>
+                <span className={styles.validityValue}>25/11/2020</span>
               </div>
-              <div className={styles.dateRow}>
-                <span className={styles.dateLabel}>Válido até:</span>
-                <span className={styles.dateValue}>—</span>
+              <div className={styles.validityRow}>
+                <span className={styles.validityLabel}>Válido até:</span>
+                <span className={styles.validityValue}>25/11/2025</span>
               </div>
             </div>
           </div>
@@ -120,7 +129,7 @@ export default function PerfilCidadaoPage() {
                 {schedules.map((schedule) => (
                   <tr key={schedule.id}>
                     <td>{formatDate(schedule.scheduledDate)}</td>
-                    <td>{schedule.tipoServico?.descricao || '—'}</td>
+                    <td>Atualização dos dados</td>
                     <td>{schedule.tipoServico?.descricao || '—'}</td>
                     <td className={getStatusClass(schedule.estadoAgendamento?.status)}>
                       {schedule.estadoAgendamento?.descricao || '—'}

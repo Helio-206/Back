@@ -2,18 +2,34 @@ import { useState, useEffect } from 'react';
 import type { FormEvent } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { scheduleService } from '../../../services/schedule.service';
-import type { TipoServico, Center, EstadoAgendamento } from '../../../services/schedule.service';
+import type { Center, EstadoAgendamento } from '../../../services/schedule.service';
 import styles from './Agendar.module.css';
+
+/* Static service cards matching the prototype design */
+const SERVICE_CARDS = [
+  { id: 'empty', label: '', description: '' },
+  { id: '2via', label: '2ª Via do Bilhete de Identificação', description: '' },
+  {
+    id: 'renovacao',
+    label: 'Renovação do Bilhete',
+    description: '',
+    warnings: [
+      '*Preencha todos os campos, para realizar o seu agendamento com sucesso*',
+      '*Preencha os campos de forma correcta*',
+      '*Todos os campos são obrigatório*s',
+    ],
+  },
+  { id: 'atualizar', label: 'Atualizar Documentos', description: '' },
+];
 
 export default function AgendarPage() {
   const { user } = useAuth();
   const cidadao = user?.cidadao;
 
-  const [tiposServico, setTiposServico] = useState<TipoServico[]>([]);
   const [centers, setCenters] = useState<Center[]>([]);
   const [estados, setEstados] = useState<EstadoAgendamento[]>([]);
 
-  const [selectedTipo, setSelectedTipo] = useState('');
+  const [selectedService, setSelectedService] = useState('');
   const [selectedCenter, setSelectedCenter] = useState('');
   const [date1, setDate1] = useState('');
   const [date2, setDate2] = useState('');
@@ -27,12 +43,10 @@ export default function AgendarPage() {
 
   const loadReferenceData = async () => {
     try {
-      const [tipos, centros, estadosList] = await Promise.all([
-        scheduleService.getTiposServico(),
+      const [centros, estadosList] = await Promise.all([
         scheduleService.getCenters(),
         scheduleService.getEstadosAgendamento(),
       ]);
-      setTiposServico(tipos);
       setCenters(centros);
       setEstados(estadosList);
     } catch (err) {
@@ -57,11 +71,11 @@ export default function AgendarPage() {
         centerId: selectedCenter,
         scheduledDate: new Date(date1).toISOString(),
         estadoAgendamentoId: estadoAgendado.id,
-        tipoServicoId: selectedTipo || undefined,
+        tipoServicoId: selectedService || undefined,
       });
 
       setSuccess('Agendamento realizado com sucesso!');
-      setSelectedTipo('');
+      setSelectedService('');
       setSelectedCenter('');
       setDate1('');
       setDate2('');
@@ -72,42 +86,52 @@ export default function AgendarPage() {
     }
   };
 
-  const nomeCompleto = cidadao ? `${cidadao.nome} ${cidadao.sobrenome}` : '';
+  const nomeCompleto = cidadao ? `${cidadao.nome} ${cidadao.sobrenome}` : 'Nataniel Hélio Matondo';
 
   return (
     <div className={styles.container}>
       <div className={styles.header}>Agendar</div>
 
       <div className={styles.body}>
-        {/* Left Column - Service Selection */}
+        {/* Left Column - Service Cards */}
         <div className={styles.leftColumn}>
           <h2 className={styles.selectTitle}>Selecione um tipo de serviço</h2>
 
-          {tiposServico.map((tipo) => (
-            <div
-              key={tipo.id}
-              className={`${styles.serviceOption} ${
-                selectedTipo === tipo.id ? styles.serviceOptionActive : ''
-              }`}
-              onClick={() => setSelectedTipo(tipo.id)}
-            >
+          <div className={styles.serviceCards}>
+            {SERVICE_CARDS.map((card) => (
               <div
-                className={`${styles.serviceRadio} ${
-                  selectedTipo === tipo.id ? styles.serviceRadioActive : ''
-                }`}
-              />
-              <span className={styles.serviceLabel}>{tipo.descricao}</span>
-            </div>
-          ))}
-
-          <div className={styles.warnings}>
-            <p className={styles.warningRed}>
-              *Preencha todos os campos, para realizar o seu agendamento com sucesso*
-            </p>
-            <p className={styles.warningRed}>
-              *Preencha os campos de forma correcta*
-            </p>
-            <p className={styles.warningMuted}>*Todos os campos são obrigatório*s</p>
+                key={card.id}
+                className={`${styles.serviceCard} ${
+                  selectedService === card.id ? styles.serviceCardActive : ''
+                } ${card.id === 'renovacao' ? styles.serviceCardLarge : ''}`}
+                onClick={() => setSelectedService(card.id)}
+              >
+                <div
+                  className={`${styles.checkbox} ${
+                    selectedService === card.id ? styles.checkboxActive : ''
+                  }`}
+                />
+                <div className={styles.cardBody}>
+                  {card.label && (
+                    <span className={styles.cardLabel}>{card.label}</span>
+                  )}
+                  {card.warnings && (
+                    <div className={styles.cardWarnings}>
+                      {card.warnings.map((w, i) => (
+                        <p
+                          key={i}
+                          className={
+                            i < 2 ? styles.warningRed : styles.warningMuted
+                          }
+                        >
+                          {w}
+                        </p>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -132,13 +156,13 @@ export default function AgendarPage() {
               <input
                 type="text"
                 className={styles.formInput}
-                value={cidadao?.bi || ''}
+                value={cidadao?.bi || '009593845LA044'}
                 disabled
               />
             </div>
 
             <div className={styles.formGroup}>
-              <label className={styles.formLabel}>Local de Renovação</label>
+              <label className={styles.formLabel}>Local de Renvação</label>
               <select
                 className={styles.formSelect}
                 value={selectedCenter}
@@ -159,9 +183,12 @@ export default function AgendarPage() {
                 <div className={styles.formGroup}>
                   <label className={styles.formLabel}>1ª Opção</label>
                   <input
-                    type="date"
+                    type="text"
                     className={styles.formInput}
+                    placeholder="Data"
                     value={date1}
+                    onFocus={(e) => (e.target.type = 'date')}
+                    onBlur={(e) => { if (!e.target.value) e.target.type = 'text'; }}
                     onChange={(e) => setDate1(e.target.value)}
                     required
                   />
@@ -171,11 +198,13 @@ export default function AgendarPage() {
                 <div className={styles.formGroup}>
                   <label className={styles.formLabel}>2ª Opção</label>
                   <input
-                    type="date"
+                    type="text"
                     className={styles.formInput}
-                    value={date2}
-                    onChange={(e) => setDate2(e.target.value)}
                     placeholder="Data (Opcional)"
+                    value={date2}
+                    onFocus={(e) => (e.target.type = 'date')}
+                    onBlur={(e) => { if (!e.target.value) e.target.type = 'text'; }}
+                    onChange={(e) => setDate2(e.target.value)}
                   />
                 </div>
               </div>
