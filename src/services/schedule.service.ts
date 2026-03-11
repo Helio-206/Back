@@ -16,7 +16,7 @@ export interface Schedule {
   center?: {
     id: string;
     name: string;
-    province: string;
+    provincia: string;
   };
   createdAt: string;
 }
@@ -43,16 +43,16 @@ export interface EstadoAgendamento {
 export interface Center {
   id: string;
   name: string;
-  province: string;
-  municipality?: string;
+  provincia: string;
   address?: string;
-  openTime?: string;
-  closeTime?: string;
+  openingTime?: string;
+  closingTime?: string;
+  active?: boolean;
 }
 
 export const scheduleService = {
   async getMySchedules(): Promise<Schedule[]> {
-    const { data } = await api.get('/schedules/user');
+    const { data } = await api.get('/schedules/user/me');
     return data;
   },
 

@@ -1,18 +1,24 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useContext, useState } from 'react';
 import type { ReactNode } from 'react';
 import { authService } from '../services/auth.service';
 import type { LoginPayload, RegisterPayload } from '../services/auth.service';
 
 interface User {
   id: string;
+  name?: string;
   email: string;
   role: string;
   cidadao?: {
     id: string;
     nome: string;
     sobrenome: string;
-    bi?: string;
+    numeroBIAnterior?: string;
     dataNascimento?: string;
+    sexo?: string;
+    provinciaResidencia?: string;
+    municipioResidencia?: string;
+    bairroResidencia?: string;
   };
 }
 
@@ -24,86 +30,46 @@ interface AuthContextType {
   login: (payload: LoginPayload) => Promise<void>;
   register: (payload: RegisterPayload) => Promise<void>;
   logout: () => void;
+  updateUser: (updates: Partial<User>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const storedToken = localStorage.getItem('token');
+  const [user, setUser] = useState<User | null>(() => {
     const storedUser = localStorage.getItem('user');
-    if (storedToken && storedUser) {
+    if (storedUser) {
       try {
-        setToken(storedToken);
-        setUser(JSON.parse(storedUser));
+        return JSON.parse(storedUser) as User;
       } catch {
-        localStorage.removeItem('token');
         localStorage.removeItem('user');
       }
     }
-    setIsLoading(false);
-  }, []);
+    return null;
+  });
+  const [token, setToken] = useState<string | null>(
+    () => localStorage.getItem('token'),
+  );
+  const [isLoading] = useState(false);
 
   const login = async (payload: LoginPayload) => {
-    try {
-      const response = await authService.login(payload);
-      setToken(response.access_token);
-      setUser(response.user);
-      localStorage.setItem('token', response.access_token);
-      localStorage.setItem('user', JSON.stringify(response.user));
-    } catch {
-      // Modo demo: se o backend não estiver disponível, entra com dados fictícios
-      const demoUser: User = {
-        id: 'demo-001',
-        email: payload.email || 'demo@gov.ao',
-        role: 'USER',
-        cidadao: {
-          id: 'cid-001',
-          nome: 'Nataniel Hélio',
-          sobrenome: 'Matondo',
-          bi: '009593845LA0444',
-          dataNascimento: '2007-04-16',
-        },
-      };
-      const demoToken = 'demo-token';
-      setToken(demoToken);
-      setUser(demoUser);
-      localStorage.setItem('token', demoToken);
-      localStorage.setItem('user', JSON.stringify(demoUser));
-    }
+    const response = await authService.login(payload);
+    setToken(response.access_token);
+    setUser(response.user);
+    localStorage.setItem('token', response.access_token);
+    localStorage.setItem('user', JSON.stringify(response.user));
   };
 
   const register = async (payload: RegisterPayload) => {
-    try {
-      const response = await authService.register(payload);
-      setToken(response.access_token);
-      setUser(response.user);
-      localStorage.setItem('token', response.access_token);
-      localStorage.setItem('user', JSON.stringify(response.user));
-    } catch {
-      // Modo demo: se o backend não estiver disponível, regista com dados fictícios
-      const demoUser: User = {
-        id: 'demo-001',
-        email: payload.email || 'demo@gov.ao',
-        role: 'USER',
-        cidadao: {
-          id: 'cid-001',
-          nome: payload.cidadao?.nome || 'Nataniel Hélio',
-          sobrenome: payload.cidadao?.sobrenome || 'Matondo',
-          bi: payload.cidadao?.bi || '009593845LA0444',
-          dataNascimento: '2007-04-16',
-        },
-      };
-      const demoToken = 'demo-token';
-      setToken(demoToken);
-      setUser(demoUser);
-      localStorage.setItem('token', demoToken);
-      localStorage.setItem('user', JSON.stringify(demoUser));
-    }
+    await authService.register(payload);
+    const loginResponse = await authService.login({
+      email: payload.email,
+      password: payload.password,
+    });
+    setToken(loginResponse.access_token);
+    setUser(loginResponse.user);
+    localStorage.setItem('token', loginResponse.access_token);
+    localStorage.setItem('user', JSON.stringify(loginResponse.user));
   };
 
   const logout = () => {
@@ -111,6 +77,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+  };
+
+  const updateUser = (updates: Partial<User>) => {
+    setUser((prev) => {
+      if (!prev) return prev;
+      const updated = { ...prev, ...updates };
+      localStorage.setItem('user', JSON.stringify(updated));
+      return updated;
+    });
   };
 
   return (
@@ -123,6 +98,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         login,
         register,
         logout,
+        updateUser,
       }}
     >
       {children}

@@ -1,0 +1,369 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.pageTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111;
+  margin: 0;
+}
+
+.badge {
+  padding: 5px 16px;
+  border-radius: 16px;
+  background: var(--color-primary-red);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.searchRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.searchWrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 1.5px solid #B0B0B0;
+  border-radius: 8px;
+  padding: 0 14px;
+  height: 46px;
+  position: relative;
+}
+
+.searchInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  color: #333;
+  background: transparent;
+}
+
+.searchInput::placeholder {
+  color: #AEAEAE;
+}
+
+.clearBtn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #999;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+.clearBtn:hover {
+  color: #333;
+}
+
+.searchBtn {
+  height: 46px;
+  padding: 0 28px;
+  border: 2px solid var(--color-primary-red);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--color-primary-red);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+
+.searchBtn:hover {
+  background: #FFF5F5;
+}
+
+.outerCard {
+  border: 1.5px solid #222;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.statsHeader {
+  background: var(--color-primary-red);
+  padding: 14px 24px 16px;
+  color: #fff;
+  border-radius: 10px 10px 0 0;
+}
+
+.statsLabel {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 0 2px;
+}
+
+.statsCount {
+  font-size: 34px;
+  font-weight: 800;
+  margin: 0;
+  line-height: 1.1;
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+.table thead tr {
+  background: #D5D5D5;
+}
+
+.table th {
+  text-align: left;
+  padding: 10px 16px;
+  font-weight: 700;
+  font-size: 13px;
+  color: #111;
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 12px 16px;
+  color: #444;
+  border-bottom: 1px solid #F0F0F0;
+  vertical-align: middle;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table tbody tr:hover {
+  background: #FAFAFA;
+}
+
+.emptyCell {
+  text-align: center;
+  padding: 40px 16px !important;
+  color: #999;
+  font-style: italic;
+}
+
+.tableFooter {
+  min-height: 100px;
+  background: #ECECEC;
+}
+
+.detailsBtn {
+  background: none;
+  border: none;
+  color: var(--color-primary-red);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  padding: 4px 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.detailsBtn:hover {
+  opacity: 0.8;
+}
+
+/* CRUD Buttons & Status */
+.createBtn {
+  margin-left: auto;
+  padding: 8px 22px;
+  background: var(--color-primary-red);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.createBtn:hover { opacity: 0.85; }
+
+.actionCell {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.editBtn {
+  background: none;
+  border: 1.5px solid #3B82F6;
+  color: #3B82F6;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.editBtn:hover { background: #EFF6FF; }
+
+.deactivateBtn {
+  background: none;
+  border: 1.5px solid #EF4444;
+  color: #EF4444;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.deactivateBtn:hover { background: #FEF2F2; }
+
+.activateBtn {
+  background: none;
+  border: 1.5px solid #22C55E;
+  color: #22C55E;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.activateBtn:hover { background: #F0FDF4; }
+
+.statusActive {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 12px;
+  background: #F0FDF4;
+  color: #15803D;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.statusInactive {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 12px;
+  background: #FEF2F2;
+  color: #B91C1C;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Modal */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background: #fff;
+  border-radius: 14px;
+  padding: 28px 32px;
+  min-width: 480px;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.2);
+}
+
+.modalTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111;
+  margin: 0 0 18px;
+}
+
+.formError {
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
+  color: #B91C1C;
+  font-size: 13px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  margin-bottom: 14px;
+}
+
+.formGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.formGroup label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #555;
+}
+
+.formGroup input,
+.formGroup select {
+  padding: 8px 12px;
+  border: 1.5px solid #D0D0D0;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #333;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.formGroup input:focus,
+.formGroup select:focus {
+  border-color: var(--color-primary-red);
+}
+
+.formActions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.cancelBtn {
+  padding: 8px 22px;
+  border: 1.5px solid #999;
+  border-radius: 8px;
+  background: #fff;
+  color: #666;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.cancelBtn:hover { background: #F5F5F5; }
+
+.saveBtn {
+  padding: 8px 28px;
+  border: none;
+  border-radius: 8px;
+  background: var(--color-primary-red);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.saveBtn:hover { opacity: 0.85; }
+.saveBtn:disabled { opacity: 0.6; cursor: not-allowed; }

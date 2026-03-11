@@ -86,7 +86,7 @@ export default function EstadoPage() {
                   </span>
                   <span className={styles.scheduleDetail}>
                     <strong>Local:</strong> {schedule.center?.name || '—'}
-                    {schedule.center?.province && ` — ${schedule.center.province}`}
+                    {schedule.center?.provincia && ` — ${schedule.center.provincia}`}
                   </span>
                 </div>
 

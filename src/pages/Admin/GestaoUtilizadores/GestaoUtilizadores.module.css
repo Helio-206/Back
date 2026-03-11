@@ -1,0 +1,280 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.pageTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111;
+  margin: 0;
+}
+
+.badge {
+  padding: 5px 16px;
+  border-radius: 16px;
+  background: var(--color-primary-red);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.searchRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.searchWrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 1.5px solid #B0B0B0;
+  border-radius: 8px;
+  padding: 0 14px;
+  height: 46px;
+  position: relative;
+}
+
+.searchInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  color: #333;
+  background: transparent;
+}
+
+.searchInput::placeholder {
+  color: #AEAEAE;
+}
+
+.clearBtn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #999;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+.clearBtn:hover {
+  color: #333;
+}
+
+.searchBtn {
+  height: 46px;
+  padding: 0 28px;
+  border: 2px solid var(--color-primary-red);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--color-primary-red);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+
+.searchBtn:hover {
+  background: #FFF5F5;
+}
+
+.outerCard {
+  border: 1.5px solid #222;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.statsHeader {
+  background: var(--color-primary-red);
+  padding: 14px 24px 16px;
+  color: #fff;
+  border-radius: 10px 10px 0 0;
+}
+
+.statsLabel {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 0 2px;
+}
+
+.statsCount {
+  font-size: 34px;
+  font-weight: 800;
+  margin: 0;
+  line-height: 1.1;
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+.table thead tr {
+  background: #D5D5D5;
+}
+
+.table th {
+  text-align: left;
+  padding: 10px 16px;
+  font-weight: 700;
+  font-size: 13px;
+  color: #111;
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 12px 16px;
+  color: #444;
+  border-bottom: 1px solid #F0F0F0;
+  vertical-align: middle;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table tbody tr:hover {
+  background: #FAFAFA;
+}
+
+.monoCell {
+  font-family: 'Courier New', monospace;
+  font-size: 12.5px;
+  letter-spacing: 0.03em;
+}
+
+.emptyCell {
+  text-align: center;
+  padding: 40px 16px !important;
+  color: #999;
+  font-style: italic;
+}
+
+.tableFooter {
+  min-height: 100px;
+  background: #ECECEC;
+}
+
+.detailsBtn {
+  background: none;
+  border: none;
+  color: var(--color-primary-red);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  padding: 4px 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.detailsBtn:hover {
+  opacity: 0.8;
+}
+
+/* Role filter tabs */
+.roleTabs {
+  display: flex;
+  gap: 0;
+  border: 1.5px solid #E0E0E0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.roleTab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border: none;
+  border-right: 1px solid #E0E0E0;
+  background: #fff;
+  color: #666;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.roleTab:last-child {
+  border-right: none;
+}
+
+.roleTab:hover {
+  background: #FFF5F5;
+}
+
+.roleTabActive {
+  background: var(--color-primary-red);
+  color: #fff;
+}
+
+.roleTabActive:hover {
+  background: var(--color-primary-red);
+}
+
+.roleCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  background: rgba(0,0,0,0.1);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.roleTabActive .roleCount {
+  background: rgba(255,255,255,0.3);
+}
+
+.roleBadge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  background: #EFF6FF;
+  color: #3B82F6;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.actionCell {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.deactivateBtn {
+  background: none;
+  border: 1.5px solid #EF4444;
+  color: #EF4444;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.deactivateBtn:hover { background: #FEF2F2; }

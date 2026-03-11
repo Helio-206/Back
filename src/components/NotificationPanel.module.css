@@ -1,0 +1,207 @@
+.container {
+  position: relative;
+}
+
+.bellBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.15s;
+}
+
+.bellBtn:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+/* Dropdown */
+.dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: -8px;
+  width: 340px;
+  max-height: 460px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.dropdownHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid #E5E7EB;
+}
+
+.dropdownTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.headerActions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.markAllBtn,
+.closeBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  color: #888;
+  display: flex;
+  align-items: center;
+  transition: all 0.15s;
+}
+
+.markAllBtn:hover,
+.closeBtn:hover {
+  background: #F3F4F6;
+  color: #333;
+}
+
+.dropdownBody {
+  overflow-y: auto;
+  flex: 1;
+  max-height: 380px;
+}
+
+.dropdownEmpty {
+  padding: 40px 16px;
+  text-align: center;
+  color: #999;
+  font-size: 13px;
+}
+
+/* Notification Item */
+.notifItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #F3F4F6;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.notifItem:hover {
+  background: #FAFAFA;
+}
+
+.notifItem:last-child {
+  border-bottom: none;
+}
+
+.notifUnread {
+  background: #F0F7FF;
+}
+
+.notifUnread:hover {
+  background: #E8F2FF;
+}
+
+.notifIcon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.iconGreen {
+  color: #16A34A;
+}
+
+.iconRed {
+  color: #DC2626;
+}
+
+.iconBlue {
+  color: #2563EB;
+}
+
+.iconGray {
+  color: #9CA3AF;
+}
+
+.notifContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.notifTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a1a;
+  line-height: 1.3;
+}
+
+.notifMessage {
+  font-size: 12px;
+  color: #666;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.notifTime {
+  font-size: 11px;
+  color: #9CA3AF;
+  margin-top: 2px;
+}
+
+.readBtn {
+  flex-shrink: 0;
+  background: none;
+  border: 1px solid #D1D5DB;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9CA3AF;
+  transition: all 0.15s;
+  margin-top: 2px;
+}
+
+.readBtn:hover {
+  border-color: #16A34A;
+  color: #16A34A;
+  background: #F0FDF4;
+}

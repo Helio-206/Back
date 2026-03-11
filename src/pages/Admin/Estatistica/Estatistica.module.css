@@ -1,0 +1,269 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.pageTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111;
+  margin: 0;
+}
+
+.viewToggle {
+  display: flex;
+  gap: 0;
+}
+
+.toggleBtn {
+  padding: 7px 18px;
+  border: 2px solid var(--color-primary-red);
+  background: #fff;
+  color: var(--color-primary-red);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.toggleBtn:first-child {
+  border-radius: 6px 0 0 6px;
+}
+
+.toggleBtn:last-child {
+  border-radius: 0 6px 6px 0;
+  border-left: none;
+}
+
+.toggleActive {
+  background: var(--color-primary-red);
+  color: #fff;
+}
+
+.filterRow {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  border: 1.5px solid #B0B0B0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.filterGroup {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 16px;
+  border-right: 1px solid #E0E0E0;
+  min-width: 0;
+}
+
+.filterGroup:last-of-type {
+  border-right: none;
+}
+
+.filterLabel {
+  font-size: 11px;
+  color: #999;
+  margin-bottom: 2px;
+}
+
+.filterSelect {
+  border: none;
+  outline: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  appearance: none;
+}
+
+.filterBtn {
+  padding: 0 32px;
+  border: none;
+  border-left: 2px solid var(--color-primary-red);
+  background: #fff;
+  color: var(--color-primary-red);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.filterBtn:hover {
+  background: #FFF5F5;
+}
+
+.outerCard {
+  border: 1.5px solid #222;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.statsHeader {
+  background: var(--color-primary-red);
+  padding: 14px 24px 16px;
+  color: #fff;
+  border-radius: 10px 10px 0 0;
+}
+
+.statsLabel {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 0 2px;
+}
+
+.statsCount {
+  font-size: 34px;
+  font-weight: 800;
+  margin: 0;
+  line-height: 1.1;
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+.table thead tr {
+  background: #D5D5D5;
+}
+
+.table th {
+  text-align: left;
+  padding: 10px 16px;
+  font-weight: 700;
+  font-size: 13px;
+  color: #111;
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 12px 16px;
+  color: #444;
+  border-bottom: 1px solid #F0F0F0;
+  vertical-align: middle;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table tbody tr:hover {
+  background: #FAFAFA;
+}
+
+.monoCell {
+  font-family: 'Courier New', monospace;
+  font-size: 12.5px;
+  letter-spacing: 0.03em;
+}
+
+.emptyCell {
+  text-align: center;
+  padding: 40px 16px !important;
+  color: #999;
+  font-style: italic;
+}
+
+.tableFooter {
+  min-height: 100px;
+  background: #ECECEC;
+}
+
+.detailsBtn {
+  background: none;
+  border: none;
+  color: var(--color-primary-red);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  padding: 4px 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.detailsBtn:hover {
+  opacity: 0.8;
+}
+
+.chartCard {
+  border: 1.5px solid #222;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  min-height: 420px;
+}
+
+.chartContainer {
+  padding: 32px;
+}
+
+.chartTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: #222;
+  margin: 0 0 24px;
+}
+
+.barChart {
+  display: flex;
+  align-items: flex-end;
+  gap: 32px;
+  height: 240px;
+  padding: 0 16px 0 0;
+  border-bottom: 2px solid #E0E0E0;
+  padding-bottom: 8px;
+}
+
+.barGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 50px;
+}
+
+.barValue {
+  font-size: 13px;
+  font-weight: 700;
+  color: #333;
+}
+
+.bar {
+  width: 48px;
+  background: var(--color-primary-red);
+  border-radius: 4px 4px 0 0;
+  min-height: 4px;
+  transition: height 0.4s ease;
+}
+
+.barBlue {
+  background: var(--color-primary-blue);
+}
+
+.barLabel {
+  font-size: 12px;
+  color: #666;
+  text-align: center;
+  white-space: nowrap;
+}

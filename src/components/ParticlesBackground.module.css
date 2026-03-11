@@ -1,0 +1,38 @@
+.canvas {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.particle {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: floatDrift linear infinite;
+  will-change: transform;
+}
+
+.color_red  { color: #C41E24; }
+.color_gold { color: #B8860B; }
+.color_dark { color: #3B3B3B; }
+
+@keyframes floatDrift {
+  0% {
+    transform: translateY(0)   translateX(0)    rotate(0deg);
+  }
+  25% {
+    transform: translateY(-60px) translateX(18px)  rotate(20deg);
+  }
+  50% {
+    transform: translateY(-120px) translateX(-12px) rotate(-15deg);
+  }
+  75% {
+    transform: translateY(-60px) translateX(22px)  rotate(25deg);
+  }
+  100% {
+    transform: translateY(0)   translateX(0)    rotate(0deg);
+  }
+}

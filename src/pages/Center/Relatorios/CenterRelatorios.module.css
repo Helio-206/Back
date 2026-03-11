@@ -1,0 +1,243 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.loading {
+  text-align: center;
+  padding: 48px;
+  color: #888;
+  font-size: 14px;
+}
+
+.pageHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pageTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-primary-red);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.centerLabel {
+  font-size: 13px;
+  color: #666;
+  margin: -16px 0 0;
+}
+
+/* Config Card */
+.configCard {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.configTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.configGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: 16px;
+  align-items: end;
+}
+
+.configGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.configGroup label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #555;
+}
+
+.configGroup select,
+.configGroup input {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #D1D5DB;
+  font-size: 13px;
+  color: #333;
+  background: #fff;
+}
+
+.configActions {
+  display: flex;
+  align-items: end;
+}
+
+.generateBtn {
+  padding: 9px 24px;
+  border-radius: 8px;
+  border: none;
+  background: var(--color-primary-red);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.generateBtn:hover {
+  background: #A8181E;
+}
+
+/* Report Card */
+.reportCard {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.reportHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.reportTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+}
+
+.exportBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--color-primary-red);
+  background: transparent;
+  color: var(--color-primary-red);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.exportBtn:hover {
+  background: var(--color-primary-red);
+  color: #fff;
+}
+
+/* Summary Grid */
+.summaryGrid {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #F3F4F6;
+}
+
+.summaryItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.summaryNum {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.summaryLbl {
+  font-size: 11px;
+  color: #888;
+  margin-top: 2px;
+}
+
+/* Table */
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.table th {
+  text-align: left;
+  padding: 10px 14px;
+  font-weight: 600;
+  font-size: 12px;
+  color: #666;
+  border-bottom: 2px solid #E5E7EB;
+  background: #FAFAFA;
+}
+
+.table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #F3F4F6;
+  color: #333;
+}
+
+.table tr:hover td {
+  background: #F9FAFB;
+}
+
+.emptyCell {
+  text-align: center;
+  padding: 32px;
+  color: #999;
+}
+
+/* Status badges */
+.statusAGENDADO {
+  padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;
+  background: #FEF3C7; color: #92400E;
+}
+.statusCONFIRMADO {
+  padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;
+  background: #DBEAFE; color: #1E40AF;
+}
+.statusCONCLUIDO {
+  padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;
+  background: #DCFCE7; color: #166534;
+}
+.statusCANCELADO,
+.statusREJEITADO {
+  padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;
+  background: #FEE2E2; color: #991B1B;
+}
+.statusDefault {
+  padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;
+  background: #F3F4F6; color: #374151;
+}
+
+@media (max-width: 900px) {
+  .configGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .summaryGrid {
+    flex-wrap: wrap;
+  }
+}

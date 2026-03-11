@@ -1,0 +1,239 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.loading,
+.emptyState {
+  text-align: center;
+  padding: 48px;
+  font-size: 14px;
+  color: #888;
+}
+
+.pageHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pageTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-primary-red);
+  margin: 0;
+}
+
+.scheduleCount {
+  font-size: 13px;
+  color: #888;
+  background: #F3F4F6;
+  padding: 4px 12px;
+  border-radius: 12px;
+}
+
+.successMsg {
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: #DCFCE7;
+  color: #166534;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.errorMsg {
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: #FEE2E2;
+  color: #991B1B;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Filter Bar */
+.filterBar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filterBtn {
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1px solid #D1D5DB;
+  background: #fff;
+  color: #555;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.filterBtn:hover {
+  border-color: var(--color-primary-red);
+  color: var(--color-primary-red);
+}
+
+.filterActive {
+  background: var(--color-primary-red);
+  color: #fff;
+  border-color: var(--color-primary-red);
+}
+
+.filterActive:hover {
+  background: #A8181E;
+  color: #fff;
+}
+
+/* Schedule List */
+.scheduleList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.scheduleCard {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  transition: box-shadow 0.15s;
+}
+
+.scheduleCard:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.cardMain {
+  flex: 1;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.citizenName {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.cardDetails {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 13px;
+  color: #666;
+}
+
+.cardDetails strong {
+  color: #333;
+}
+
+.cardActions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.actionBtn {
+  padding: 7px 18px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: none;
+  white-space: nowrap;
+}
+
+.actionBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.actionPrimary {
+  background: var(--color-primary-red);
+  color: #fff;
+}
+
+.actionPrimary:hover:not(:disabled) {
+  background: #A8181E;
+}
+
+.actionDanger {
+  background: transparent;
+  border: 1.5px solid #DC2626;
+  color: #DC2626;
+}
+
+.actionDanger:hover:not(:disabled) {
+  background: #FEF2F2;
+}
+
+/* Status badges */
+.statusAGENDADO {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #FEF3C7;
+  color: #92400E;
+}
+
+.statusCONFIRMADO {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #DBEAFE;
+  color: #1E40AF;
+}
+
+.statusBIOMETRIA_RECOLHIDA,
+.statusEM_PROCESSAMENTO {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #E0E7FF;
+  color: #4338CA;
+}
+
+.statusPRONTO_RETIRADA,
+.statusRETIRADO {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #DCFCE7;
+  color: #166534;
+}
+
+.statusCANCELADO,
+.statusREJEITADO {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #FEE2E2;
+  color: #991B1B;
+}
+
+.statusDefault {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #F3F4F6;
+  color: #374151;
+}

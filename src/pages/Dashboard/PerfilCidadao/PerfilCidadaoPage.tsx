@@ -4,18 +4,6 @@ import { scheduleService } from '../../../services/schedule.service';
 import type { Schedule } from '../../../services/schedule.service';
 import styles from './PerfilCidadao.module.css';
 
-/* Demo activity data shown when backend is unavailable */
-const DEMO_ACTIVITIES = [
-  {
-    id: 'demo-1',
-    scheduledDate: '2026-03-06',
-    tipoServico: { id: 't1', descricao: 'Renovação' },
-    estadoAgendamento: { id: 'e1', descricao: 'Agendado', status: 'AGENDADO' },
-    center: { id: 'c1', name: 'Posto Central', province: 'Luanda' },
-    createdAt: '2026-03-06',
-  },
-];
-
 export default function PerfilCidadaoPage() {
   const { user } = useAuth();
   const [schedules, setSchedules] = useState<Schedule[]>([]);
@@ -28,9 +16,9 @@ export default function PerfilCidadaoPage() {
   const loadSchedules = async () => {
     try {
       const data = await scheduleService.getMySchedules();
-      setSchedules(data.length > 0 ? data : DEMO_ACTIVITIES as Schedule[]);
+      setSchedules(data);
     } catch {
-      setSchedules(DEMO_ACTIVITIES as Schedule[]);
+      setSchedules([]);
     } finally {
       setLoading(false);
     }
@@ -68,22 +56,24 @@ export default function PerfilCidadaoPage() {
         <h2 className={styles.sectionTitle}>Dados do Cidadão</h2>
 
         <div className={styles.citizenCard}>
-          <span className={styles.biStatus}>Caducado</span>
+          {cidadao?.numeroBIAnterior && (
+            <span className={styles.biStatus}>BI Anterior</span>
+          )}
           <div className={styles.cardContent}>
             {/* Left: BI + Citizen info */}
             <div className={styles.cardLeft}>
               <div className={styles.biRow}>
                 <p className={styles.biLabel}>Nº Bilhete de Identidade</p>
-                <p className={styles.biNumber}>{cidadao?.bi || '009593845LA0444'}</p>
+                <p className={styles.biNumber}>{cidadao?.numeroBIAnterior || '—'}</p>
               </div>
 
               <p className={styles.citizenLabel}>Cidadão</p>
-              <p className={styles.citizenName}>{nomeCompleto || 'Nataniel Hélio Matondo'}</p>
+              <p className={styles.citizenName}>{nomeCompleto || '—'}</p>
 
               <div className={styles.dateInfo}>
                 <span className={styles.dateLabel}>Data de Nascimento</span>
                 <span className={styles.dateValue}>
-                  {cidadao?.dataNascimento ? formatDate(cidadao.dataNascimento) : '16-04-2007'}
+                  {cidadao?.dataNascimento ? formatDate(cidadao.dataNascimento) : '—'}
                 </span>
               </div>
             </div>
@@ -91,16 +81,22 @@ export default function PerfilCidadaoPage() {
             {/* Vertical divider */}
             <div className={styles.cardDivider} />
 
-            {/* Right: emission and validity */}
+            {/* Right: extra info */}
             <div className={styles.cardRight}>
               <div className={styles.validityRow}>
-                <span className={styles.validityLabel}>Emitido em:</span>
-                <span className={styles.validityValue}>25/11/2020</span>
+                <span className={styles.validityLabel}>Sexo:</span>
+                <span className={styles.validityValue}>{cidadao?.sexo || '—'}</span>
               </div>
               <div className={styles.validityRow}>
-                <span className={styles.validityLabel}>Válido até:</span>
-                <span className={styles.validityValue}>25/11/2025</span>
+                <span className={styles.validityLabel}>Província:</span>
+                <span className={styles.validityValue}>{cidadao?.provinciaResidencia || '—'}</span>
               </div>
+              {cidadao?.bairroResidencia && (
+                <div className={styles.validityRow}>
+                  <span className={styles.validityLabel}>Bairro:</span>
+                  <span className={styles.validityValue}>{cidadao.bairroResidencia}</span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -109,7 +105,7 @@ export default function PerfilCidadaoPage() {
 
         {/* Atividades */}
         <div className={styles.activitiesSection}>
-          <h2 className={styles.sectionTitle}>Atividades da Cidadção</h2>
+          <h2 className={styles.sectionTitle}>Atividades do Cidadão</h2>
 
           {loading ? (
             <div className={styles.emptyState}>A carregar...</div>

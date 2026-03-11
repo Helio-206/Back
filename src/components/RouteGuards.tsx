@@ -29,14 +29,17 @@ export function ProtectedRoute() {
 }
 
 export function PublicRoute() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
 
   if (isLoading) {
     return null;
   }
 
   if (isAuthenticated) {
-    return <Navigate to="/dashboard/perfil" replace />;
+    let target = '/dashboard/perfil';
+    if (user?.role === 'ADMIN') target = '/addadd';
+    else if (user?.role === 'CENTER') target = '/centro';
+    return <Navigate to={target} replace />;
   }
 
   return <Outlet />;

@@ -23,7 +23,6 @@
   margin-bottom: var(--spacing-md);
 }
 
-/* ========== SCHEDULE CARDS ========== */
 .scheduleList {
   display: flex;
   flex-direction: column;

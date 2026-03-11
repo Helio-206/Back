@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { User, Lock, EyeOff, Eye, KeyRound } from 'lucide-react';
+import { User, Lock, EyeOff, Eye } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import styles from '../../layouts/AuthLayout.module.css';
 
@@ -23,9 +23,12 @@ export default function LoginPage() {
 
     try {
       await login({ email, password });
-      navigate('/dashboard/perfil');
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Credenciais inválidas. Tente novamente.');
+      const userRaw = localStorage.getItem('user');
+      const user = userRaw ? (JSON.parse(userRaw) as { role?: string }) : null;
+      navigate(user?.role === 'ADMIN' ? '/addadd' : '/dashboard/perfil');
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { message?: string } } };
+      setError(axiosErr.response?.data?.message || 'Credenciais inválidas. Tente novamente.');
     } finally {
       setLoading(false);
     }
@@ -94,23 +97,16 @@ export default function LoginPage() {
           </label>
         </div>
 
-        <button type="submit" className={styles.submitBtn} disabled={loading}>
-          {loading ? 'A entrar...' : 'Entrar'}
-        </button>
+        <div className={styles.submitBtnWrap}>
+          <button type="submit" className={styles.submitBtn} disabled={loading}>
+            {loading ? 'A entrar...' : 'Entrar'}
+          </button>
+        </div>
       </form>
 
-      <div className={styles.divider}>
-        <span className={styles.dividerLine} />
-        <span className={styles.dividerText}>OU</span>
-        <span className={styles.dividerLine} />
-      </div>
-
-      <Link to="/register">
-        <button type="button" className={styles.altBtn}>
-          <KeyRound size={18} className={styles.altBtnIcon} />
-          Entrar com admin.gov
-        </button>
-      </Link>
+      <p className={styles.registerLink}>
+        Não tem conta? <Link to="/register">Registrar?</Link>
+      </p>
     </div>
   );
 }

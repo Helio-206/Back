@@ -1,0 +1,304 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.loading,
+.error {
+  text-align: center;
+  padding: 48px;
+  font-size: 14px;
+  color: #888;
+}
+
+.error {
+  color: #991b1b;
+}
+
+/* Center Info Card */
+.centerCard {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+.centerIcon {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  background: #FDE8E8;
+  color: var(--color-primary-red);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.centerInfo {
+  flex: 1;
+}
+
+.centerName {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 4px;
+}
+
+.centerDetail {
+  font-size: 13px;
+  color: #666;
+  margin: 2px 0;
+}
+
+.centerStatus {
+  flex-shrink: 0;
+}
+
+.active {
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #DCFCE7;
+  color: #166534;
+}
+
+.inactive {
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #FEE2E2;
+  color: #991B1B;
+}
+
+/* Stats Grid */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.statCard {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.statCard > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.statNumber {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1;
+}
+
+.statLabel {
+  font-size: 12px;
+  color: #888;
+  margin-top: 4px;
+}
+
+.statIconBlue { color: #2563EB; }
+.statIconOrange { color: #D97706; }
+.statIconGreen { color: #16A34A; }
+.statIconRed { color: #DC2626; }
+.statIconPurple { color: #7C3AED; }
+.statIconTeal { color: #0D9488; }
+
+/* Sections */
+.section {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.sectionTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-primary-red);
+  margin: 0 0 16px;
+}
+
+.sectionHeader .sectionTitle {
+  margin: 0;
+}
+
+.viewAllBtn {
+  padding: 6px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--color-primary-red);
+  background: transparent;
+  color: var(--color-primary-red);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.viewAllBtn:hover {
+  background: var(--color-primary-red);
+  color: #fff;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 32px;
+  color: #999;
+  font-size: 13px;
+}
+
+/* Table */
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.table th {
+  text-align: left;
+  padding: 10px 14px;
+  font-weight: 600;
+  font-size: 12px;
+  color: #666;
+  border-bottom: 2px solid #E5E7EB;
+  background: #FAFAFA;
+}
+
+.table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #F3F4F6;
+  color: #333;
+}
+
+.table tr:hover td {
+  background: #F9FAFB;
+}
+
+/* Status badges */
+.statusAGENDADO {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #FEF3C7;
+  color: #92400E;
+}
+
+.statusCONFIRMADO {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #DBEAFE;
+  color: #1E40AF;
+}
+
+.statusBIOMETRIA_RECOLHIDA,
+.statusEM_PROCESSAMENTO {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #E0E7FF;
+  color: #4338CA;
+}
+
+.statusPRONTO_RETIRADA,
+.statusRETIRADO {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #DCFCE7;
+  color: #166534;
+}
+
+.statusCANCELADO,
+.statusREJEITADO {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #FEE2E2;
+  color: #991B1B;
+}
+
+.statusDefault {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #F3F4F6;
+  color: #374151;
+}
+
+/* Activity list */
+.activityList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.activityItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid #F3F4F6;
+}
+
+.activityItem:last-child {
+  border-bottom: none;
+}
+
+.activityDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-primary-red);
+  flex-shrink: 0;
+}
+
+.activityInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.activityName {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+}
+
+.activityMeta {
+  font-size: 12px;
+  color: #888;
+}

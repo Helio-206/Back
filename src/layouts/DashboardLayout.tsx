@@ -1,23 +1,30 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { User, LogOut } from 'lucide-react';
+import { User, LogOut, CalendarPlus, ClipboardList, RefreshCw } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import NotificationPanel from '../components/NotificationPanel';
 import styles from './DashboardLayout.module.css';
 
 const navItems = [
-  { label: 'Perfil Cidadão', path: '/dashboard/perfil' },
-  { label: 'Agendar', path: '/dashboard/agendar' },
-  { label: 'Estado', path: '/dashboard/estado' },
-  { label: 'Atualização', path: '/dashboard/atualizacao' },
+  { label: 'Perfil Cidadão', path: '/dashboard/perfil', icon: User },
+  { label: 'Agendar', path: '/dashboard/agendar', icon: CalendarPlus },
+  { label: 'Estado', path: '/dashboard/estado', icon: ClipboardList },
+  { label: 'Atualização', path: '/dashboard/atualizacao', icon: RefreshCw },
 ];
 
 export default function DashboardLayout() {
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
+
+  const citizenName = user?.cidadao
+    ? `${user.cidadao.nome} ${user.cidadao.sobrenome}`
+    : user?.email || 'Cidadão';
+
+  const avatarLetter = citizenName.trim().charAt(0).toUpperCase() || 'C';
 
   return (
     <div className={styles.dashboardContainer}>
@@ -33,7 +40,9 @@ export default function DashboardLayout() {
         </p>
 
         <nav className={styles.sidebarNav}>
-          {navItems.map((item) => (
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            return (
               <NavLink
                 key={item.path}
                 to={item.path}
@@ -41,10 +50,11 @@ export default function DashboardLayout() {
                   `${styles.navLink} ${isActive ? styles.navLinkActive : ''}`
                 }
               >
-                <User size={15} strokeWidth={1.8} />
+                <Icon size={15} strokeWidth={1.8} />
                 {item.label}
               </NavLink>
-          ))}
+            );
+          })}
         </nav>
 
         <div className={styles.sidebarFooter}>
@@ -57,7 +67,27 @@ export default function DashboardLayout() {
 
       {/* Main Content */}
       <main className={styles.mainContent}>
-        <Outlet />
+        {/* Header bar */}
+        <div className={styles.headerBar}>
+          <span className={styles.headerLine} />
+          <h1 className={styles.headerTitle}>Painel do Cidadão</h1>
+          <span className={styles.headerLine} />
+
+          <NotificationPanel accentColor="#C41E24" />
+
+          <div className={styles.userBadge}>
+            <div className={styles.userAvatar}>
+              <span className={styles.avatarLetter}>{avatarLetter}</span>
+            </div>
+            <div className={styles.userInfo}>
+              <span className={styles.userRole}>Cidadão</span>
+              <span className={styles.userName}>{citizenName}</span>
+            </div>
+          </div>
+        </div>
+        <div className={styles.mainBody}>
+          <Outlet />
+        </div>
       </main>
     </div>
   );

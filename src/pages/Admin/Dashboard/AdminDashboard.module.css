@@ -1,0 +1,276 @@
+
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.pageTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111;
+  margin: 0;
+}
+
+/* KPI Cards */
+.kpiRow {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.kpiCard {
+  flex: 1;
+  min-width: 140px;
+  background: #fff;
+  border: 1.5px solid #E0E0E0;
+  border-radius: 12px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: box-shadow 0.15s;
+}
+
+.kpiCard:hover {
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+.kpiLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.kpiValue {
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--color-primary-red);
+  line-height: 1.1;
+}
+
+/* Top Centers & Services */
+.topRow {
+  display: flex;
+  gap: 16px;
+}
+
+.topCard {
+  flex: 1;
+  background: #fff;
+  border: 1.5px solid #E0E0E0;
+  border-radius: 12px;
+  padding: 18px 20px;
+}
+
+.topCardTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 12px;
+}
+
+.topList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.topItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: #444;
+  padding: 6px 0;
+  border-bottom: 1px solid #F0F0F0;
+}
+
+.topItem:last-child {
+  border-bottom: none;
+}
+
+.topCount {
+  font-weight: 700;
+  color: var(--color-primary-red);
+  background: #FFF5F5;
+  padding: 2px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+}
+
+.topEmpty {
+  font-size: 13px;
+  color: #999;
+  font-style: italic;
+  margin: 0;
+}
+
+.searchRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.searchWrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 1.5px solid #B0B0B0;
+  border-radius: 8px;
+  padding: 0 14px;
+  height: 46px;
+  position: relative;
+}
+
+.searchInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  color: #333;
+  background: transparent;
+}
+
+.searchInput::placeholder {
+  color: #AEAEAE;
+}
+
+.clearBtn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #999;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+.clearBtn:hover {
+  color: #333;
+}
+
+.searchBtn {
+  height: 46px;
+  padding: 0 28px;
+  border: 2px solid var(--color-primary-red);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--color-primary-red);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+
+.searchBtn:hover {
+  background: #FFF5F5;
+}
+
+.outerCard {
+  border: 1.5px solid #222;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.statsHeader {
+  background: var(--color-primary-red);
+  padding: 14px 24px 16px;
+  color: #fff;
+  border-radius: 10px 10px 0 0;
+}
+
+.statsLabel {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 0 2px;
+}
+
+.statsCount {
+  font-size: 34px;
+  font-weight: 800;
+  margin: 0;
+  line-height: 1.1;
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+.table thead tr {
+  background: #D5D5D5;
+}
+
+.table th {
+  text-align: left;
+  padding: 10px 16px;
+  font-weight: 700;
+  font-size: 13px;
+  color: #111;
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 12px 16px;
+  color: #444;
+  border-bottom: 1px solid #F0F0F0;
+  vertical-align: middle;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table tbody tr:hover {
+  background: #FAFAFA;
+}
+
+.monoCell {
+  font-family: 'Courier New', monospace;
+  font-size: 12.5px;
+  letter-spacing: 0.03em;
+}
+
+.emptyCell {
+  text-align: center;
+  padding: 40px 16px !important;
+  color: #999;
+  font-style: italic;
+}
+
+.tableFooter {
+  min-height: 100px;
+  background: #ECECEC;
+}
+
+.detailsBtn {
+  background: none;
+  border: none;
+  color: var(--color-primary-red);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  padding: 4px 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.detailsBtn:hover {
+  opacity: 0.8;
+}
