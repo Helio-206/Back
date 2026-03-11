@@ -2,7 +2,8 @@ import { Injectable, BadRequestException, NotFoundException } from '@nestjs/comm
 import { PrismaService } from '@database/prisma.service';
 import { CreateCenterDto } from './dtos/create-center.dto';
 import { UpdateCenterDto } from './dtos/update-center.dto';
-import { Prisma, Provincia } from '@prisma/client';
+import { Prisma, Provincia, Role } from '@prisma/client';
+import * as bcrypt from 'bcryptjs';
 
 /**
  * CentersService - Handles CRUD operations for centers.
@@ -11,6 +12,26 @@ import { Prisma, Provincia } from '@prisma/client';
 @Injectable()
 export class CentersService {
   constructor(private prisma: PrismaService) {}
+
+  async findByUserId(userId: string) {
+    return this.prisma.center.findUnique({
+      where: { userId },
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            cidadao: {
+              select: { nome: true, sobrenome: true },
+            },
+          },
+        },
+        _count: {
+          select: { schedules: true, funcionarios: true },
+        },
+      },
+    });
+  }
 
   /**
    * Validates that opening time is before closing time.
@@ -52,7 +73,38 @@ export class CentersService {
   /**
    * Creates a new center (only available for CENTER role users).
    */
-  async create(userId: string, createCenterDto: CreateCenterDto) {
+  async create(requesterId: string, createCenterDto: CreateCenterDto, requesterRole: Role = Role.CENTER) {
+    let userId = requesterId;
+
+    if (requesterRole === Role.ADMIN) {
+      if (!createCenterDto.email) {
+        throw new BadRequestException('Center user email is required for admin-created centers');
+      }
+
+      if (!createCenterDto.userPassword) {
+        throw new BadRequestException('Center user password is required for admin-created centers');
+      }
+
+      const existingUser = await this.prisma.user.findUnique({
+        where: { email: createCenterDto.email },
+      });
+
+      if (existingUser) {
+        throw new BadRequestException('A user with this email already exists');
+      }
+
+      const passwordHash = await bcrypt.hash(createCenterDto.userPassword, 10);
+      const centerUser = await this.prisma.user.create({
+        data: {
+          email: createCenterDto.email,
+          password: passwordHash,
+          role: Role.CENTER,
+        },
+      });
+
+      userId = centerUser.id;
+    }
+
     // Validate time range if both times provided
     const openingTime = createCenterDto.openingTime || '08:00';
     const closingTime = createCenterDto.closingTime || '17:00';
@@ -72,10 +124,12 @@ export class CentersService {
       throw new BadRequestException('User already has a center. One center per user allowed.');
     }
 
+    const { userPassword, ...centerData } = createCenterDto;
+
     try {
       return await this.prisma.center.create({
         data: {
-          ...createCenterDto,
+          ...centerData,
           openingTime,
           closingTime,
           attendanceDays,
@@ -83,8 +137,9 @@ export class CentersService {
         },
         include: {
           user: {
-            select: { id: true, email: true },
-            include: {
+            select: {
+              id: true,
+              email: true,
               cidadao: {
                 select: { nome: true, sobrenome: true },
               },
@@ -123,8 +178,9 @@ export class CentersService {
       where,
       include: {
         user: {
-          select: { id: true, email: true },
-          include: {
+          select: {
+            id: true,
+            email: true,
             cidadao: {
               select: { nome: true, sobrenome: true },
             },
@@ -143,8 +199,9 @@ export class CentersService {
       where: { provincia, active: true },
       include: {
         user: {
-          select: { id: true, email: true },
-          include: {
+          select: {
+            id: true,
+            email: true,
             cidadao: {
               select: { nome: true, sobrenome: true },
             },
@@ -163,8 +220,9 @@ export class CentersService {
       where: { id },
       include: {
         user: {
-          select: { id: true, email: true },
-          include: {
+          select: {
+            id: true,
+            email: true,
             cidadao: {
               select: { nome: true, sobrenome: true },
             },
@@ -213,8 +271,9 @@ export class CentersService {
         data: updateCenterDto,
         include: {
           user: {
-            select: { id: true, email: true },
-            include: {
+            select: {
+              id: true,
+              email: true,
               cidadao: {
                 select: { nome: true, sobrenome: true },
               },
@@ -246,8 +305,9 @@ export class CentersService {
       data: { active: false },
       include: {
         user: {
-          select: { id: true, email: true },
-          include: {
+          select: {
+            id: true,
+            email: true,
             cidadao: {
               select: { nome: true, sobrenome: true },
             },
@@ -271,8 +331,9 @@ export class CentersService {
       data: { active: true },
       include: {
         user: {
-          select: { id: true, email: true },
-          include: {
+          select: {
+            id: true,
+            email: true,
             cidadao: {
               select: { nome: true, sobrenome: true },
             },

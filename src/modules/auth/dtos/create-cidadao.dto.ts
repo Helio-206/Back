@@ -91,8 +91,8 @@ export class CreateCidadaoDto {
 
   @IsOptional()
   @IsString()
-  @Matches(/^\d{9}LA\d{3}$/, {
-    message: 'numeroBIAnterior must match #########LA### (example: 123456789LA123)',
+  @Matches(/^\d{9}[A-Z]{2}\d{3,4}$/, {
+    message: 'numeroBIAnterior deve ter o formato: 9 dígitos + 2 letras + 3-4 dígitos (ex: 007654844BO042)',
   })
   numeroBIAnterior?: string;
 }

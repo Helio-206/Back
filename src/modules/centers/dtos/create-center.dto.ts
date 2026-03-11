@@ -60,6 +60,11 @@ export class CreateCenterDto {
   email?: string;
 
   @IsOptional()
+  @IsString({ message: 'User password must be a string' })
+  @MinLength(8, { message: 'User password must be at least 8 characters long' })
+  userPassword?: string;
+
+  @IsOptional()
   @IsString({ message: 'Opening time must be a string' })
   @Matches(/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/, {
     message: 'Opening time must be in HH:MM format (00:00 to 23:59)',

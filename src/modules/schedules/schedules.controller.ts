@@ -6,6 +6,7 @@ import {
   Param,
   Put,
   Delete,
+  Patch,
   UseGuards,
   HttpCode,
   Query,
@@ -51,16 +52,16 @@ export class SchedulesController {
   @Put(':id')
   @UseGuards(JwtAuthGuard, RolesGuard, ScheduleAccessGuard)
   @Roles('ADMIN', 'CITIZEN', 'CENTER')
-  async update(@Param('id') id: string, @Body() updateScheduleDto: UpdateScheduleDto) {
-    return this.schedulesService.update(id, updateScheduleDto);
+  async update(@Param('id') id: string, @Body() updateScheduleDto: UpdateScheduleDto, @CurrentUser() user: { id: string }) {
+    return this.schedulesService.update(id, updateScheduleDto, user.id);
   }
 
-  @Delete(':id/cancel')
+  @Patch(':id/cancel')
   @UseGuards(JwtAuthGuard, RolesGuard, ScheduleAccessGuard)
   @Roles('ADMIN', 'CITIZEN', 'CENTER')
   @HttpCode(200)
-  async cancel(@Param('id') id: string) {
-    return this.schedulesService.cancel(id);
+  async cancel(@Param('id') id: string, @CurrentUser() user: { id: string }) {
+    return this.schedulesService.cancel(id, user.id);
   }
 
   @Delete(':id')

@@ -48,7 +48,7 @@ export class CentersController {
   @Roles(Role.CENTER, Role.ADMIN)
   @HttpCode(201)
   async create(@Body() createCenterDto: CreateCenterDto, @CurrentUser() user: AuthenticatedUser) {
-    return this.centersService.create(user.id, createCenterDto);
+    return this.centersService.create(user.id, createCenterDto, user.role);
   }
 
   @Get()
@@ -70,6 +70,18 @@ export class CentersController {
     }
 
     return this.centersService.findAll(filters);
+  }
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.CENTER)
+  @HttpCode(200)
+  async findMyCenter(@CurrentUser() user: AuthenticatedUser) {
+    const center = await this.centersService.findByUserId(user.id);
+    if (!center) {
+      throw new NotFoundException('You do not have a center assigned');
+    }
+    return center;
   }
 
   @Get('province/:provincia')

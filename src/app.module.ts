@@ -7,6 +7,8 @@ import { CentersModule } from '@modules/centers/centers.module';
 import { SchedulesModule } from '@modules/schedules/schedules.module';
 import { TipoServicoModule } from '@modules/tipo-servico/tipo-servico.module';
 import { EstadoAgendamentoModule } from '@modules/estado-agendamento/estado-agendamento.module';
+import { NotificationsModule } from '@modules/notifications/notifications.module';
+import { ActivityLogModule } from '@modules/activity-log/activity-log.module';
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import { EstadoAgendamentoModule } from '@modules/estado-agendamento/estado-agen
     SchedulesModule,
     TipoServicoModule,
     EstadoAgendamentoModule,
+    NotificationsModule,
+    ActivityLogModule,
   ],
 })
 export class AppModule {}

@@ -4,6 +4,8 @@ import { SchedulesService } from './schedules.service';
 import { SchedulesController } from './schedules.controller';
 import { DatabaseModule } from '@database/database.module';
 import { ScheduleAccessGuard } from '@common/guards/schedule-access.guard';
+import { NotificationsModule } from '@modules/notifications/notifications.module';
+import { ActivityLogModule } from '@modules/activity-log/activity-log.module';
 
 @Module({
   imports: [
@@ -11,6 +13,8 @@ import { ScheduleAccessGuard } from '@common/guards/schedule-access.guard';
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'dev-secret',
     }),
+    NotificationsModule,
+    ActivityLogModule,
   ],
   providers: [SchedulesService, ScheduleAccessGuard],
   controllers: [SchedulesController],
