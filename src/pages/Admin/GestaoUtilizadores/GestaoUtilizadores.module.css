@@ -278,3 +278,23 @@
   white-space: nowrap;
 }
 .deactivateBtn:hover { background: #FEF2F2; }
+
+@media (max-width: 768px) {
+  .searchRow {
+    flex-direction: column;
+  }
+
+  .roleTabs {
+    flex-wrap: wrap;
+  }
+
+  .table th,
+  .table td {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .actionCell {
+    flex-wrap: wrap;
+  }
+}

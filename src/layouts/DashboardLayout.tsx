@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { User, LogOut, CalendarPlus, ClipboardList, RefreshCw } from 'lucide-react';
+import { User, LogOut, CalendarPlus, ClipboardList, RefreshCw, Menu, X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import NotificationPanel from '../components/NotificationPanel';
 import styles from './DashboardLayout.module.css';
@@ -14,6 +15,7 @@ const navItems = [
 export default function DashboardLayout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -28,8 +30,16 @@ export default function DashboardLayout() {
 
   return (
     <div className={styles.dashboardContainer}>
+      {/* Mobile hamburger */}
+      <button className={styles.hamburger} onClick={() => setMenuOpen(!menuOpen)}>
+        {menuOpen ? <X size={22} /> : <Menu size={22} />}
+      </button>
+
+      {/* Overlay */}
+      {menuOpen && <div className={styles.overlay} onClick={() => setMenuOpen(false)} />}
+
       {/* Sidebar */}
-      <aside className={styles.sidebar}>
+      <aside className={`${styles.sidebar} ${menuOpen ? styles.sidebarOpen : ''}`}>
         <div className={styles.sidebarLogo}>
           <img src="/assets/emblema-angola.png" alt="Emblema de Angola" />
         </div>
@@ -44,6 +54,7 @@ export default function DashboardLayout() {
               <NavLink
                 key={item.path}
                 to={item.path}
+                onClick={() => setMenuOpen(false)}
                 className={({ isActive }) =>
                   `${styles.navLink} ${isActive ? styles.navLinkActive : ''}`
                 }

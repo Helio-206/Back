@@ -157,3 +157,15 @@
   text-align: center;
   margin: 12px 0 0;
 }
+
+@media (max-width: 768px) {
+  .filterRow {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .filterSegment {
+    flex-direction: column;
+    width: 100%;
+  }
+}

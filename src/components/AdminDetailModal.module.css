@@ -122,3 +122,20 @@
 .closeFooterBtn:hover {
   background: #FFF5F5;
 }
+
+@media (max-width: 768px) {
+  .modal {
+    width: 95vw;
+  }
+
+  .fieldLabel {
+    min-width: 100px;
+  }
+
+  .header,
+  .body,
+  .footer {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}

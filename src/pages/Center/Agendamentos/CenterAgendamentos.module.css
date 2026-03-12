@@ -350,3 +350,26 @@
   transition: background 0.2s;
 }
 .modalConfirm:hover { background: #A8181E; }
+
+@media (max-width: 768px) {
+  .pageHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .scheduleCard {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .filterBar {
+    flex-wrap: wrap;
+  }
+
+  .modal {
+    max-width: 95vw;
+    padding: 20px 16px;
+  }
+}

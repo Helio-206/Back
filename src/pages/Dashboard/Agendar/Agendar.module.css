@@ -290,3 +290,26 @@
   margin-bottom: 16px;
   text-align: center;
 }
+
+@media (max-width: 768px) {
+  .header {
+    padding: 10px 16px;
+    gap: 16px;
+    font-size: 13px;
+  }
+
+  .body {
+    flex-direction: column;
+    padding: 16px;
+    gap: 20px;
+  }
+
+  .rightColumn {
+    width: 100%;
+    flex-shrink: unset;
+  }
+
+  .dateRow {
+    max-width: 100%;
+  }
+}

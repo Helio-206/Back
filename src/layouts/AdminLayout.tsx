@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, BarChart3, Settings, MapPin, Users, FileText, LogOut, UserCog, Activity } from 'lucide-react';
+import { LayoutDashboard, BarChart3, Settings, MapPin, Users, FileText, LogOut, UserCog, Activity, Menu, X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import styles from './AdminLayout.module.css';
 
@@ -13,6 +14,7 @@ const navItems = [
 ];
 
 export default function AdminLayout() {
+  const [menuOpen, setMenuOpen] = useState(false);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -29,7 +31,11 @@ export default function AdminLayout() {
 
   return (
     <div className={styles.container}>
-      <aside className={styles.sidebar}>
+      <button className={styles.hamburger} onClick={() => setMenuOpen(!menuOpen)}>
+        {menuOpen ? <X size={22} /> : <Menu size={22} />}
+      </button>
+      {menuOpen && <div className={styles.overlay} onClick={() => setMenuOpen(false)} />}
+      <aside className={`${styles.sidebar} ${menuOpen ? styles.sidebarOpen : ''}`}>
         <div className={styles.sidebarLogo}>
           <img src="/assets/emblema-angola.png" alt="Emblema de Angola" />
         </div>
@@ -48,6 +54,7 @@ export default function AdminLayout() {
                 className={({ isActive }) =>
                   `${styles.navLink} ${isActive ? styles.navLinkActive : ''}`
                 }
+                onClick={() => setMenuOpen(false)}
               >
                 <Icon size={15} strokeWidth={1.8} />
                 {item.label}

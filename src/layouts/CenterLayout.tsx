@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, CalendarCheck, LogOut, Building2, BarChart3, FileText } from 'lucide-react';
+import { LayoutDashboard, CalendarCheck, LogOut, Building2, BarChart3, FileText, Menu, X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import styles from './CenterLayout.module.css';
 
@@ -11,6 +12,7 @@ const navItems = [
 ];
 
 export default function CenterLayout() {
+  const [menuOpen, setMenuOpen] = useState(false);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -27,7 +29,11 @@ export default function CenterLayout() {
 
   return (
     <div className={styles.container}>
-      <aside className={styles.sidebar}>
+      <button className={styles.hamburger} onClick={() => setMenuOpen(!menuOpen)}>
+        {menuOpen ? <X size={22} /> : <Menu size={22} />}
+      </button>
+      {menuOpen && <div className={styles.overlay} onClick={() => setMenuOpen(false)} />}
+      <aside className={`${styles.sidebar} ${menuOpen ? styles.sidebarOpen : ''}`}>
         <div className={styles.sidebarLogo}>
           <img src="/assets/emblema-angola.png" alt="Emblema de Angola" />
         </div>
@@ -46,6 +52,7 @@ export default function CenterLayout() {
                 className={({ isActive }) =>
                   `${styles.navLink} ${isActive ? styles.navLinkActive : ''}`
                 }
+                onClick={() => setMenuOpen(false)}
               >
                 <Icon size={15} strokeWidth={1.8} />
                 {item.label}

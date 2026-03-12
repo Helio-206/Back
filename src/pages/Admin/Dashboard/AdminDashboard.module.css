@@ -274,3 +274,41 @@
 .detailsBtn:hover {
   opacity: 0.8;
 }
+
+@media (max-width: 768px) {
+  .pageTitle {
+    font-size: 18px;
+  }
+
+  .kpiRow {
+    gap: 10px;
+  }
+
+  .kpiCard {
+    min-width: calc(50% - 8px);
+    padding: 14px;
+  }
+
+  .kpiValue {
+    font-size: 22px;
+  }
+
+  .topRow {
+    flex-direction: column;
+  }
+
+  .searchRow {
+    flex-direction: column;
+  }
+
+  .searchBtn {
+    width: 100%;
+    padding: 0 16px;
+  }
+
+  .table th,
+  .table td {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+}

@@ -267,3 +267,26 @@
   text-align: center;
   white-space: nowrap;
 }
+
+@media (max-width: 768px) {
+  .filterRow {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .filterSegment {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .barChart {
+    gap: 12px;
+    overflow-x: auto;
+  }
+
+  .table th,
+  .table td {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+}

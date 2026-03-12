@@ -521,3 +521,17 @@
 .retryBtn:hover {
   background: #a01a1f;
 }
+
+@media (max-width: 768px) {
+  .imageGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .cameraContainer {
+    height: 300px;
+  }
+
+  .modal {
+    padding: 16px;
+  }
+}

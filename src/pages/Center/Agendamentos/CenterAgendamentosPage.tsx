@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { centerService } from '../../../services/center.service';
-import type { CenterInfo, CenterSchedule, EstadoAgendamento } from '../../../services/center.service';
+import type { CenterSchedule, EstadoAgendamento } from '../../../services/center.service';
 import styles from './CenterAgendamentos.module.css';
 
 const STATUS_FLOW: Record<string, string[]> = {
@@ -26,7 +26,6 @@ interface PendingAction {
 }
 
 export default function CenterAgendamentosPage() {
-  const [center, setCenter] = useState<CenterInfo | null>(null);
   const [schedules, setSchedules] = useState<CenterSchedule[]>([]);
   const [estados, setEstados] = useState<EstadoAgendamento[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,7 +49,6 @@ export default function CenterAgendamentosPage() {
         centerService.getMyCenter(),
         centerService.getEstadosAgendamento(),
       ]);
-      setCenter(centerData);
       setEstados(estadosData);
       const schedulesData = await centerService.getCenterSchedules(centerData.id);
       setSchedules(schedulesData);

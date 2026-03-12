@@ -367,3 +367,28 @@
 }
 .saveBtn:hover { opacity: 0.85; }
 .saveBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+@media (max-width: 768px) {
+  .searchRow {
+    flex-direction: column;
+  }
+
+  .searchBtn {
+    width: 100%;
+  }
+
+  .modalContent {
+    min-width: 0;
+    width: 92vw;
+  }
+
+  .table th,
+  .table td {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .formActions {
+    flex-direction: column;
+  }
+}
