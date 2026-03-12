@@ -219,12 +219,12 @@ export class SchedulesService {
         },
         REJEITADO: {
           title: 'Agendamento Rejeitado',
-          message: `O seu agendamento no centro "${current.center?.name}" foi rejeitado. Por favor, entre em contacto com o centro.`,
+          message: `O seu agendamento no centro "${current.center?.name}" foi rejeitado.${updateScheduleDto.notes ? ` Motivo: ${updateScheduleDto.notes}` : ' Por favor, entre em contacto com o centro.'}`,
           type: 'REJECTION',
         },
         CANCELADO: {
           title: 'Agendamento Cancelado',
-          message: `O seu agendamento no centro "${current.center?.name}" foi cancelado.`,
+          message: `O seu agendamento no centro "${current.center?.name}" foi cancelado.${updateScheduleDto.notes ? ` Motivo: ${updateScheduleDto.notes}` : ''}`,
           type: 'REJECTION',
         },
       };
