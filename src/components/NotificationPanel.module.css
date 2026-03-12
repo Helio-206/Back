@@ -200,3 +200,18 @@
   color: #16A34A;
   background: #F0FDF4;
 }
+
+@media (max-width: 768px) {
+  .dropdown {
+    position: fixed;
+    top: 60px;
+    right: 12px;
+    left: 12px;
+    width: auto;
+    max-height: calc(100vh - 84px);
+  }
+
+  .dropdownBody {
+    max-height: calc(100vh - 160px);
+  }
+}

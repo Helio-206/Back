@@ -36,10 +36,10 @@ cleanup() {
 trap cleanup EXIT INT TERM
 
 echo "Iniciando backend (develop) em background..."
-npm --prefix "$BACK_DIR" run dev &
+APP_HOST=0.0.0.0 npm --prefix "$BACK_DIR" run dev &
 BACK_PID=$!
 
 sleep 2
 
 echo "Iniciando frontend (feature/frontend-clean)..."
-npm --prefix "$ROOT_DIR" run dev
+npm --prefix "$ROOT_DIR" run dev -- --host 0.0.0.0

@@ -230,3 +230,36 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+@media (max-width: 480px) {
+  .avatarSection {
+    padding: 20px 16px;
+  }
+
+  .avatarName {
+    font-size: 16px;
+  }
+
+  .avatarRole {
+    font-size: 12px;
+  }
+
+  .formCard {
+    padding: 16px;
+  }
+
+  .formCardTitle {
+    font-size: 15px;
+  }
+
+  .input {
+    height: 38px;
+    font-size: 13px;
+  }
+
+  .saveBtn {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 20px;
+  }
+}

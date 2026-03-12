@@ -164,3 +164,27 @@
     gap: var(--spacing-sm);
   }
 }
+
+@media (max-width: 480px) {
+  .header {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .body {
+    padding: 10px;
+  }
+
+  .scheduleCard {
+    padding: 12px;
+  }
+
+  .scheduleActions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .scheduleActions button {
+    width: 100%;
+  }
+}

@@ -265,3 +265,19 @@
     padding: 14px 12px;
   }
 }
+
+@media (max-width: 480px) {
+  .headerBar {
+    padding: 10px 12px;
+    padding-left: 52px;
+    gap: 8px;
+  }
+
+  .headerTitle {
+    font-size: 13px;
+  }
+
+  .mainBody {
+    padding: 10px 8px;
+  }
+}

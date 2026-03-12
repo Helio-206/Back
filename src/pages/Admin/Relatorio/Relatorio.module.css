@@ -169,3 +169,25 @@
     width: 100%;
   }
 }
+
+@media (max-width: 480px) {
+  .pageTitle {
+    font-size: 16px;
+  }
+
+  .previewArea {
+    min-height: 240px;
+    padding: 12px;
+  }
+
+  .exportBtn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .previewTable th,
+  .previewTable td {
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+}

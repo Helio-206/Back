@@ -239,3 +239,27 @@
     padding: 20px 16px;
   }
 }
+
+@media (max-width: 480px) {
+  .header {
+    gap: 12px;
+    padding: 8px 12px;
+    font-size: 13px;
+    flex-wrap: wrap;
+    white-space: normal;
+  }
+
+  .body {
+    padding: 12px;
+    gap: 14px;
+  }
+
+  .uploadArea {
+    min-height: 160px;
+    padding: 16px;
+  }
+
+  .formCard {
+    padding: 16px 12px;
+  }
+}

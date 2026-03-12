@@ -535,3 +535,37 @@
     padding: 16px;
   }
 }
+
+@media (max-width: 480px) {
+  .body {
+    padding: 12px;
+  }
+
+  .menuArea {
+    padding: 12px;
+  }
+
+  .uploadArea {
+    min-height: 160px;
+    padding: 16px;
+  }
+
+  .cameraContainer {
+    height: 240px;
+  }
+
+  .captureBtn {
+    width: 100%;
+  }
+
+  .modal {
+    padding: 12px;
+    border-radius: 12px;
+  }
+
+  .retryBtn,
+  .cancelBtn {
+    width: 100%;
+    text-align: center;
+  }
+}

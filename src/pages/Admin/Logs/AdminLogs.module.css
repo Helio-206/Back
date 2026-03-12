@@ -227,3 +227,32 @@
     padding: 8px 10px;
   }
 }
+
+@media (max-width: 480px) {
+  .pageTitle {
+    font-size: 1.1rem;
+  }
+
+  .statCard {
+    padding: 14px;
+  }
+
+  .statValue {
+    font-size: 1.2rem;
+  }
+
+  .statLabel {
+    font-size: 0.7rem;
+  }
+
+  .filtersBar {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .table th,
+  .table td {
+    padding: 6px 8px;
+    font-size: 0.72rem;
+  }
+}

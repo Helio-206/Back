@@ -178,3 +178,19 @@
 .clearBtn:hover {
   text-decoration: underline;
 }
+
+@media (max-width: 768px) {
+  .panel {
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(320px, calc(100vw - 24px));
+    min-width: 0;
+    padding: 12px;
+  }
+
+  .dayCell {
+    min-width: 30px;
+    min-height: 30px;
+    font-size: 12px;
+  }
+}

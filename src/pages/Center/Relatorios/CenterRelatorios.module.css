@@ -241,3 +241,46 @@
     flex-wrap: wrap;
   }
 }
+
+@media (max-width: 768px) {
+  .pageHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .summaryGrid {
+    flex-direction: column;
+  }
+
+  .table th,
+  .table td {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pageTitle {
+    font-size: 16px;
+  }
+
+  .reportCard {
+    padding: 16px;
+  }
+
+  .summaryCard {
+    padding: 14px;
+  }
+
+  .table th,
+  .table td {
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+
+  .exportBtn {
+    width: 100%;
+    justify-content: center;
+  }
+}

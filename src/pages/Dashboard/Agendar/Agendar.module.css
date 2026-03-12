@@ -313,3 +313,29 @@
     max-width: 100%;
   }
 }
+
+@media (max-width: 480px) {
+  .header {
+    gap: 10px;
+    padding: 8px 12px;
+    font-size: 12px;
+    flex-wrap: wrap;
+    white-space: normal;
+  }
+
+  .body {
+    padding: 12px;
+    gap: 14px;
+  }
+
+  .sectionTitle {
+    font-size: 14px;
+  }
+
+  .confirmBtn,
+  .backBtn {
+    font-size: 13px;
+    padding: 10px 16px;
+    width: 100%;
+  }
+}

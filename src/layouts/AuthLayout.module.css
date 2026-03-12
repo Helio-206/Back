@@ -375,7 +375,52 @@
 }
 
 @media (max-width: 640px) {
+  .authLayout {
+    justify-content: flex-start;
+    padding: 12px;
+  }
+
+  .authLogo {
+    width: 72px;
+    height: 72px;
+    margin: 8px 0 12px;
+  }
+
+  .authCard {
+    max-width: none;
+    padding: 18px 14px;
+    border-radius: 18px;
+  }
+
+  .authTitle {
+    font-size: 20px;
+  }
+
+  .inputWrapper,
+  .inputField,
+  .submitBtn,
+  .altBtn,
+  .scanBtn {
+    font-size: 13px;
+  }
+
   .formRow {
     grid-template-columns: 1fr;
+  }
+
+  .inlineCheckbox,
+  .checkboxRow,
+  .forgotRow {
+    flex-wrap: wrap;
+  }
+
+  .footer {
+    margin-top: 16px;
+    padding-bottom: 8px;
+  }
+
+  .footerLinks {
+    flex-wrap: wrap;
+    gap: 6px 10px;
   }
 }

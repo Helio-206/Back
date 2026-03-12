@@ -139,3 +139,31 @@
     padding-right: 16px;
   }
 }
+
+@media (max-width: 480px) {
+  .modal {
+    width: 98vw;
+    border-radius: 12px;
+  }
+
+  .fieldRow {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .fieldLabel {
+    min-width: unset;
+    font-size: 12px;
+  }
+
+  .fieldValue {
+    font-size: 13px;
+  }
+
+  .header,
+  .body,
+  .footer {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
