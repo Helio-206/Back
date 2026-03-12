@@ -55,7 +55,7 @@ tr:nth-child(even){background:#f9f9f9}
 <p class="meta">Período: ${filters.periodo} | Serviço: ${filters.servico} | Centro: ${filters.centro} | Total: ${data.length}</p>
 <table><thead><tr><th>Data</th><th>Identificação</th><th>Cidadão</th><th>Tipologia</th><th>Local</th></tr></thead>
 <tbody>${rows}</tbody></table>
-<p class="footer">Gerado em ${new Date().toLocaleString('pt-AO')} — Sistema de Agendamento BI</p>
+<p class="footer">Gerado em ${new Date().toLocaleString('pt-AO')} — RegulaFácil</p>
 </body></html>`;
 }
 

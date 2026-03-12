@@ -34,9 +34,7 @@ export default function AdminLayout() {
           <img src="/assets/emblema-angola.png" alt="Emblema de Angola" />
         </div>
         <p className={styles.sidebarBrand}>
-          Sistema de<br />
-          Agendamento<br />
-          Regularização do BI
+          RegulaFácil
         </p>
 
         <nav className={styles.sidebarNav}>

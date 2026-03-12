@@ -32,9 +32,7 @@ export default function CenterLayout() {
           <img src="/assets/emblema-angola.png" alt="Emblema de Angola" />
         </div>
         <p className={styles.sidebarBrand}>
-          Gestão de<br />
-          Centro de<br />
-          Atendimento
+          RegulaFácil
         </p>
 
         <nav className={styles.sidebarNav}>

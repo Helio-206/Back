@@ -18,6 +18,13 @@ const STATUS_ACTION_LABELS: Record<string, string> = {
   REJEITADO: 'Rejeitar',
 };
 
+const NEEDS_JUSTIFICATION = new Set(['REJEITADO', 'CANCELADO']);
+
+interface PendingAction {
+  scheduleId: string;
+  newStatusCode: string;
+}
+
 export default function CenterAgendamentosPage() {
   const [center, setCenter] = useState<CenterInfo | null>(null);
   const [schedules, setSchedules] = useState<CenterSchedule[]>([]);
@@ -27,6 +34,11 @@ export default function CenterAgendamentosPage() {
   const [filterStatus, setFilterStatus] = useState('TODOS');
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState('');
+
+  // Modal state
+  const [pendingAction, setPendingAction] = useState<PendingAction | null>(null);
+  const [justification, setJustification] = useState('');
+  const [justError, setJustError] = useState('');
 
   useEffect(() => {
     loadData();
@@ -49,17 +61,42 @@ export default function CenterAgendamentosPage() {
     }
   };
 
-  const handleStatusChange = async (scheduleId: string, newStatusCode: string) => {
-    const estadoTarget = estados.find((e) => e.status === newStatusCode);
+  const handleActionClick = (scheduleId: string, newStatusCode: string) => {
+    if (NEEDS_JUSTIFICATION.has(newStatusCode)) {
+      setPendingAction({ scheduleId, newStatusCode });
+      setJustification('');
+      setJustError('');
+    } else {
+      const estadoTarget = estados.find((e) => e.status === newStatusCode);
+      if (!estadoTarget) return;
+      const label = STATUS_ACTION_LABELS[newStatusCode] || newStatusCode;
+      if (!confirm(`Deseja ${label.toLowerCase()} este agendamento?`)) return;
+      executeStatusChange(scheduleId, estadoTarget.id, undefined);
+    }
+  };
+
+  const handleModalConfirm = async () => {
+    if (!pendingAction) return;
+    if (!justification.trim()) {
+      setJustError('A justificação é obrigatória.');
+      return;
+    }
+    const estadoTarget = estados.find((e) => e.status === pendingAction.newStatusCode);
     if (!estadoTarget) return;
+    setPendingAction(null);
+    executeStatusChange(pendingAction.scheduleId, estadoTarget.id, justification.trim());
+  };
 
-    const actionLabel = STATUS_ACTION_LABELS[newStatusCode] || newStatusCode;
-    if (!confirm(`Deseja ${actionLabel.toLowerCase()} este agendamento?`)) return;
-
+  const executeStatusChange = async (
+    scheduleId: string,
+    estadoAgendamentoId: string,
+    notes: string | undefined,
+  ) => {
     setUpdatingId(scheduleId);
     try {
-      await centerService.updateScheduleStatus(scheduleId, estadoTarget.id);
-      setSuccessMsg(`Agendamento actualizado para "${estadoTarget.descricao}".`);
+      await centerService.updateScheduleStatus(scheduleId, estadoAgendamentoId, notes);
+      const estado = estados.find((e) => e.id === estadoAgendamentoId);
+      setSuccessMsg(`Agendamento actualizado para "${estado?.descricao || ''}".`);
       await loadData();
       setTimeout(() => setSuccessMsg(''), 3000);
     } catch (err: unknown) {
@@ -88,6 +125,10 @@ export default function CenterAgendamentosPage() {
   if (loading) {
     return <div className={styles.loading}>A carregar...</div>;
   }
+
+  const pendingStatusLabel = pendingAction
+    ? STATUS_ACTION_LABELS[pendingAction.newStatusCode] || pendingAction.newStatusCode
+    : '';
 
   return (
     <div className={styles.container}>
@@ -135,11 +176,7 @@ export default function CenterAgendamentosPage() {
                 <div className={styles.cardMain}>
                   <div className={styles.cardHeader}>
                     <span className={styles.citizenName}>{citizenName}</span>
-                    <span
-                      className={
-                        styles[`status${currentStatus}`] || styles.statusDefault
-                      }
-                    >
+                    <span className={styles[`status${currentStatus}`] || styles.statusDefault}>
                       {schedule.estadoAgendamento?.descricao || '—'}
                     </span>
                   </div>
@@ -161,6 +198,11 @@ export default function CenterAgendamentosPage() {
                         <strong>Sexo:</strong> {schedule.user.cidadao.sexo}
                       </span>
                     )}
+                    {schedule.notes && (
+                      <span className={styles.notesRow}>
+                        <strong>Nota:</strong> {schedule.notes}
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -175,9 +217,7 @@ export default function CenterAgendamentosPage() {
                             : styles.actionPrimary
                         }`}
                         disabled={updatingId === schedule.id}
-                        onClick={() =>
-                          handleStatusChange(schedule.id, nextStatus)
-                        }
+                        onClick={() => handleActionClick(schedule.id, nextStatus)}
                       >
                         {updatingId === schedule.id
                           ? '...'
@@ -191,6 +231,44 @@ export default function CenterAgendamentosPage() {
           })}
         </div>
       )}
+
+      {/* Justification Modal */}
+      {pendingAction && (
+        <div className={styles.modalOverlay} onClick={() => setPendingAction(null)}>
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <h3 className={styles.modalTitle}>
+              {pendingStatusLabel} agendamento
+            </h3>
+            <p className={styles.modalSubtitle}>
+              Para {pendingStatusLabel.toLowerCase()} este agendamento é necessário indicar uma justificação.
+            </p>
+            <label className={styles.modalLabel}>
+              Justificação <span className={styles.required}>*</span>
+            </label>
+            <textarea
+              className={`${styles.modalTextarea} ${justError ? styles.modalTextareaError : ''}`}
+              placeholder="Descreva o motivo..."
+              rows={4}
+              value={justification}
+              onChange={(e) => {
+                setJustification(e.target.value);
+                if (e.target.value.trim()) setJustError('');
+              }}
+              autoFocus
+            />
+            {justError && <span className={styles.modalError}>{justError}</span>}
+            <div className={styles.modalActions}>
+              <button className={styles.modalCancel} onClick={() => setPendingAction(null)}>
+                Cancelar
+              </button>
+              <button className={styles.modalConfirm} onClick={handleModalConfirm}>
+                Confirmar {pendingStatusLabel}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+

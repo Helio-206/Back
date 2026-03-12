@@ -24,6 +24,7 @@ export interface CenterSchedule {
   scheduledDate: string;
   slotNumber?: number;
   description?: string;
+  notes?: string;
   createdAt: string;
   user: {
     id: string;
@@ -67,8 +68,9 @@ export const centerService = {
   async updateScheduleStatus(
     scheduleId: string,
     estadoAgendamentoId: string,
+    notes?: string,
   ): Promise<void> {
-    await api.put(`/schedules/${scheduleId}`, { estadoAgendamentoId });
+    await api.put(`/schedules/${scheduleId}`, { estadoAgendamentoId, ...(notes ? { notes } : {}) });
   },
 
   async getEstadosAgendamento(): Promise<EstadoAgendamento[]> {
