@@ -56,9 +56,6 @@ export default function PerfilCidadaoPage() {
         <h2 className={styles.sectionTitle}>Dados do Cidadão</h2>
 
         <div className={styles.citizenCard}>
-          {cidadao?.numeroBIAnterior && (
-            <span className={styles.biStatus}>BI Anterior</span>
-          )}
           <div className={styles.cardContent}>
             {/* Left: BI + Citizen info */}
             <div className={styles.cardLeft}>
