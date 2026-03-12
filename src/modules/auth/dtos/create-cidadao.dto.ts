@@ -10,6 +10,7 @@ import {
   MinLength,
 } from 'class-validator';
 import { Provincia } from '@prisma/client';
+import { HasMinimumAge, IsNotFutureDate } from '../../../common/validators';
 
 export class CreateCidadaoDto {
   @IsString()
@@ -24,6 +25,8 @@ export class CreateCidadaoDto {
 
   @IsDateString()
   @IsNotEmpty()
+  @IsNotFutureDate()
+  @HasMinimumAge(1)
   dataNascimento!: string;
 
   @IsString()
