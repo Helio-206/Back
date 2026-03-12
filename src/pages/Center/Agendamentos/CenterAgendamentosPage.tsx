@@ -80,9 +80,13 @@ export default function CenterAgendamentosPage() {
       return;
     }
     const estadoTarget = estados.find((e) => e.status === pendingAction.newStatusCode);
-    if (!estadoTarget) return;
-    setPendingAction(null);
-    executeStatusChange(pendingAction.scheduleId, estadoTarget.id, justification.trim());
+     if (!estadoTarget) {
+       setJustError('Estado não encontrado. Tente recarregar a página.');
+       return;
+     }
+     const { scheduleId } = pendingAction;
+     setPendingAction(null);
+     await executeStatusChange(scheduleId, estadoTarget.id, justification.trim());
   };
 
   const executeStatusChange = async (
@@ -98,9 +102,12 @@ export default function CenterAgendamentosPage() {
       await loadData();
       setTimeout(() => setSuccessMsg(''), 3000);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Erro ao actualizar estado.';
-      setError(msg);
-      setTimeout(() => setError(''), 3000);
+       const axiosMsg = (err as { response?: { data?: { message?: string | string[] } } })?.response?.data?.message;
+       const msg = axiosMsg
+         ? (Array.isArray(axiosMsg) ? axiosMsg.join(', ') : axiosMsg)
+         : (err instanceof Error ? err.message : 'Erro ao actualizar estado.');
+       setError(msg);
+       setTimeout(() => setError(''), 5000);
     } finally {
       setUpdatingId(null);
     }
