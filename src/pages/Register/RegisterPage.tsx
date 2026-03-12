@@ -50,6 +50,23 @@ export default function RegisterPage() {
   const [rememberMe, setRememberMe] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
   const [error, setError] = useState('');
+
+  const getTodayISO = () => {
+    const now = new Date();
+    const tzOffset = now.getTimezoneOffset() * 60000;
+    return new Date(now.getTime() - tzOffset).toISOString().split('T')[0];
+  };
+
+  const calculateAge = (birthDateStr: string) => {
+    const birthDate = new Date(birthDateStr);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age -= 1;
+    }
+    return age;
+  };
   const [loading, setLoading] = useState(false);
 
   const { register } = useAuth();
@@ -99,6 +116,17 @@ export default function RegisterPage() {
 
     if (!dataNascimento) {
       setError('Data de nascimento é obrigatória.');
+      return;
+    }
+
+    const todayISO = getTodayISO();
+    if (dataNascimento > todayISO) {
+      setError('Data de nascimento não pode ser superior à data corrente.');
+      return;
+    }
+
+    if (calculateAge(dataNascimento) < 1) {
+      setError('Apenas pessoas com 1 ano de vida ou mais podem se registrar.');
       return;
     }
 
@@ -223,6 +251,7 @@ export default function RegisterPage() {
                   className={styles.inputField}
                   value={dataNascimento}
                   onChange={(e) => setDataNascimento(e.target.value)}
+                  max={getTodayISO()}
                   required
                 />
               </div>
