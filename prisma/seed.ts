@@ -156,6 +156,7 @@ async function main() {
     { descricao: 'Em Processamento', status: 'EM_PROCESSAMENTO' },
     { descricao: 'Concluído', status: 'CONCLUIDO' },
     { descricao: 'Cancelado', status: 'CANCELADO' },
+     { descricao: 'Rejeitado', status: 'REJEITADO' },
   ];
 
   const estadoIds: Record<string, string> = {};
